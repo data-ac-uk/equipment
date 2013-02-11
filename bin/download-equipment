@@ -13,15 +13,14 @@
 # Then we process the cache files to produce a searchable website, and tabular data.
 
 
-# TODO
-# Log errors in URL downloads
-# Add name, location & logo for places
-# Add something clever with licenses
+require_once( "lib/arc2/ARC2.php" );
+require_once( "lib/Graphite/Graphite.php" );
 
+$base_dir = "/home/dataacuk/data.ac.uk/equipment";
 
-require_once( 
+$org_cache_dir = "$base_dir/htdocs/data/org";
 
-$config = read_config( "etc/test-list.tsv" );
+$config = read_config( "$base_dir/etc/test-list.tsv" );
 
 foreach( $config as $config_item )
 {
@@ -43,15 +42,38 @@ foreach( $config as $config_item )
 		print "Unknown type: ".$config_item["type"]."\n";
 	}
 
-	if( $graph != null )
+	if( $graph != null && count( $graph->toArcTriples() ) > 0 ) 
 	{
-		# cache graph TODO
+		# cache graph if it's set and has some triples
+
+		# filename has ukprn- as a prefix as in the future there may be data from organisations
+		# without a ukprn. Who can say for sure!
+		$file = "$org_cache_dir/ukprn-".$config_item["ukprn"].".ttl";
+		
+		$fh = fopen($file, 'w') or die("can't open file: $file" );
+		fwrite($fh, $graph->serialize( "Turtle" ) );
+		fclose($fh);
 	}
 	else
 	{
 		# don't update cache TODO?
 	}
 }	
+
+# At this stage, we could delete items from the cache not in the profile
+# documents.
+
+foreach( $config as $config_item )
+{
+	$file = "$org_cache_dir/ukprn-".$config_item["ukprn"].".ttl";
+
+	$graph = new Graphite();
+	$n = $graph->load( "file://$file" );
+print "$file -- $n\n";
+	if( $n == 0 ) { continue; }
+	
+	print "yo\n";	
+}
 		
 # Output Data Documents & files for search
 
@@ -71,12 +93,27 @@ function read_config( $file )
 			"ukprn" => $cells[0],	
 			"type" => $cells[1],	
 			"url" => $cells[2],	
+			"name" => $cells[3],	
+			"logo" => $cells[4],	
 		);
 	}
 	
 	return $config;
 }
 
+function rdf_to_graph( $c )
+{
+	$content = file_get_contents( $c["url"] );
+	$items = json_decode( $content, true );
+
+	$graph = new Graphite();
+
+	$n = $graph->load( $c["url"] );
+
+	if( $n==0 ) { return null; }
+
+	return $graph;
+}
 
 # INPUT
 
@@ -100,10 +137,58 @@ function kitcat_to_graph( $c )
 	foreach( $items as $item )
 	{
 		$uri = "http://equipment.data.ac.uk/item/".$c["ukprn"]."/".md5( $item["id"] );
-		print "($uri)\n";
+
+		# assumption-- everything from kitcat is equipment		
+		$graph->addCompressedTriple( $uri, "rdf:type", "oo:Equipment" );
+
+		$graph->addCompressedTriple( $uri, "rdfs:label", $item["name"], "literal" );
+		$graph->addCompressedTriple( $uri, "oo:formalOrganization", "http://id.learning-provider.data.ac.uk/ukprn/".$c["ukprn"] );
+
+		if( $item["model"] != ""  || $item["manufacturer"] != "" )
+		{
+			$graph->addCompressedTriple( $uri, "gr:hasMakeAndModel", "$uri#model" );
+			$graph->addCompressedTriple( "$uri#model", "rdf:type", "gr:ProductOrServiceModel" );
+			if( $item["model"] != "" )
+			{
+				$graph->addCompressedTriple( "$uri#model", "rdfs:label", $item["model"], "literal" ); 
+			}
+			if( $item["manufacturer"] != "" )
+			{
+				$graph->addCompressedTriple( "$uri#model", "gr:hasManufacturer", "$uri#manu" );
+				$graph->addCompressedTriple( "$uri#manu", "rdf:type", "gr:BusinessEntity" );
+				$graph->addCompressedTriple( "$uri#manu", "rdfs:label", $item["manufacturer"], "literal" ); 
+			}
+		}
+
+		if( $item["description"] != "" )
+		{
+			# kitcat always makes HTML fragment descriptions	
+			$graph->addCompressedTriple( $uri, "dcterms:description", $item["description"], "http://purl.org/xtypes/Fragment-HTML" );
+		}
 		
+		if( $item["contact1"] != "" )
+		{	
+			$graph->addCompressedTriple( $uri, "oo:contact", "$uri#contact1" );
+			$graph->addCompressedTriple( $uri, "oo:primaryContact", "$uri#contact1" );
+			$graph->addCompressedTriple( "$uri#contact1", "foaf:mbox", "mailto:".$item["contact1"] );
+		}
+
+		if( $item["contact2"] != "" )
+		{	
+			$graph->addCompressedTriple( $uri, "oo:contact", "$uri#contact2" );
+			$graph->addCompressedTriple( "$uri#contact2", "foaf:mbox", "mailto:".$item["contact1"] );
+		}
+
+		if( $item["link"] != "" )
+		{	
+			$graph->addCompressedTriple( $uri, "foaf:page", $item["link"] );
+		}
+
+		if( $item["image"] != "" )
+		{	
+			$graph->addCompressedTriple( $uri, "foaf:depiction", $item["image"] );
+		}
 	}
 	
-	#print_r( $content );
-exit;
+	return $graph;
 }
