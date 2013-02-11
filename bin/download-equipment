@@ -1,0 +1,109 @@
+#!/usr/bin/php
+<?php
+
+# This script downloads each of the equiment datasets for equipment.data.ac.uk
+# And processes them into common formats.
+
+# This takes the list of files to download from a configuration file, which is
+# generated from the data at hub.data.ac.uk
+
+# First of all we download each data document and convert it to RDF and cache that.
+# If there's a problem, we don't over-ride the previous cache.
+
+# Then we process the cache files to produce a searchable website, and tabular data.
+
+
+# TODO
+# Log errors in URL downloads
+# Add name, location & logo for places
+# Add something clever with licenses
+
+
+require_once( 
+
+$config = read_config( "etc/test-list.tsv" );
+
+foreach( $config as $config_item )
+{
+	$graph = null;
+	if( $config_item["type"] == "rdf" )
+	{
+		$graph = rdf_to_graph( $config_item ); # TODO
+	}
+	elseif( $config_item["type"] == "uniquip_csv" )
+	{
+		$graph = uniquip_csv_to_graph( $config_item ); # TODO
+	}
+	elseif( $config_item["type"] == "kitcat" )
+	{
+		$graph = kitcat_to_graph( $config_item );
+	}
+	else
+	{
+		print "Unknown type: ".$config_item["type"]."\n";
+	}
+
+	if( $graph != null )
+	{
+		# cache graph TODO
+	}
+	else
+	{
+		# don't update cache TODO?
+	}
+}	
+		
+# Output Data Documents & files for search
+
+
+exit;
+
+
+function read_config( $file )
+{
+	$rows = file( $file );
+
+	$config = array();	
+	foreach( $rows as $row )
+	{
+		$cells = preg_split( "/\t/", chop( $row ) );	
+		$config []=  array( 
+			"ukprn" => $cells[0],	
+			"type" => $cells[1],	
+			"url" => $cells[2],	
+		);
+	}
+	
+	return $config;
+}
+
+
+# INPUT
+
+#        "id": "http://equipment.lboro.ac.uk/id/item/2121",
+#        "name": "X-ray Photoelectron Spectrometer",
+#        "manufacturer": "Thermo Scientific",
+#        "model": "K-Alpha",
+#        "description": "<p>Fully...",
+#        "contact1": "s.s.doak@lboro.ac.uk",
+#        "contact2": "",
+#        "image": "http://equipment.lboro.ac.uk/item/x-ray-photoelectron-spectrometer/2121/image/image_41780.jpg",
+#        "link": "http://equipment.lboro.ac.uk/id/item/2121/x-ray-photoelectron-spectrometer.html"
+
+
+function kitcat_to_graph( $c )
+{
+	$content = file_get_contents( $c["url"] );
+	$items = json_decode( $content, true );
+
+	$graph = new Graphite();
+	foreach( $items as $item )
+	{
+		$uri = "http://equipment.data.ac.uk/item/".$c["ukprn"]."/".md5( $item["id"] );
+		print "($uri)\n";
+		
+	}
+	
+	#print_r( $content );
+exit;
+}
