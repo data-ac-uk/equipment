@@ -1,0 +1,24 @@
+#!/usr/bin/php
+<?php
+
+# This script downloads the list of university name, easting, northing from
+# learning-providers.data.ac.uk
+
+require_once( "lib/arc2/ARC2.php" );
+require_once( "lib/Graphite/Graphite.php" );
+
+$base_dir = "/home/dataacuk/data.ac.uk/equipment";
+
+$var_dir = "$base_dir/var";
+
+$rows = file( "http://learning-provider.data.ac.uk/data/learning-providers-plus.tsv" );
+if( sizeof( $rows ) < 100 ) 
+{
+	print "Not enough rows, aborting.\n";
+	exit( 1 );
+}
+
+$file = "$var_dir/learning-providers-plus.tsv";
+$fh = fopen($file, 'w') or die("can't open file: $file" );
+fwrite($fh, join( "", $rows ));
+fclose($fh);

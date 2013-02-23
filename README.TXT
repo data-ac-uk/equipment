@@ -6,6 +6,7 @@ Quickstart:
 
  mkdir lib
  mkdir var
+ mkdir var/item
  mkdir htdocs/data
  mkdir htdocs/data/org
  cd lib
@@ -23,4 +24,7 @@ TODO List:
  website template
  website search
  download dump documents
- 
+
+ADDITIONAL CREDITS:
+
+Icons licensed as CC-by 2.5 from http://www.famfamfam.com/lab/icons/silk/

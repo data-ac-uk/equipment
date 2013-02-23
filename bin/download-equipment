@@ -19,6 +19,7 @@ require_once( "lib/Graphite/Graphite.php" );
 $base_dir = "/home/dataacuk/data.ac.uk/equipment";
 
 $org_cache_dir = "$base_dir/htdocs/data/org";
+$item_cache_dir = "$base_dir/var/item";
 
 $config = read_config( "$base_dir/etc/test-list.tsv" );
 
@@ -63,17 +64,80 @@ foreach( $config as $config_item )
 # At this stage, we could delete items from the cache not in the profile
 # documents.
 
+$search_rows = array();
 foreach( $config as $config_item )
 {
 	$file = "$org_cache_dir/ukprn-".$config_item["ukprn"].".ttl";
 
 	$graph = new Graphite();
 	$n = $graph->load( "file://$file" );
-print "$file -- $n\n";
+	$orguri = "http://id.learning-provider.data.ac.uk/ukprn/".$config_item["ukprn"];
+	$graph->load( $orguri );
+	$org = $graph->resource( $orguri );
+	$postcode = $org->get( "http://data.ordnancesurvey.co.uk/ontology/postcode/postcode" );
+	$homepage = $org->get( "foaf:homepage" );
+	$easting = "";
+	$northing = "";	
+	if( $postcode->has( "http://data.ordnancesurvey.co.uk/ontology/spatialrelations/easting" ) )
+	{
+		$easting = $postcode->get( "http://data.ordnancesurvey.co.uk/ontology/spatialrelations/easting" );
+		$northing = $postcode->get( "http://data.ordnancesurvey.co.uk/ontology/spatialrelations/northing" );
+	}
+
+
+	print "$file -- $n\n";
 	if( $n == 0 ) { continue; }
-	
-	print "yo\n";	
+
+	foreach( $graph->allOfType( "oo:Equipment" ) as $item )
+	{
+		$cache_id = md5( $item->uri );
+
+		# create row for grepping searches
+		$search_terms = $item->label()." ".$item->getString( "dcterms:description" );
+		$search_terms = preg_replace( "/\s+/"," ", $search_terms );
+		$search_terms = strtolower( $search_terms );
+		$search_terms = preg_replace( "/<[^>]+/", "", $search_terms );
+		$search_terms = preg_replace( "/[^ a-z0-9]/", "", $search_terms );
+
+		$cells = array();
+		$cells []= $search_terms;	
+		$cells []= $cache_id;	
+		$cells []= $item->label();	
+		$cells []= $config_item["name"];
+		$cells []= $easting;
+		$cells []= $northing;
+
+		$search_rows []= join( "\t", $cells )."\n";
+  
+#→ rdf:type → oo:Equipment
+#→ gr:hasMakeAndModel → http://equipment.data.ac.uk/item/ukprn-10004113/0884b83817ad7ac91bd19c7780f5d307#model
+#"^^http://purl.org/xtypes/Fragment-HTML
+#→ oo:contact → http://equipment.data.ac.uk/item/ukprn-10004113/0884b83817ad7ac91bd19c7780f5d307#contact1
+#→ oo:primaryContact → http://equipment.data.ac.uk/item/ukprn-10004113/0884b83817ad7ac91bd19c7780f5d307#contact1
+ 
+
+		# create cache for displaying results
+		$html = array();
+		$html []= "<div class='search-result'>";
+		$html []= "<h2>".htmlspecialchars( $item->label() )."</h2>";
+		$html []= "<a title='".$config_item["name"]."' href='".$homepage."'><img width='200' src='".$config_item["logo"]."' /></a>";
+		if( $item->has( "foaf:depiction" ) )
+		{
+			$html []= "<img width='200' src='".$item->get( "foaf:depiction" )."' />";
+		}
+		$html []= "<div>".$item->get("dcterms:description")."</div>";
+		$html []= "<p>More info: ".$item->get("foaf:page")->link()."</p>";
+		$html []= "</div>";
+		$file = $item_cache_dir."/".$cache_id;
+		$fh = fopen($file, 'w') or die("can't open file: $file" );
+		fwrite($fh, join( "", $html ) );
+		fclose( $fh );
+	}	
 }
+$file = $base_dir."/var/search.tsv";
+$fh = fopen($file, 'w') or die("can't open file: $file" );
+fwrite($fh, join( "", $search_rows ) );
+fclose($fh);
 		
 # Output Data Documents & files for search
 
@@ -136,7 +200,7 @@ function kitcat_to_graph( $c )
 	$graph = new Graphite();
 	foreach( $items as $item )
 	{
-		$uri = "http://equipment.data.ac.uk/item/".$c["ukprn"]."/".md5( $item["id"] );
+		$uri = "http://equipment.data.ac.uk/item/ukprn-".$c["ukprn"]."/".md5( $item["id"] );
 
 		# assumption-- everything from kitcat is equipment		
 		$graph->addCompressedTriple( $uri, "rdf:type", "oo:Equipment" );
