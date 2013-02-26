@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html lang="en">
+<!--<![endif]-->
+<head>
+
+<!-- Basic Page Needs
+  ================================================== -->
+<meta charset="utf-8">
+<title>{{ @html_title }}</title>
+<meta value="description" content="equipment.data.ac.uk: Open data about equipment and facilities of UK Universities ">
+<meta value="author" content="Christopher Gutteridge">
+
+<!-- Mobile Specific Metas
+  ================================================== -->
+<meta value="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<!-- CSS
+  ================================================== -->
+<link rel="stylesheet" href="http://data.ac.uk/stylesheets/base.css">
+<link rel="stylesheet" href="http://data.ac.uk/stylesheets/skeleton.css">
+<link rel="stylesheet" href="http://data.ac.uk/stylesheets/layout.css">
+<link rel="stylesheet" href="/resources/jquery-ui.css" />
+<script src="/resources/jquery-1.9.1.js"></script>
+<script src="/resources/jquery-ui.js"></script>
+<link rel="stylesheet" href="/resources/subsite-styles.css">
+<link rel="stylesheet" href="/resources/site.css">
+
+
+<!--[if lt IE 9]>
+        <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+<!-- Favicons
+    ================================================== -->
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="apple-touch-icon" href="http://data.ac.uk/images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="72x72" href="http://data.ac.uk/images/apple-touch-icon-72x72.png">
+<link rel="apple-touch-icon" sizes="114x114" href="http://data.ac.uk/images/apple-touch-icon-114x114.png">
+
+</head>
+<body>
+
+<!-- Primary Page Layout
+    ================================================== --> 
+
+<div class="container">
+  <div id="content">
+  <div class="sixteen columns padding_top_30 ">
+  <h1>{{ @html_title }}</h1>
+  <F3:include href="{{@content}}"/>
+  </div>
+</div>
+
+ </body>
+</html>
+<script type="text/javascript" src="//network-bar.data.ac.uk/network-bar.js"></script>
+
+

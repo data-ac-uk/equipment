@@ -1,3 +1,4 @@
 lib
 var
 htdocs/data
+htdocs/tmp/
