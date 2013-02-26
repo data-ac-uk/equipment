@@ -1,5 +1,6 @@
 #!/usr/bin/php
 <?php
+echo ini_get('max_execution_time'), ' | ', ini_get('max_input_time');
 
 # This script downloads each of the equiment datasets for equipment.data.ac.uk
 # And processes them into common formats.
@@ -23,8 +24,12 @@ $item_cache_dir = "$base_dir/var/item";
 
 $config = read_config( "$base_dir/etc/test-list.tsv" );
 
-foreach( $config as $config_item )
+print "STAGE 1\n";
+foreach( $config as &$config_item )
 {
+	print_r( $config_item );
+	$config_item["errors"] = array();
+	$config_item["items"] = 0;
 	$graph = null;
 	if( $config_item["type"] == "rdf" )
 	{
@@ -40,34 +45,48 @@ foreach( $config as $config_item )
 	}
 	else
 	{
-		print "Unknown type: ".$config_item["type"]."\n";
+		$err = "Unknown type: ".$config_item["type"];
+		$config_item["errors"][] = $err;
+		print "$err\n";
+		continue;
 	}
 
+	# filename has ukprn- as a prefix as in the future there may be data from organisations
+	# without a ukprn. Who can say for sure!
+	$cache_file = "$org_cache_dir/ukprn-".$config_item["ukprn"].".ttl";
+		
 	if( $graph != null && count( $graph->toArcTriples() ) > 0 ) 
 	{
 		# cache graph if it's set and has some triples
 
-		# filename has ukprn- as a prefix as in the future there may be data from organisations
-		# without a ukprn. Who can say for sure!
-		$file = "$org_cache_dir/ukprn-".$config_item["ukprn"].".ttl";
-		
-		$fh = fopen($file, 'w') or die("can't open file: $file" );
+		$fh = fopen($cache_file, 'w') or die("can't open cache_file: $cache_file" );
 		fwrite($fh, $graph->serialize( "Turtle" ) );
 		fclose($fh);
 	}
 	else
 	{
-		# don't update cache TODO?
+		if( file_exists( $cache_file ) )
+		{
+			$err = "Failed to get new data. Using cached version.";
+		}
+		else
+		{
+			$err = "Failed to get new data. Also no cache available.";
+		}
+		$config_item["errors"][] = $err;
+		print "$err\n";
 	}
 }	
 
 # At this stage, we could delete items from the cache not in the profile
 # documents.
+print "STAGE 2\n";
 
 $search_rows = array();
-foreach( $config as $config_item )
+foreach( $config as &$config_item )
 {
 	$file = "$org_cache_dir/ukprn-".$config_item["ukprn"].".ttl";
+	print_r( $config_item );
 
 	$graph = new Graphite();
 	$n = $graph->load( "file://$file" );
@@ -90,6 +109,7 @@ foreach( $config as $config_item )
 
 	foreach( $graph->allOfType( "oo:Equipment" ) as $item )
 	{
+		$config_item["items"]++;
 		$cache_id = md5( $item->uri );
 
 		# create row for grepping searches
@@ -121,12 +141,20 @@ foreach( $config as $config_item )
 		$html []= "<div class='search-result'>";
 		$html []= "<h2>".htmlspecialchars( $item->label() )."</h2>";
 		$html []= "<a title='".$config_item["name"]."' href='".$homepage."'><img width='200' src='".$config_item["logo"]."' /></a>";
+		if( $item->has( "foaf:page" ) )
+		{
+			$html []= "<p>More info: ".$item->get("foaf:page")->link()."</p>";
+		}
 		if( $item->has( "foaf:depiction" ) )
 		{
 			$html []= "<img width='200' src='".$item->get( "foaf:depiction" )."' />";
 		}
-		$html []= "<div>".$item->get("dcterms:description")."</div>";
-		$html []= "<p>More info: ".$item->get("foaf:page")->link()."</p>";
+		if( $item->has( "dcterms:description" ) )
+		{
+			$html []= "<div>".$item->get("dcterms:description")."</div>";
+		}
+		$html []= $item->dump();
+		$html []= $item->get( "oo:contact" )->dump();
 		$html []= "</div>";
 		$file = $item_cache_dir."/".$cache_id;
 		$fh = fopen($file, 'w') or die("can't open file: $file" );
@@ -134,12 +162,18 @@ foreach( $config as $config_item )
 		fclose( $fh );
 	}	
 }
+
 $file = $base_dir."/var/search.tsv";
 $fh = fopen($file, 'w') or die("can't open file: $file" );
 fwrite($fh, join( "", $search_rows ) );
 fclose($fh);
-		
-# Output Data Documents & files for search
+
+# TODO: Output Data Documents
+
+$file = $base_dir."/htdocs/data/status.json";
+$fh = fopen($file, 'w') or die("can't open file: $file" );
+fwrite($fh, json_encode( $config ) );
+fclose($fh);
 
 
 exit;
@@ -167,11 +201,9 @@ function read_config( $file )
 
 function rdf_to_graph( $c )
 {
-	$content = file_get_contents( $c["url"] );
-	$items = json_decode( $content, true );
-
 	$graph = new Graphite();
 
+print "Loading RDF: ".$c["url"]."\n";
 	$n = $graph->load( $c["url"] );
 
 	if( $n==0 ) { return null; }
@@ -179,7 +211,7 @@ function rdf_to_graph( $c )
 	return $graph;
 }
 
-# INPUT
+# Input terms from kitcat JSON
 
 #        "id": "http://equipment.lboro.ac.uk/id/item/2121",
 #        "name": "X-ray Photoelectron Spectrometer",
@@ -190,7 +222,6 @@ function rdf_to_graph( $c )
 #        "contact2": "",
 #        "image": "http://equipment.lboro.ac.uk/item/x-ray-photoelectron-spectrometer/2121/image/image_41780.jpg",
 #        "link": "http://equipment.lboro.ac.uk/id/item/2121/x-ray-photoelectron-spectrometer.html"
-
 
 function kitcat_to_graph( $c )
 {
@@ -256,3 +287,4 @@ function kitcat_to_graph( $c )
 	
 	return $graph;
 }
+
