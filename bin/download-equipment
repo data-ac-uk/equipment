@@ -31,21 +31,21 @@ foreach( $config as &$config_item )
 	$config_item["errors"] = array();
 	$config_item["items"] = 0;
 	$graph = null;
-	if( $config_item["type"] == "rdf" )
+	if( $config_item["dataset_type"] == "rdf" )
 	{
 		$graph = rdf_to_graph( $config_item ); # TODO
 	}
-	elseif( $config_item["type"] == "uniquip_csv" )
+	elseif( $config_item["dataset_type"] == "uniquip_csv" )
 	{
 		$graph = uniquip_csv_to_graph( $config_item ); # TODO
 	}
-	elseif( $config_item["type"] == "kitcat" )
+	elseif( $config_item["dataset_type"] == "kitcat" )
 	{
 		$graph = kitcat_to_graph( $config_item );
 	}
 	else
 	{
-		$err = "Unknown type: ".$config_item["type"];
+		$err = "Unknown type: ".$config_item["dataset_type"];
 		$config_item["errors"][] = $err;
 		print "$err\n";
 		continue;
@@ -53,7 +53,7 @@ foreach( $config as &$config_item )
 
 	# filename has ukprn- as a prefix as in the future there may be data from organisations
 	# without a ukprn. Who can say for sure!
-	$cache_file = "$org_cache_dir/ukprn-".$config_item["ukprn"].".ttl";
+	$cache_file = "$org_cache_dir/ukprn-".$config_item["org_ukprn"].".ttl";
 		
 	if( $graph != null && count( $graph->toArcTriples() ) > 0 ) 
 	{
@@ -62,12 +62,14 @@ foreach( $config as &$config_item )
 		$fh = fopen($cache_file, 'w') or die("can't open cache_file: $cache_file" );
 		fwrite($fh, $graph->serialize( "Turtle" ) );
 		fclose($fh);
+		$config_item["dataset_timestamp"] = time();
 	}
 	else
 	{
 		if( file_exists( $cache_file ) )
 		{
 			$err = "Failed to get new data. Using cached version.";
+			$config_item["dataset_timestamp"] = filemtime( $cache_file );
 		}
 		else
 		{
@@ -85,12 +87,12 @@ print "STAGE 2\n";
 $search_rows = array();
 foreach( $config as &$config_item )
 {
-	$file = "$org_cache_dir/ukprn-".$config_item["ukprn"].".ttl";
+	$file = "$org_cache_dir/ukprn-".$config_item["org_ukprn"].".ttl";
 	print_r( $config_item );
 
 	$graph = new Graphite();
 	$n = $graph->load( "file://$file" );
-	$orguri = "http://id.learning-provider.data.ac.uk/ukprn/".$config_item["ukprn"];
+	$orguri = "http://id.learning-provider.data.ac.uk/ukprn/".$config_item["org_ukprn"];
 	$graph->load( $orguri );
 	$org = $graph->resource( $orguri );
 	$postcode = $org->get( "http://data.ordnancesurvey.co.uk/ontology/postcode/postcode" );
@@ -123,7 +125,7 @@ foreach( $config as &$config_item )
 		$cells []= $search_terms;	
 		$cells []= $cache_id;	
 		$cells []= $item->label();	
-		$cells []= $config_item["name"];
+		$cells []= $config_item["org_name"];
 		$cells []= $easting;
 		$cells []= $northing;
 
@@ -140,7 +142,7 @@ foreach( $config as &$config_item )
 		$html = array();
 		$html []= "<div class='search-result'>";
 		$html []= "<h2>".htmlspecialchars( $item->label() )."</h2>";
-		$html []= "<a title='".$config_item["name"]."' href='".$homepage."'><img width='200' src='".$config_item["logo"]."' /></a>";
+		$html []= "<a class='uni-logo' title='".$config_item["org_name"]."' href='".$homepage."'><img width='200' src='".$config_item["org_logo"]."' /></a>";
 		if( $item->has( "foaf:page" ) )
 		{
 			$html []= "<p>More info: ".$item->get("foaf:page")->link()."</p>";
@@ -152,6 +154,18 @@ foreach( $config as &$config_item )
 		if( $item->has( "dcterms:description" ) )
 		{
 			$html []= "<div>".$item->get("dcterms:description")."</div>";
+		}
+		foreach( $item->all( "oo:contact" ) as $contact )
+		{
+			$html []= "<p>Contact ";
+			if( $contact->hasLabel() ) { $html []= $contact->label(); }
+			if( $contact->has( "foaf:mbox" ) ) {
+				$html []= " ".$contact->get( "foaf:mbox" )->prettyLink();
+			}
+			if( $contact->has( "foaf:phone" ) ) {
+				$html []= " ".$contact->get( "foaf:phone" )->prettyLink();
+			}
+			$html []= "</p>";
 		}
 		$html []= $item->dump();
 		$html []= $item->get( "oo:contact" )->dump();
@@ -188,11 +202,12 @@ function read_config( $file )
 	{
 		$cells = preg_split( "/\t/", chop( $row ) );	
 		$config []=  array( 
-			"ukprn" => $cells[0],	
-			"type" => $cells[1],	
-			"url" => $cells[2],	
-			"name" => $cells[3],	
-			"logo" => $cells[4],	
+			"org_ukprn" => $cells[0],	
+			"dataset_type" => $cells[1],	
+			"dataset_url" => $cells[2],	
+			"org_name" => $cells[3],	
+			"org_url" => $cells[4],	
+			"org_logo" => $cells[5],	
 		);
 	}
 	
@@ -203,8 +218,8 @@ function rdf_to_graph( $c )
 {
 	$graph = new Graphite();
 
-print "Loading RDF: ".$c["url"]."\n";
-	$n = $graph->load( $c["url"] );
+	print "Loading RDF: ".$c["dataset_url"]."\n";
+	$n = $graph->load( $c["dataset_url"] );
 
 	if( $n==0 ) { return null; }
 
@@ -225,19 +240,19 @@ print "Loading RDF: ".$c["url"]."\n";
 
 function kitcat_to_graph( $c )
 {
-	$content = file_get_contents( $c["url"] );
+	$content = file_get_contents( $c["dataset_url"] );
 	$items = json_decode( $content, true );
 
 	$graph = new Graphite();
 	foreach( $items as $item )
 	{
-		$uri = "http://equipment.data.ac.uk/item/ukprn-".$c["ukprn"]."/".md5( $item["id"] );
+		$uri = "http://equipment.data.ac.uk/item/ukprn-".$c["org_ukprn"]."/".md5( $item["id"] );
 
 		# assumption-- everything from kitcat is equipment		
 		$graph->addCompressedTriple( $uri, "rdf:type", "oo:Equipment" );
 
 		$graph->addCompressedTriple( $uri, "rdfs:label", $item["name"], "literal" );
-		$graph->addCompressedTriple( $uri, "oo:formalOrganization", "http://id.learning-provider.data.ac.uk/ukprn/".$c["ukprn"] );
+		$graph->addCompressedTriple( $uri, "oo:formalOrganization", "http://id.learning-provider.data.ac.uk/ukprn/".$c["org_ukprn"] );
 
 		if( $item["model"] != ""  || $item["manufacturer"] != "" )
 		{

@@ -37,7 +37,7 @@ h3 {
 	background-color: #eeeeee;
 	padding: 2px;
 }
-#featured-result img { 
+.uni-logo { 
 	float:right;
 	clear:right;
 	margin: 0 10px 10px 0;
@@ -64,3 +64,4 @@ i {
 body {
 	min-height: 101%;
 }
+#logos img { margin-right: 20px; margin-bottom:20px; }
