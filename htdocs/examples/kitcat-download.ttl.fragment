@@ -1,0 +1,7 @@
+<http://equipment.lboro.ac.uk/api/public/items.json>
+        a dcat:Download ;
+        oo:organization <http://id.example.ac.uk/> ;
+        dcterms:subject <http://purl.org/openorg/theme/equipment> ;
+        dcterms:subject <http://purl.org/openorg/theme/facilities> ;
+        dcterms:conformsTo <http://equipment.data.ac.uk/kitcat-items-json.html> ;
+        dcterms:license <http://creativecommons.org/publicdomain/zero/1.0/> .

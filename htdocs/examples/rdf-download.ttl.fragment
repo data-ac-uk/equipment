@@ -1,0 +1,7 @@
+<http://www.example.ac.uk/equipment.rdf>
+        a dcat:Download ;
+        oo:organization <http://id.example.ac.uk/> ;
+        dcterms:subject <http://purl.org/openorg/theme/facilities> ;
+        dcterms:subject <http://purl.org/openorg/theme/equipment> ;
+        dcterms:conformsTo <http://openorg.ecs.soton.ac.uk/wiki/FacilitiesAndEquipment> ;
+        dcterms:license <http://creativecommons.org/publicdomain/zero/1.0/> .

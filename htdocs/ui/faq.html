@@ -1,0 +1,121 @@
+
+
+
+<h2 ><a name="h.630jozuuoosk"></a>Can we include information from University X? </h2>
+<p >Yes. This site aggregates information from the websites of UK academic organisations. This way you can verify the source of the information yourself, or even build your own aggregator. </p>
+
+<h2 ><a name="h.m2r1nistwtc1"></a>Can we include information from some source other than a UK University?</h2>
+<p >Not currently. </p>
+<p >In future it may include information from other .ac.uk organisations or from organisations providing services to UK academia, but initially we limit the scope to keep the service manageable.</p>
+
+<h2 ><a name="h.ti2fr3mxfmmg"></a>Which types of information will you accept?</h2>
+<p >Information on your equipment, facilities and services or capabilities. For our purposes:</p>
+<p ><span class="c6">Facility - This is a very overloaded term so for our purposes this is something your organisations calls a facility. More semantic subclasses are available in RDF, for example to indicate it&rsquo;s an RCUK costed facility.</p>
+<p class="c5 c0"><span class="c6"></p>
+<p ><span class="c6">Equipment&nbsp;- A physical thing which has a location. We make no rules about how much detail you can go into. A single record could describe a grouping of equipment as a single item, eg. 3 Vacuum Chambers.</p>
+<p ><span class="c6">Capability - This is a &ldquo;thing your organisation can do&rdquo;. It may include multiple facilities and equipment, and staff expertise, to provide this capability. For our purposes &ldquo;Capability&rdquo; = &ldquo;Service&rdquo;. </p>
+
+<h2 ><a name="h.rlmvs38kplpi"></a>How do we have equipment.data.ac.uk include our data?</h2>
+<p >Step 1. Place your data on the web in one of the accepted formats (see below). The most simple can be created in a spreadsheet.</p>
+<p >Step 2. Create (or update) an Organisation Profile Document which links to the equipment data and tells us what license you provide it under. This is just a short machine-readable text file which tells us things like what logo to use, and what format your data is in.</p>
+<p class="c5 c0"></p>
+<p >Step 3. (optional but recommended) Make your organisation profile document auto-discoverable from your university homepage. If you can&rsquo;t do this, just drop us a line and we&rsquo;ll add your profile by hand.</p>
+
+<h2 ><a name="h.ln3xf77s5fzf"></a>Accepted Formats</h2>
+<p >In the next year we expect standards to emerge. We expect to expand accepted formats in due course.</p>
+<h3 ><a name="h.6tfmlt5h2368"></a>1. OpenOrg RDF Document</h3>
+<p >The Open Org project describes a basic pattern for publishing facilities and equipment data. </p>
+<p >In the future it&rsquo;s certain that other standards emerge, but its possible to use multiple patterns to describe the same entities. &nbsp;A single RDF document could conform to multiple patterns. They are (generally) not mutually exclusive.</p>
+<p >See <span class="c3"><a class="c1" href="http://openorg.ecs.soton.ac.uk/wiki/FacilitiesAndEquipment">http://openorg.ecs.soton.ac.uk/wiki/FacilitiesAndEquipment</a>&nbsp;for more information.</p>
+<p >Example of how to describe an OpenOrg style document listed in an organisation profile document.</p>
+<p >The RDF can be encoded as either RDF+XML or Turtle.</p>
+<p >&lt;<span class="c3"><a class="c1" href="http://www.example.ac.uk/equipment.xls">http://www.example.ac.uk/equipment.</a>rdf&gt;</p>
+<p >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a dcat:Download ;</p>
+<p >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;oo:organization &lt;<span class="c3"><a class="c1" href="http://id.example.ac.uk/">http://id.example.ac.uk/</a>&gt; ;</p>
+<p >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dcterms:subject &lt;<span class="c3"><a class="c1" href="http://purl.org/openorg/theme/">http://purl.org/openorg/theme/</a>facilities&gt; ;</p>
+<p >&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dcterms:conformsTo&nbsp;&lt;<span class="c3">http://openorg.ecs.soton.ac.uk/wiki/FacilitiesAndEquipment&gt; ;</p>
+<p >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dcterms:license &lt;<span class="c3"><a class="c1" href="http://creativecommons.org/publicdomain/zero/1.0/">http://creativecommons.org/publicdomain/zero/1.0/</a>&gt; .</p>
+<h3 ><a name="h.l3w9gqvmmelf"></a>2. Uniquip Spreadsheet</h3>
+<p >This simple spreadsheet format was designed to be very easy to produce and have a minimal amount of required information. </p>
+<p >It was created as a result of an exercise involving representatives from 30 UK Universities and aimed to produce the most basic format that would facilitate equipment sharing in the UK. In brief; each item of equipment (or facility) must have a description, a location and some kind of contact information. Everything else is optional. </p>
+<p >This spreadsheet can be formatted in Excel (.xls or .xlsx) or in CSV or Tab-Separated Values.</p>
+<p >See <span class="c3"><a class="c1" href="http://equipment.data.ac.uk/uniquip.html">http://equipment.data.ac.uk/uniquip.html</a>&nbsp;to get the specification of what should go in each column.</p>
+<p >Assuming the URL of your spreadsheet is </p>
+<p ><span class="c3"><a class="c1" href="http://www.example.ac.uk/equipment.xls">http://www.example.ac.uk/equipment.xls</a></p>
+<p >and your license is CC0 (allow unlimited use)</p>
+<p >You would describe it in the organisation profile document, thusly:</p>
+<p >&lt;<span class="c3"><a class="c1" href="http://www.example.ac.uk/equipment.xls">http://www.example.ac.uk/equipment.xls</a>&gt;</p>
+<p >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a dcat:Download ;</p>
+<p >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;oo:organization &lt;<span class="c3"><a class="c1" href="http://id.example.ac.uk/">http://id.example.ac.uk/</a>&gt; ;</p>
+<p >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dcterms:subject &lt;<span class="c3"><a class="c1" href="http://purl.org/openorg/theme/">http://purl.org/openorg/theme/</a>facilities&gt; ;</p>
+<p >&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dcterms:conformsTo &lt;<span class="c3"><a class="c1" href="http://equipment.data.ac.uk/uniquip.html">http://equipment.data.ac.uk/uniquip.html</a>&gt; ;</p>
+<p >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dcterms:license &lt;<span class="c3"><a class="c1" href="http://creativecommons.org/publicdomain/zero/1.0/">http://creativecommons.org/publicdomain/zero/1.0/</a>&gt; .</p>
+<h3 ><a name="h.qg3nqa8ucvyz"></a>3. KitCatalogue JSON Document</h3>
+<p >http://kit-catalogue.lboro.ac.uk/</p>
+<p >KitCatalgue is being developed by Loughborough University, funded by the JISC. It&rsquo;s free &amp; open source software which collects information on a an organisation&rsquo;s equipment.</p>
+<p >It allows the option to publish some or all of your records as open data. Currently we use the JSON to import this information but in future kitcat may include an RDF mode.</p>
+<p >&lt;http://equipment.lboro.ac.uk/api/public/items.json&gt;</p>
+<p >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a dcat:Download ;</p>
+<p >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;oo:organization &lt;<span class="c3"><a class="c1" href="http://id.example.ac.uk/">http://id.example.ac.uk/</a>&gt; ;</p>
+<p >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dcterms:subject &lt;<span class="c3"><a class="c1" href="http://purl.org/openorg/theme/">http://purl.org/openorg/theme/</a>facilities&gt; ;</p>
+<p >&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dcterms:conformsTo &lt;<span class="c3"><a class="c1" href="http://equipment.data.ac.uk/uniquip.html">http://equipment.data.ac.uk/kitcat-items-json.html</a>&gt; ;</p>
+<p >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dcterms:license &lt;<span class="c3"><a class="c1" href="http://creativecommons.org/publicdomain/zero/1.0/">http://creativecommons.org/publicdomain/zero/1.0/</a>&gt; .</p>
+<h3 ><a name="h.mx7jmnvarf0l"></a>Future formats</h3>
+<p >Undecided, of course. But the XML and RDF encodings of CERIF are a possiblity.</p>
+
+<h2 ><a name="h.extkd7o7pzn6"></a>Licenses</h2>
+<p >Currently the licenses we accept are described at XXXXX. </p>
+
+<h2 ><a name="h.tj2qmbsns9ud"></a>Organisation Profile Document</h2>
+<p >To tell us where to find your equipment (facilities, capabilities...) data, and the license etc. you&rsquo;ll need to create an organisation profile document. This is a simple RDF file which describes your organisation and open access documents.</p>
+<p >The examples we use in this page are all &ldquo;Turtle&rdquo; format but RDF+XML is OK too.</p>
+<p >You will require a &ldquo;URI&rdquo; to refer to your organisation. You can either use your own, or use one from learning-provider.data.ac.uk. If you use your own please include a owl:sameAs linking it to the learning-provider.data.ac.uk URI for your organisation. In our examples we use &lt;<span class="c3"><a class="c1" href="http://id.example.ac.uk/">http://id.example.ac.uk/</a>&gt; as the URI for your organisation. </p>
+<p >sidebar: American spelling of &ldquo;organization&rdquo;? Yes, we use the american spelling in the data structures. Sorry if that annoys people, but we decided to keep the &ldquo;z&rdquo; in all the semantics rather than have a muddle of UK and US spelling which is certain to create errors.</p>
+<p >----</p>
+<p ># defining prefixes makes our document easier to read an maintain</p>
+<p >@prefix skos: &nbsp; &nbsp;&lt;http://www.w3.org/2004/02/skos/core#&gt; .<br>@prefix owl: &nbsp; &nbsp; &lt;http://www.w3.org/2002/07/owl#&gt; .<br>@prefix dcterms: &lt;http://purl.org/dc/terms/&gt; .<br>@prefix oo: &nbsp; &nbsp; &nbsp;&lt;http://purl.org/openorg/&gt; .<br>@prefix foaf: &nbsp; &nbsp;&lt;http://xmlns.com/foaf/0.1/&gt; .<br>@prefix vcard: &nbsp; &lt;http://www.w3.org/2006/vcard/ns#&gt; .<br>@prefix dcat: &nbsp; &nbsp;&lt;http://www.w3.org/ns/dcat#&gt; .</p>
+<p >@prefix org: &nbsp; &nbsp; &lt;http://www.w3.org/ns/org#&gt; .</p>
+<p ># Describe this document and state a license</p>
+<p >&lt;&gt; </p>
+<p class="c0 c9">a <span class="c7"><a class="c1" href="http://graphite.ecs.soton.ac.uk/browser/?uri=http%3A%2F%2Fpurl.org%2Fopenorg%2FOrganizationProfileDocument#http://purl.org/openorg/OrganizationProfileDocument">oo:OrganizationProfileDocument</a>&nbsp;;</p>
+<p >&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; dcterms:license &lt;<span class="c3"><a class="c1" href="http://creativecommons.org/publicdomain/zero/1.0/">http://creativecommons.org/publicdomain/zero/1.0/</a>&gt; ;</p>
+<p >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;foaf:primaryTopic &lt;<span class="c3"><a class="c1" href="http://id.example.ac.uk">http://id.example.ac.uk</a>&gt;&nbsp;.</p>
+<p ># Some information about the organisation, most of this is optional but the</p>
+<p ># prefLabel, logo and sameAs to the learning-provider URI is strongly encouraged.</p>
+<p >&lt;<span class="c3"><a class="c1" href="http://id.example.ac.uk">http://id.example.ac.uk</a>&gt; </p>
+<p >&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; a <span class="c7"><a class="c1" href="">org:FormalOrganization</a>&nbsp;;</p>
+<p >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;skos:prefLabel &ldquo;The University of Example&rdquo; ;</p>
+<p >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;skos:hiddenLabel &ldquo;Example&rdquo; ;</p>
+<p >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;skos:hiddenLabel &ldquo;Example U&rdquo; ;</p>
+<p >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;vcard:sortLabel &ldquo;Example, University of&rdquo; ;</p>
+<p >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;vcard:tel &lt;tel:+441234567890&gt; ;</p>
+<p >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;foaf:logo &lt;<span class="c3"><a class="c1" href="http://www.example.ac.uk/example-logo.png">http://www.example.ac.uk/example-logo.png</a>&gt; ;</p>
+<p >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;foaf:homepage &lt;<span class="c3"><a class="c1" href="http://www.example.ac.uk/">http://www.example.ac.uk/</a>&gt; ;</p>
+<p >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;owl:sameAs &lt;<span class="c3"><a class="c1" href="http://id.learning-provider.data.ac.uk/ukprn/10000291#address">http://id.learning-provider.data.ac.uk/ukprn/1</a>2345678&gt; ;</p>
+<p >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;owl:sameAs &lt;<span class="c3"><a class="c1" href="http://dbpedia.org/resource/University">http://dbpedia.org/resource/University</a>_of_Example&gt; .</p>
+<p >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
+<p ># Describe the source of equipment data, what standard it conforms to, and the license.</p>
+<p ># delete the dcterms:subject as applicable, but you need to have one of </p>
+<p ># facilities/equipment/capabilities to trigger the automatic aggregation of the data.</p>
+<p >&lt;<span class="c3"><a class="c1" href="http://www.example.ac.uk/equipment.xls">http://www.example.ac.uk/equipment.xls</a>&gt;</p>
+<p >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;a dcat:Download ;</p>
+<p >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;oo:organization &lt;<span class="c3"><a class="c1" href="http://id.example.ac.uk/">http://id.example.ac.uk/</a>&gt; ;</p>
+<p >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dcterms:subject &lt;<span class="c3"><a class="c1" href="http://purl.org/openorg/theme/">http://purl.org/openorg/theme/</a>facilities&gt; ; &nbsp;</p>
+<p >&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; dcterms:subject &lt;<span class="c3"><a class="c1" href="http://purl.org/openorg/theme/">http://purl.org/openorg/theme/</a>equipment&gt; ;</p>
+<p >&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; dcterms:subject &lt;<span class="c3"><a class="c1" href="http://purl.org/openorg/theme/">http://purl.org/openorg/theme/</a>capabilities&gt; ; </p>
+<p >&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dcterms:conformsTo &lt;<span class="c3"><a class="c1" href="http://equipment.data.ac.uk/uniquip.html">http://equipment.data.ac.uk/uniquip.html</a>&gt; ;</p>
+<p >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;dcterms:license &lt;<span class="c3"><a class="c1" href="http://creativecommons.org/publicdomain/zero/1.0/">http://creativecommons.org/publicdomain/zero/1.0/</a>&gt; .</p>
+<p >This isn&rsquo;t everything that can go in a profile document, but it should be a summary of your organisation, not a complete data catalog.</p>
+<p >We strongly recommend using a CC0 license (public domain dedication) for the organisational document. This makes it easy for 3rd parties to use it and combine many such documents without problems. It is very possible you won&rsquo;t be willing to CC0 license your equipment data, but the profile document should not contain anything you don&rsquo;t want widely and freely reused, so CC0 is appropriate for it.</p>
+
+<h2 ><a name="h.fmyqv8tq56ce"></a>Autodiscovery</h2>
+<p >We offer three ways to get data.ac.uk to discover your profile document.</p>
+<h3 ><a name="h.sak7qlt0oa5v"></a>Well-known</h3>
+<p >This method uses a specific URL from your university homepage to link to the profile document; if your homepage is <span class="c3"><a class="c1" href="http://www.example.ac.uk/">http://www.example.ac.uk/</a>&nbsp;then <span class="c3"><a class="c1" href="http://www.example.ac.uk/.well-known/openorg">http://www.example.ac.uk/.well-known/openorg</a>&nbsp;should serve (or redirect to) your profile document.</p>
+<h3 ><a name="h.b3n6gedgdgj1"></a>&lt;link&gt; header</h3>
+<p >This method of auto discovery uses a header on your organisation homepage header:</p>
+<p >&lt;link rel=&rdquo;openorg&rdquo; href=&rdquo;<span class="c3"><a class="c1" href="http://www.example.ac.uk/profile.ttl">http://www.example.ac.uk/profile.ttl</a>&rdquo; /&gt;</p>
+<p >Which links to the profile document.</p>
+<h3 ><a name="h.2efjesnb3me7"></a>Can&rsquo;t do either of these methods?</h3>
+<p >Don&rsquo;t panic!</p>
+<p >We understand that the team providing equipment and facilities data for your organisation won&rsquo;t always be working hand-in-glove with the team that run the homepage and main website. If The above methods are impractical for you, drop our admin a line at <span class="c3"><a class="c1" href="mailto:chris@data.ac.uk">chris@data.ac.uk</a>&nbsp;and they will manually register the URL of your profile document.</p>

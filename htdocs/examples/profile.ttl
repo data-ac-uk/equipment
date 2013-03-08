@@ -1,0 +1,44 @@
+# defining prefixes makes our document easier to read an maintain
+
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix oo:      <http://purl.org/openorg/> .
+@prefix foaf:    <http://xmlns.com/foaf/0.1/> .
+@prefix vcard:   <http://www.w3.org/2006/vcard/ns#> .
+@prefix dcat:    <http://www.w3.org/ns/dcat#> .
+@prefix org:     <http://www.w3.org/ns/org#> .
+
+# Describe this document and state a license
+
+<> a oo:OrganizationProfileDocument ;
+        dcterms:license <http://creativecommons.org/publicdomain/zero/1.0/> ;
+        foaf:primaryTopic <http://id.example.ac.uk> .
+
+# Some information about the organisation, most of this is optional but the
+# prefLabel, logo and sameAs to the learning-provider URI is strongly encouraged.
+
+<http://id.example.ac.uk>
+        a org:FormalOrganization ;
+        skos:prefLabel “The University of Example” ;
+        skos:hiddenLabel “Example” ;
+        skos:hiddenLabel “Example U” ;
+        vcard:sortLabel “Example, University of” ;
+        vcard:tel <tel:+441234567890> ;
+        foaf:logo <http://www.example.ac.uk/example-logo.png> ;
+        foaf:homepage <http://www.example.ac.uk/> ;
+        owl:sameAs <http://id.learning-provider.data.ac.uk/ukprn/12345678> ;
+        owl:sameAs <http://dbpedia.org/resource/University_of_Example> .
+
+# Describe the source of equipment data, what standard it conforms to, and the license.
+# delete the dcterms:subject as applicable, but you need to have one of
+# facilities/equipment/capabilities to trigger the automatic aggregation of the data.
+
+<http://www.example.ac.uk/equipment.xls>
+        a dcat:Download ;
+        oo:organization <http://id.example.ac.uk/> ;
+        dcterms:subject <http://purl.org/openorg/theme/facilities> ;  
+        dcterms:subject <http://purl.org/openorg/theme/equipment> ;
+        dcterms:subject <http://purl.org/openorg/theme/capabilities> ;
+        dcterms:conformsTo <http://equipment.data.ac.uk/uniquip.html> ;
+        dcterms:license <http://creativecommons.org/publicdomain/zero/1.0/> .
