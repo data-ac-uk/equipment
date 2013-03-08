@@ -3,5 +3,5 @@
         oo:organization <http://id.example.ac.uk/> ;
         dcterms:subject <http://purl.org/openorg/theme/facilities> ;
         dcterms:subject <http://purl.org/openorg/theme/equipment> ;
-        dcterms:conformsTo <http://equipment.data.ac.uk/uniquip.html> ;
+        dcterms:conformsTo <http://equipment.data.ac.uk/uniquip> ;
         dcterms:license <http://creativecommons.org/publicdomain/zero/1.0/> .

@@ -40,5 +40,5 @@
         dcterms:subject <http://purl.org/openorg/theme/facilities> ;  
         dcterms:subject <http://purl.org/openorg/theme/equipment> ;
         dcterms:subject <http://purl.org/openorg/theme/capabilities> ;
-        dcterms:conformsTo <http://equipment.data.ac.uk/uniquip.html> ;
+        dcterms:conformsTo <http://equipment.data.ac.uk/uniquip> ;
         dcterms:license <http://creativecommons.org/publicdomain/zero/1.0/> .

@@ -27,9 +27,9 @@ print "var availableTags = ".json_encode( array_keys( $data ) ).";";
     $( "#qs-sort" ).autocomplete({
         source: availableTags,
         select: function(event,ui) { 
-		$('#qs-sort').val(ui.item.value); 
-		quick_search(); 
-	}
+                $('#qs-sort').val(ui.item.value); 
+                quick_search(); 
+        }
     });
     $( "#qs-sort" ).keyup(function() {
         quick_search();
@@ -40,8 +40,24 @@ print "var availableTags = ".json_encode( array_keys( $data ) ).";";
     });
 
     $( "#qs-clear-sort" ).click(function() {
-        $('#qs-sort').val(''); 
+        $('#qs-sort').css('color','#999');
+        $('#qs-sort').val( "University of...");
         quick_search();
+    });
+
+    $( "#qs-sort" ).focus(function() {
+        var sort_name = $('#qs-sort').val();
+        if( sort_name == "" || sort_name =="University of...") {
+            $('#qs-sort').css('color','#000');
+            $('#qs-sort').val( "" );
+        }
+    });
+    $( "#qs-sort" ).blur(function() {
+        var sort_name = $('#qs-sort').val();
+        if( sort_name == "" || sort_name =="University of...") {
+            $('#qs-sort').css('color','#999');
+            $('#qs-sort').val( "University of...");
+        }
     });
 
     $('#qs-input').focus();
@@ -52,7 +68,7 @@ print "var availableTags = ".json_encode( array_keys( $data ) ).";";
         var text = $('#qs-input').val(); 
         var sort_name = $('#qs-sort').val().toUpperCase(); 
         var sort = "";
-        if( sort_name == "" ) {
+        if( sort_name == "" || sort_name =="UNIVERSITY OF...") {
             $('#qs-sort').css('background-image','none');
             $('#qs-clear-sort').hide();
         } 
@@ -69,12 +85,19 @@ print "var availableTags = ".json_encode( array_keys( $data ) ).";";
         if (text.length > 2) {
             $('#helpstring').hide();
             $('#sort-option').show();
-            $.post('search.php', {'term': text, 'sort': sort}, function(results) {
-            $('#results').html( results ); } , 'html');
+            $('#results-container').show();
+            $.get('/search', 
+                {
+                   'term': text, 
+                   'sort': sort
+                }, 
+                function(results) { $('#results').html( results ); },
+                'html' );
         }
     
         if (text.length < 3) {
             $('#sort-option').hide();
+            $('#results-container').hide();
             $('#helpstring').show();
             clear_results();
         }
@@ -82,7 +105,7 @@ print "var availableTags = ".json_encode( array_keys( $data ) ).";";
     
     
     function clear_results() {
-        $('#featureed-result').html('');
+        $('#featured-result').html('');
         $('#results').html('');
     }
 
@@ -92,7 +115,7 @@ print "var availableTags = ".json_encode( array_keys( $data ) ).";";
 // to not put in the main namespace
 function show_result( id )
 {
-    $.get('item.php', {'id': id}, function(page) {
+    $.get('item/'+id, function(page) {
         $('#featured-result').html( page );
     }, 'html');
 }

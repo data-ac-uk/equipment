@@ -29,6 +29,24 @@ $f3->route('GET /',
 		print Template::instance()->render( "page-template.html" );
 	}
 );
+$f3->route('GET /faq',
+	function() use($f3) {
+                $f3=Base::instance();
+
+		$f3->set('html_title', "Frequently Asked Questions" );
+		$f3->set('content','faq.html');
+		print Template::instance()->render( "page-template.html" );
+	}
+);
+$f3->route('GET /uniquip',
+	function() use($f3) {
+                $f3=Base::instance();
+
+		$f3->set('html_title', "UNIQUIP Data Publishing Specification" );
+		$f3->set('content','uniquip.html');
+		print Template::instance()->render( "page-template.html" );
+	}
+);
 $f3->route('GET /index2.php',
 	function() use($f3) {
                 $f3=Base::instance();
@@ -46,6 +64,8 @@ $f3->route('GET /index2.php',
 	}
 );
 $f3->route('GET /status', 'status->page' );
+$f3->route('GET /search', 'search->page' );
+$f3->route('GET /item/@id', 'item->page' );
 
 
 $f3->run();
