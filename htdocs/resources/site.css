@@ -32,10 +32,13 @@ h3 {
 	max-height: 400px;
 	overflow-y: scroll;
 }
+#featured-result .description {
+	margin-bottom: 1em;
+}
 #results .search-result { 
 	border-bottom: solid 1px #333;
 	background-color: #eeeeee;
-	padding: 2px;
+	padding: 2px 8px 2px 8px;
 }
 .uni-logo { 
 	float:right;

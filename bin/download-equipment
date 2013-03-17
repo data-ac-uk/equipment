@@ -30,6 +30,7 @@ foreach( $config as &$config_item )
 	print_r( $config_item );
 	$config_item["errors"] = array();
 	$config_item["items"] = 0;
+	$config_item["skipped_items"] = 0;
 	$graph = null;
 	if( $config_item["dataset_type"] == "rdf" )
 	{
@@ -91,90 +92,42 @@ foreach( $config as &$config_item )
 	print_r( $config_item );
 
 	$graph = new Graphite();
+	$graph->ns( "org", "http://www.w3.org/ns/org#" );	
+	$graph->ns( "gr", "http://purl.org/goodrelations/v1#" );
+
 	$n = $graph->load( "file://$file" );
 	$orguri = "http://id.learning-provider.data.ac.uk/ukprn/".$config_item["org_ukprn"];
 	$graph->load( $orguri );
 	$org = $graph->resource( $orguri );
-	$postcode = $org->get( "http://data.ordnancesurvey.co.uk/ontology/postcode/postcode" );
-	$homepage = $org->get( "foaf:homepage" );
-	$easting = "";
-	$northing = "";	
+
+	$postcode= $org->get( "http://data.ordnancesurvey.co.uk/ontology/postcode/postcode" );
+	$config_item["homepage"] = $org->getLiteral( "foaf:homepage" );
+	$config_item["easting"] = "";
+	$config_item["northing"] = "";	
 	if( $postcode->has( "http://data.ordnancesurvey.co.uk/ontology/spatialrelations/easting" ) )
 	{
-		$easting = $postcode->get( "http://data.ordnancesurvey.co.uk/ontology/spatialrelations/easting" );
-		$northing = $postcode->get( "http://data.ordnancesurvey.co.uk/ontology/spatialrelations/northing" );
+		$config_item["easting"] = $postcode->getLiteral( "http://data.ordnancesurvey.co.uk/ontology/spatialrelations/easting" );
+		$config_item["northing"] = $postcode->getLiteral( "http://data.ordnancesurvey.co.uk/ontology/spatialrelations/northing" );
 	}
 
 
 	print "$file -- $n\n";
 	if( $n == 0 ) { continue; }
 
+	foreach( $graph->allOfType( "oo:Facility" ) as $item )
+	{
+		processItem( $item, $search_rows, $config_item );
+	}
+
 	foreach( $graph->allOfType( "oo:Equipment" ) as $item )
 	{
-		$config_item["items"]++;
-		$cache_id = md5( $item->uri );
+		processItem( $item, $search_rows, $config_item );
+	}
 
-		# create row for grepping searches
-		$search_terms = $item->label()." ".$item->getString( "dcterms:description" );
-		$search_terms = preg_replace( "/\s+/"," ", $search_terms );
-		$search_terms = strtolower( $search_terms );
-		$search_terms = preg_replace( "/<[^>]+/", "", $search_terms );
-		$search_terms = preg_replace( "/[^ a-z0-9]/", "", $search_terms );
-
-		$cells = array();
-		$cells []= $search_terms;	
-		$cells []= $cache_id;	
-		$cells []= $item->label();	
-		$cells []= $config_item["org_name"];
-		$cells []= $easting;
-		$cells []= $northing;
-
-		$search_rows []= join( "\t", $cells )."\n";
-  
-#→ rdf:type → oo:Equipment
-#→ gr:hasMakeAndModel → http://equipment.data.ac.uk/item/ukprn-10004113/0884b83817ad7ac91bd19c7780f5d307#model
-#"^^http://purl.org/xtypes/Fragment-HTML
-#→ oo:contact → http://equipment.data.ac.uk/item/ukprn-10004113/0884b83817ad7ac91bd19c7780f5d307#contact1
-#→ oo:primaryContact → http://equipment.data.ac.uk/item/ukprn-10004113/0884b83817ad7ac91bd19c7780f5d307#contact1
- 
-
-		# create cache for displaying results
-		$html = array();
-		$html []= "<div class='search-result'>";
-		$html []= "<h2>".htmlspecialchars( $item->label() )."</h2>";
-		$html []= "<a class='uni-logo' title='".$config_item["org_name"]."' href='".$homepage."'><img width='200' src='".$config_item["org_logo"]."' /></a>";
-		if( $item->has( "foaf:page" ) )
-		{
-			$html []= "<p>More info: ".$item->get("foaf:page")->link()."</p>";
-		}
-		if( $item->has( "foaf:depiction" ) )
-		{
-			$html []= "<img width='200' src='".$item->get( "foaf:depiction" )."' />";
-		}
-		if( $item->has( "dcterms:description" ) )
-		{
-			$html []= "<div>".$item->get("dcterms:description")."</div>";
-		}
-		foreach( $item->all( "oo:contact" ) as $contact )
-		{
-			$html []= "<p>Contact ";
-			if( $contact->hasLabel() ) { $html []= $contact->label(); }
-			if( $contact->has( "foaf:mbox" ) ) {
-				$html []= " ".$contact->get( "foaf:mbox" )->prettyLink();
-			}
-			if( $contact->has( "foaf:phone" ) ) {
-				$html []= " ".$contact->get( "foaf:phone" )->prettyLink();
-			}
-			$html []= "</p>";
-		}
-		$html []= $item->dump();
-		$html []= $item->get( "oo:contact" )->dump();
-		$html []= "</div>";
-		$file = $item_cache_dir."/".$cache_id;
-		$fh = fopen($file, 'w') or die("can't open file: $file" );
-		fwrite($fh, join( "", $html ) );
-		fclose( $fh );
-	}	
+	if( $config_item["skipped_items"] )
+	{		
+		$config_item["errors"][] = $config_item["skipped_items"]." item".( $config_item["skipped_items"] == 1 ? "" : "s" )." had no contact listed and were skipped."; 
+	}
 }
 
 $file = $base_dir."/var/search.tsv";
@@ -303,3 +256,90 @@ function kitcat_to_graph( $c )
 	return $graph;
 }
 
+
+function processItem( $item, &$search_rows, &$config_item )
+{
+	global $item_cache_dir;
+
+	if( !$item->has( "oo:primaryContact", "oo:contact" ) )
+	{
+		$config_item["skipped_items"]++;
+		return;
+	}
+
+	$config_item["items"]++;
+	$cache_id = md5( $item->uri );
+
+	# create row for grepping searches
+	$search_terms = $item->label()." ".$item->getString( "dcterms:description" );
+	$search_terms = preg_replace( "/\s+/"," ", $search_terms );
+	$search_terms = strtolower( $search_terms );
+	$search_terms = preg_replace( "/<[^>]+/", "", $search_terms );
+	$search_terms = preg_replace( "/[^ a-z0-9]/", "", $search_terms );
+
+	$cells = array();
+	$cells []= $search_terms;	
+	$cells []= $cache_id;	
+	$cells []= $item->label();	
+	$cells []= $config_item["org_name"];
+	$cells []= $config_item["easting"];
+	$cells []= $config_item["northing"];
+
+	$search_rows []= join( "\t", $cells )."\n";
+ 
+	# create cache for displaying results
+	$html = array();
+	$html []= "<div class='search-result'>";
+	$html []= "<h2>".htmlspecialchars( $item->label() )."</h2>";
+	$html []= "<a class='uni-logo' title='".$config_item["org_name"]."' href='".$config_item["homepage"]."'><img width='200' src='".$config_item["org_logo"]."' /></a>";
+	if( $item->has( "foaf:page" ) )
+	{
+		$html []= "<p><a href='".$item->get("foaf:page")."'>More information</a>.</p>";
+	}
+	if( $item->has( "foaf:depiction" ) )
+	{
+		$html []= "<img width='200' src='".$item->get( "foaf:depiction" )."' />";
+	}
+	if( $item->has( "dcterms:description" ) )
+	{
+		$html []= "<div class='description'>".$item->get("dcterms:description")."</div>";
+	}
+	if( $item->has( "org:organization" ) && $item->get( "org:organization" )->hasLabel() )
+	{
+		$html []= "<div>Organization: ".$item->get("org:organization")->label()."</div>";
+	}
+	if( $item->has( "gr:hasMakeAndModel" ) )
+	{
+		$make_and_model = $item->get( "gr:hasMakeAndModel" );
+		if( $make_and_model->hasLabel() )
+		{
+			$html []= "<p>Model: ".$make_and_model->label()."</p>";
+		}
+		if( $make_and_model->has( "gr:hasManufacturer" ) )
+		{
+			$manufacturer = $make_and_model->get( "gr:hasManufacturer" );
+			if( $manufacturer->hasLabel() )
+			{
+				$html []= "<p>Manufacturer: ".$manufacturer->label()."</p>";
+			}
+		}
+	}
+	foreach( $item->all( "oo:primaryContact", "oo:contact" ) as $contact )
+	{
+		$html []= "<p>Contact ";
+		if( $contact->hasLabel() ) { $html []= $contact->label(); }
+		if( $contact->has( "foaf:mbox" ) ) {
+			$html []= " ".$contact->get( "foaf:mbox" )->prettyLink();
+		}
+		if( $contact->has( "foaf:phone" ) ) {
+			$html []= " ".$contact->get( "foaf:phone" )->prettyLink();
+		}
+		$html []= "</p>";
+	}
+	$html []= "</div>";
+
+	$file = $item_cache_dir."/".$cache_id;
+	$fh = fopen($file, 'w') or die("can't open file: $file" );
+	fwrite($fh, join( "", $html ) );
+	fclose( $fh );
+}	

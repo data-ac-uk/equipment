@@ -86,6 +86,7 @@ print "var availableTags = ".json_encode( array_keys( $data ) ).";";
             $('#helpstring').hide();
             $('#sort-option').show();
             $('#results-container').show();
+            $('#results').scrollTop(0);
             $.get('/search', 
                 {
                    'term': text, 
@@ -116,6 +117,7 @@ print "var availableTags = ".json_encode( array_keys( $data ) ).";";
 function show_result( id )
 {
     $.get('item/'+id, function(page) {
+        $('#featured-result').scrollTop(0);
         $('#featured-result').html( page );
     }, 'html');
 }

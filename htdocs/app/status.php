@@ -17,7 +17,7 @@ class status {
 		$c []= "<th>Source</th>";
 		$c []= "<th>Records</th>";
 		$c []= "<th>Timestamp</th>";
-		$c []= "<th>Errors</th>";
+		$c []= "<th>Issues</th>";
 		$c []= "</tr>";
 		foreach( $status as $feed )
 		{
