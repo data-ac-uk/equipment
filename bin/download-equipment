@@ -86,6 +86,7 @@ foreach( $config as &$config_item )
 print "STAGE 2\n";
 
 $search_rows = array();
+$all_uniquip_rows = array();
 foreach( $config as &$config_item )
 {
 	$file = "$org_cache_dir/ukprn-".$config_item["org_ukprn"].".ttl";
@@ -101,33 +102,82 @@ foreach( $config as &$config_item )
 	$org = $graph->resource( $orguri );
 
 	$postcode= $org->get( "http://data.ordnancesurvey.co.uk/ontology/postcode/postcode" );
-	$config_item["homepage"] = $org->getLiteral( "foaf:homepage" );
-	$config_item["easting"] = "";
-	$config_item["northing"] = "";	
+	$config_item["org_homepage"] = $org->getLiteral( "foaf:homepage" );
+	$config_item["org_easting"] = "";
+	$config_item["org_northing"] = "";	
+	$config_item["org_lat"] = "";
+	$config_item["org_long"] = "";	
 	if( $postcode->has( "http://data.ordnancesurvey.co.uk/ontology/spatialrelations/easting" ) )
 	{
-		$config_item["easting"] = $postcode->getLiteral( "http://data.ordnancesurvey.co.uk/ontology/spatialrelations/easting" );
-		$config_item["northing"] = $postcode->getLiteral( "http://data.ordnancesurvey.co.uk/ontology/spatialrelations/northing" );
+		$config_item["org_easting"] = $postcode->getLiteral( "http://data.ordnancesurvey.co.uk/ontology/spatialrelations/easting" );
+		$config_item["org_northing"] = $postcode->getLiteral( "http://data.ordnancesurvey.co.uk/ontology/spatialrelations/northing" );
 	}
-
+	if( $postcode->has( "geo:lat" ) )
+	{
+		$config_item["org_lat"] = $postcode->getLiteral( "geo:lat" );
+		$config_item["org_long"] = $postcode->getLiteral( "geo:long" );
+	}
 
 	print "$file -- $n\n";
 	if( $n == 0 ) { continue; }
 
+	$org_uniquip_rows = array();
+
 	foreach( $graph->allOfType( "oo:Facility" ) as $item )
 	{
-		processItem( $item, $search_rows, $config_item );
+		if( !itemLooksLegit( $item ) ) { $config_item["skipped_items"]++; continue; }
+		$config_item["items"]++;
+		$org_uniquip_rows []= itemToUniquipRow( $item );
+		$search_rows []= itemToSearchTerms( $item );
+		processItemPage( $item );
 	}
 
 	foreach( $graph->allOfType( "oo:Equipment" ) as $item )
 	{
-		processItem( $item, $search_rows, $config_item );
+		if( !itemLooksLegit( $item ) ) { $config_item["skipped_items"]++; continue; }
+		$config_item["items"]++;
+		$uniquip_row = itemToUniquipRow( $item );
+		$org_uniquip_rows []= $uniquip_row;
+		$all_uniquip_rows []= $uniquip_row;
+		$search_rows []= itemToSearchTerms( $item );
+		processItemPage( $item );
 	}
 
 	if( $config_item["skipped_items"] )
 	{		
 		$config_item["errors"][] = $config_item["skipped_items"]." item".( $config_item["skipped_items"] == 1 ? "" : "s" )." had no contact listed and were skipped."; 
 	}
+
+	$uniquip_file = "$org_cache_dir/ukprn-".$config_item["org_ukprn"].".tsv";
+	$fields = uniquipFields();
+	$fh = fopen($uniquip_file, 'w') or die("can't open file: $uniquip_file" );
+	fwrite( $fh, join( "\t", $fields )."\n" );
+	foreach( $org_uniquip_rows as $row )
+	{
+		$tsv_row = array();
+		foreach( $fields as $field )
+		{
+			$tsv_row []= @preg_replace( "/[\t\n]/"," ",$row[$field] );
+		}
+		fwrite( $fh, join( "\t", $tsv_row )."\n" );
+	}
+	fclose($fh);
+
+	$uniquip_file = "$org_cache_dir/ukprn-".$config_item["org_ukprn"].".csv";
+	$fields = uniquipFields();
+	$fh = fopen($uniquip_file, 'w') or die("can't open file: $uniquip_file" );
+	fputcsv($fh, $fields);
+	foreach( $org_uniquip_rows as $row )
+	{
+		$csv_row = array();
+		foreach( $fields as $field )
+		{
+			$csv_row []= @$row[$field];
+		}
+		fputcsv($fh, $csv_row);
+	}
+	fclose($fh);
+	
 }
 
 $file = $base_dir."/var/search.tsv";
@@ -135,13 +185,59 @@ $fh = fopen($file, 'w') or die("can't open file: $file" );
 fwrite($fh, join( "", $search_rows ) );
 fclose($fh);
 
-# TODO: Output Data Documents
-
 $file = $base_dir."/htdocs/data/status.json";
 $fh = fopen($file, 'w') or die("can't open file: $file" );
 fwrite($fh, json_encode( $config ) );
 fclose($fh);
 
+$uniquip_file = $base_dir."/htdocs/data/uniquip.tsv";
+$fields = uniquipFields();
+$fh = fopen($uniquip_file, 'w') or die("can't open file: $uniquip_file" );
+fwrite( $fh, join( "\t", $fields )."\n" );
+foreach( $all_uniquip_rows as $row )
+{
+	$tsv_row = array();
+	foreach( $fields as $field )
+	{
+		$tsv_row []= @preg_replace( "/[\t\n]/"," ",$row[$field] );
+	}
+	fwrite( $fh, join( "\t", $tsv_row )."\n" );
+}
+fclose($fh);
+
+$uniquip_file = $base_dir."/htdocs/data/uniquip.csv";
+$fields = uniquipFields();
+$fh = fopen($uniquip_file, 'w') or die("can't open file: $uniquip_file" );
+fputcsv($fh, $fields);
+foreach( $all_uniquip_rows as $row )
+{
+	$csv_row = array();
+	foreach( $fields as $field )
+	{
+		$csv_row []= @$row[$field];
+	}
+	fputcsv($fh, $csv_row);
+}
+fclose($fh);
+
+$uniquip_file = $base_dir."/htdocs/data/uniquip.html";
+$fields = uniquipFields();
+$fh = fopen($uniquip_file, 'w') or die("can't open file: $uniquip_file" );
+
+fwrite( $fh, "<style>table { border-collapse: collapse; } td th { cellpadding: 4px; border: solid 1px #000 } th { color: #fff ; background-color: #000; }</style>" );
+fwrite( $fh, "<table>" );
+fwrite( $fh, "<tr><th>".join( "</th><th>", $fields )."</th></tr>\n" );
+foreach( $all_uniquip_rows as $row )
+{
+	$html_row = array();
+	foreach( $fields as $field )
+	{
+		$html_row []= @preg_replace( "/[\t\n]/"," ",$row[$field] );
+	}
+	fwrite( $fh, "<tr><td>".join( "</td><td>", $html_row )."</td></tr>\n" );
+}
+fwrite( $fh, "</table>" );
+fclose($fh);
 
 exit;
 
@@ -161,6 +257,7 @@ function read_config( $file )
 			"org_name" => $cells[3],	
 			"org_url" => $cells[4],	
 			"org_logo" => $cells[5],	
+			"dataset_corrections" => $cells[6],	
 		);
 	}
 	
@@ -256,20 +353,162 @@ function kitcat_to_graph( $c )
 	return $graph;
 }
 
-
-function processItem( $item, &$search_rows, &$config_item )
+function uniquipFields()
 {
-	global $item_cache_dir;
+	return array( 
+"Type",
+"Name",
+"Description",
+"Related Facility ID",
+"Technique",
+"Location",
+"Contact Name",
+"Contact Telephone",
+"Contact URL",
+"Contact Email",
+"Secondary Contact Name",
+"Secondary Contact Telephone",
+"Secondary Contact URL",
+"Secondary Contact Email",
+"ID",
+"Photo",
+"Department",
+"Site Location",
+"Building",
+"Service Level",
+"Web Address",
 
-	if( !$item->has( "oo:primaryContact", "oo:contact" ) )
+"Institution Name",
+"Institution URL",
+"Institution Logo URL",
+"Datestamp",
+"Approximate Coordinates",
+);
+}
+
+function itemToUniquipRow($item)
+{
+	global $config_item;
+
+	$uniquip = array();
+
+	$contacts = array();
+	foreach( $item->all( "oo:primaryContact", "oo:contact" ) as $contact )
 	{
-		$config_item["skipped_items"]++;
-		return;
+		$c = array();
+		if( $contact->hasLabel() ) { $c["Name"] = (string)$contact->label(); }
+		if( $contact->has( "foaf:mbox" ) ) { 
+			$c["Email"] = preg_replace( "/mailto:/","", $contact->getString( "foaf:mbox" ) );
+		}
+		if( $contact->has( "foaf:phone" ) ) { 
+			$c["Telephone"] = preg_replace( "/mailto:/","", $contact->getString( "foaf:phone" ) );
+		}
+		$contacts []= $c;
 	}
 
-	$config_item["items"]++;
-	$cache_id = md5( $item->uri );
 
+
+
+#"Type",
+	if( $item->isType( "oo:Equipment" ) )
+	{
+		$uniqip["Type"] = "equipment";
+	}
+	if( $item->isType( "oo:Facility" ) )
+	{
+		$uniqip["Type"] = "facility";
+	}
+#"Name",
+	if( $item->hasLabel() )
+	{
+		$uniquip["Name"] = (string)$item->label();
+	}
+#"Description",
+	if( $item->has( "dcterms:description" ) )
+	{
+		$uniquip["Description"] = $item->getString( "dcterms:description" );
+	}
+#"Related Facility ID",
+#"Technique",
+#"Location",
+#"Contact Name",
+	@$uniquip["Contact Name"] = $contacts[0]["Name"];
+#"Contact Telephone",
+	@$uniquip["Contact Telephone"] = $contacts[0]["Telephone"];
+#"Contact URL",
+#"Contact Email",
+	@$uniquip["Contact Email"] = $contacts[0]["Email"];
+#"Secondary Contact Name",
+	@$uniquip["Secondary Contact Name"] = $contacts[1]["Name"];
+#"Secondary Contact Telephone",
+	@$uniquip["Secondary Contact Telephone"] = $contacts[1]["Telephone"];
+#"Secondary Contact URL",
+#"Secondary Contact Email",
+	@$uniquip["Secondary Contact Email"] = $contacts[1]["Email"];
+#"ID",
+#"Photo",
+	if( $item->has( "foaf:depiction" ) )
+	{
+		$uniquip["Photo"] = $item->getString( "foaf:depiction" );
+	}
+#"Department",
+#"Site Location",
+#"Building",
+#"Service Level",
+#"Web Address",
+	if( $item->has( "foaf:page" ) )
+	{
+		$uniquip["Web Address"] = $item->getString( "foaf:page" );
+	}
+#"Institution Name",
+	if( $config_item["org_name"] )
+	{
+		$uniquip["Institution Name"] = $config_item["org_name"];
+	}
+#"Institution URL",
+	if( $config_item["org_homepage"] )
+	{
+		$uniquip["Institution URL"] = $config_item["org_homepage"];
+	}
+#"Institution Logo URL",
+	if( $config_item["org_logo"] )
+	{
+		$uniquip["Institution Logo URL"] = $config_item["org_logo"];
+	}
+#"Datestamp",
+	if( $config_item["dataset_timestamp"] )
+	{
+		$uniquip["Datestamp"] = $config_item["dataset_timestamp"];
+	}
+#"Approximate Coordinates",
+	if( $config_item["org_lat"] )
+	{
+		$uniquip["Approximate Coordinates"] = $config_item["org_lat"]." ".$config_item["org_long"];
+	}
+#"Corrections"
+	if( $config_item["dataset_corrections"] )
+	{
+		$uniquip["Corrections"] = $config_item["dataset_corrections"];
+	}
+	return $uniquip;
+}
+
+function itemLooksLegit( $item )
+{
+	if( !$item->has( "oo:primaryContact", "oo:contact" ) )
+	{
+		return false;
+	}
+	return true;
+}
+
+function itemCacheID( $item )
+{
+	return md5( $item->uri );
+}
+function itemToSearchTerms( $item )
+{
+	global $config_item;
 	# create row for grepping searches
 	$search_terms = $item->label()." ".$item->getString( "dcterms:description" );
 	$search_terms = preg_replace( "/\s+/"," ", $search_terms );
@@ -279,19 +518,23 @@ function processItem( $item, &$search_rows, &$config_item )
 
 	$cells = array();
 	$cells []= $search_terms;	
-	$cells []= $cache_id;	
+	$cells []= itemCacheID( $item );
 	$cells []= $item->label();	
 	$cells []= $config_item["org_name"];
-	$cells []= $config_item["easting"];
-	$cells []= $config_item["northing"];
+	$cells []= $config_item["org_easting"];
+	$cells []= $config_item["org_northing"];
+	return join( "\t", $cells )."\n";
+}
+function processItemPage( $item )
+{
+	global $item_cache_dir;
+	global $config_item;
 
-	$search_rows []= join( "\t", $cells )."\n";
- 
 	# create cache for displaying results
 	$html = array();
 	$html []= "<div class='search-result'>";
 	$html []= "<h2>".htmlspecialchars( $item->label() )."</h2>";
-	$html []= "<a class='uni-logo' title='".$config_item["org_name"]."' href='".$config_item["homepage"]."'><img width='200' src='".$config_item["org_logo"]."' /></a>";
+	$html []= "<a class='uni-logo' title='".$config_item["org_name"]."' href='".$config_item["org_homepage"]."'><img width='200' src='".$config_item["org_logo"]."' /></a>";
 	if( $item->has( "foaf:page" ) )
 	{
 		$html []= "<p><a href='".$item->get("foaf:page")."'>More information</a>.</p>";
@@ -336,9 +579,15 @@ function processItem( $item, &$search_rows, &$config_item )
 		}
 		$html []= "</p>";
 	}
+	if( $config_item["dataset_corrections"] )
+	{
+		# use the graphite URL link renderer
+		$g = new Graphite();
+		$html []=  "<div class='corrections'>Issues with this record should be reported to ".$g->resource( $config_item["dataset_corrections"] )->prettyLink()."</div>";
+	}
 	$html []= "</div>";
 
-	$file = $item_cache_dir."/".$cache_id;
+	$file = $item_cache_dir."/".itemCacheID( $item );
 	$fh = fopen($file, 'w') or die("can't open file: $file" );
 	fwrite($fh, join( "", $html ) );
 	fclose( $fh );

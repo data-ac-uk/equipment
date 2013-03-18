@@ -15,24 +15,13 @@ Quickstart:
 
 TODO List:
 
- Caching of downloaded information
+ Add "miles" option to distance
  Use hub.data.ac.uk (or it's code) for autodiscovery
- Log of errors in URL downloads
- Log of errors and warnings in parsing
- Add name and logo info for orgs
  add location info
- List of organisations and data sources
  Add something clever with licenses
- load configuration options
- website template
- download dump documents - RDF, CSV, TSV, cerif(?)
+ CERIF?
  per-site timeout
  accessible version of search
- link to documentation
- fix NULL in item pages
- add contact info
- add manufacturer info
- add better link to uni page for item 
 
 ADDITIONAL CREDITS:
 

@@ -12,7 +12,7 @@
 
 
 <h2 class="P2"><span class="T5">Background</span></h2>
-<p class="Standard">This specification was developed in order to define the requirements for equipment database data publishing to enable individual institutions data to be harvested by or published to equipment portals (e.g. equipment.data.ac.uk).  This document details the specification of the input and output data table.</p>
+<p class="Standard">This specification was developed in order to define the requirements for equipment database data publishing to enable individual institutions' data to be harvested by or published to equipment portals (e.g. equipment.data.ac.uk).  This document details the specification of the input and output data table.</p>
 
 <h2>Document Format</h2>
 
@@ -62,7 +62,7 @@
 <td style="text-align:left;width:3.106cm; " class="Table3_B2">
 <p class="Standard">No</p></td>
 <td style="text-align:left;width:9.837cm; " class="Table3_C2">
-<p class="Standard">Define as either "equipment" or "facility". </p></td></tr>
+<p class="Standard">Defined as either "equipment" or "facility". </p></td></tr>
 <tr class="Table31">
 <td style="text-align:left;width:3.358cm; " class="Table3_A3">
 <p class="Standard">Name</p></td>
@@ -81,14 +81,14 @@
 <td style="text-align:left;width:3.106cm; " class="Table3_A1">
 <p class="Standard">No</p></td>
 <td style="text-align:left;width:9.837cm; " class="Table3_A1">
-<p class="Standard">Must be unset if type=Facility. If type=Equipment then this is the ID of a facility listed in this document which the equipment is part of. If it is possible an item of equipment is related to multiple facilities, multiple values may be specified separated by a mandatory comma “,” and optional whitespace e.g. F0001, F0002.</p></td></tr>
+<p class="Standard">Must be unset if type=Facility. If type=Equipment then this is the ID of a facility listed in this document which the equipment is part of. If an item of equipment is related to multiple facilities, multiple values may be specified separated by a mandatory comma “,” and optional whitespace (e.g. F0001, F0002).</p></td></tr>
 <tr class="Table31">
 <td style="text-align:left;width:3.358cm; " class="Table3_A1">
 <p class="Standard">Technique(:cpv) or (:N8)</p></td>
 <td style="text-align:left;width:3.106cm; " class="Table3_A1">
 <p class="Standard">No</p></td>
 <td style="text-align:left;width:9.837cm; " class="Table3_A1">
-<p class="Standard">Free text description of research discipline/field e.g. Spectroscopy.  This might also be a controlled vocabulary e.g. taxonomy or categorisation field by adding :N8 or cpv codes by adding :cpv. </p></td></tr>
+<p class="Standard">Free text description of research discipline/field (e.g. Spectroscopy).  This might also be a controlled vocabulary. Use of the N8 taxonomy is indicated by adding :N8 or <a href="http://cpv.data.ac.uk/">CPV</a> codes by adding :cpv. </p></td></tr>
 <tr class="Table31">
 <td style="text-align:left;width:3.358cm; " class="Table3_A1">
 <p class="Standard">Location</p></td>
@@ -114,7 +114,7 @@
 <td style="text-align:left;width:3.358cm; " class="Table3_A1">
 <p class="Standard">Contact URL</p></td>
 <td style="text-align:left;width:9.837cm; " class="Table3_A1">
-<p class="Standard">The URL or a web page containing contact information.</p></td></tr>
+<p class="Standard">The URL of a web page containing contact information.</p></td></tr>
 <tr class="Table31">
 <td style="text-align:left;width:3.358cm; " class="Table3_A1">
 <p class="Standard">Contact Email</p></td>
@@ -138,7 +138,7 @@
 <td style="text-align:left;width:3.358cm; " class="Table3_A14">
 <p class="Standard">Secondary Contact URL</p></td>
 <td style="text-align:left;width:9.837cm; " class="Table3_C14">
-<p class="Standard">The URL or a web page containing contact information.</p></td></tr>
+<p class="Standard">The URL of a web page containing contact information.</p></td></tr>
 <tr class="Table31">
 <td style="text-align:left;width:3.358cm; " class="Table3_A15">
 <p class="Standard">Secondary Contact Email</p></td>
@@ -150,14 +150,14 @@
 <td style="text-align:left;width:3.106cm; " class="Table3_A1">
 <p class="Standard">No</p></td>
 <td style="text-align:left;width:9.837cm; " class="Table3_A1">
-<p class="Standard">An institution assigned unique ID e.g. Asset ID or similar. If required you may wish to make this one way encrypted</p></td></tr>
+<p class="Standard">An institution assigned unique ID (e.g. Asset ID). If required you may make this one-way encrypted (e.g. MD5 Hash)</p></td></tr>
 <tr class="Table31">
 <td style="text-align:left;width:3.358cm; " class="Table3_A1">
 <p class="Standard">Photo</p></td>
 <td style="text-align:left;width:3.106cm; " class="Table3_A1">
 <p class="Standard">No</p></td>
 <td style="text-align:left;width:9.837cm; " class="Table3_A1">
-<p class="Standard">The URL of a publically accessible photograph of the facility (e.g. png, jpeg, gif).</td></tr>
+<p class="Standard">The URL of a publicly accessible photograph of the facility (e.g. png, jpeg, gif).</td></tr>
 <tr class="Table31">
 <td style="text-align:left;width:3.358cm; " class="Table3_A1">
 <p class="Standard">Department</p></td>
@@ -167,7 +167,7 @@
 <p class="Standard">Organisational unit, school or research group which owns the facility (if appropriate).</p></td></tr>
 <tr class="Table31">
 <td style="text-align:left;width:3.358cm; " class="Table3_A1">
-<p class="Standard">Site location</p></td>
+<p class="Standard">Site Location</p></td>
 <td style="text-align:left;width:3.106cm; " class="Table3_A1">
 <p class="Standard">Yes</p></td>
 <td style="text-align:left;width:9.837cm; " class="Table3_A1">
@@ -178,17 +178,17 @@
 <td style="text-align:left;width:3.106cm; " class="Table3_A1">
 <p class="Standard">No</p></td>
 <td style="text-align:left;width:9.837cm; " class="Table3_A1">
-<p class="Standard">Name or reference number for building where the equipment or facility is based.</p></td></tr>
+<p class="Standard">Name or reference number of the building where the equipment or facility is based.</p></td></tr>
 <tr class="Table31">
 <td style="text-align:left;width:3.358cm; " class="Table3_A1">
-<p class="Standard">Service level </p></td>
+<p class="Standard">Service Level </p></td>
 <td style="text-align:left;width:3.106cm; " class="Table3_A1">
 <p class="Standard">No</p></td>
 <td style="text-align:left;width:9.837cm; " class="Table3_A1">
 <p class="Standard">Details of support available for the use of this facility or equipment.</p></td></tr>
 <tr class="Table31">
 <td style="text-align:left;width:3.358cm; " class="Table3_A1">
-<p class="Standard">Web address</p></td>
+<p class="Standard">Web Address</p></td>
 <td style="text-align:left;width:3.106cm; " class="Table3_A1">
 <p class="Standard">No</p></td>
 <td style="text-align:left;width:9.837cm; " class="Table3_A1">
@@ -222,17 +222,26 @@
 <td style="text-align:left;width:3.799cm; " class="Table4_A1">
 <p class="Standard">Institution Logo URL</p></td>
 <td style="text-align:left;width:12.501cm; " class="Table4_A1">
-<p class="Standard">The URL for a publically accessible logo for the institution.</p></td></tr>
+<p class="Standard">The URL for a publicly accessible logo for the institution.</p></td></tr>
 <tr class="Table41">
 <td style="text-align:left;width:3.799cm; " class="Table4_A1">
 <p class="Standard">Datestamp</p></td>
 <td style="text-align:left;width:12.501cm; " class="Table4_A1">
 <p class="Standard">The date on which the data were submitted.  An indication of how ‘fresh’ the facility record is.</p></td></tr>
+
 <tr class="Table41">
 <td style="text-align:left;width:3.799cm; " class="Table4_A1">
 <p class="Standard">Approximate Coordinates</p></td>
 <td style="text-align:left;width:12.501cm; " class="Table4_A1">
-<p class="Standard">The Approximate Latitude and Longitude, if available</p></td></tr></table>
+<p class="Standard">The Approximate Latitude and Longitude, if available. Writen with a space between them, eg. "51.060556 -1.313056"</p></td></tr>
+
+<tr class="Table41">
+<td style="text-align:left;width:3.799cm; " class="Table4_A1">
+<p class="Standard">Corrections</p></td>
+<td style="text-align:left;width:12.501cm; " class="Table4_A1">
+<p class="Standard">A URL to request corrections to this record. May be an email address in which case it should start with mailto: </p></td></tr>
+
+</table>
 
 
 
@@ -323,6 +332,20 @@
 <p class="P3">Removed 'open data' column as all fields must be open data for equipment.data.ac.uk, changed definition of approximate coordinates, added the document formatting section, corrected .jif to .gif.</p></td>
 <td style="text-align:left;width:4.519cm; " class="Table2_A1">
 <p class="P3">Christopher Gutteridge</p></td></tr>
+
+<tr class="Table22">
+<td style="text-align:left;width:1.431cm; " class="Table2_A1">
+<p class="P3">0.8</p></td>
+<td style="text-align:left;width:2.669cm; " class="Table2_A1">
+<p class="P3">18 Mar 2013</p></td>
+<td style="text-align:left;width:7.502cm; " class="Table2_A1">
+<p class="P3">
+Corrected all terms to have upper-case first letters on all words. Added Corrections term. Added specific description of Approximate Coordinates. Clarrified taxonomy suffixes. Several corrections to spelling and grammar.
+</p></td>
+<td style="text-align:left;width:4.519cm; " class="Table2_A1">
+<p class="P3">Christopher Gutteridge, Adam Field</p></td></tr>
+
+
 </div>
 
 </table>
