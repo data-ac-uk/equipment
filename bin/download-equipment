@@ -127,7 +127,9 @@ foreach( $config as &$config_item )
 	{
 		if( !itemLooksLegit( $item ) ) { $config_item["skipped_items"]++; continue; }
 		$config_item["items"]++;
-		$org_uniquip_rows []= itemToUniquipRow( $item );
+		$uniquip_row = itemToUniquipRow( $item );
+		$org_uniquip_rows []= $uniquip_row;
+		$all_uniquip_rows []= $uniquip_row;
 		$search_rows []= itemToSearchTerms( $item );
 		processItemPage( $item );
 	}
@@ -336,7 +338,7 @@ function kitcat_to_graph( $c )
 		if( $item["contact2"] != "" )
 		{	
 			$graph->addCompressedTriple( $uri, "oo:contact", "$uri#contact2" );
-			$graph->addCompressedTriple( "$uri#contact2", "foaf:mbox", "mailto:".$item["contact1"] );
+			$graph->addCompressedTriple( "$uri#contact2", "foaf:mbox", "mailto:".$item["contact2"] );
 		}
 
 		if( $item["link"] != "" )
@@ -383,6 +385,7 @@ function uniquipFields()
 "Institution Logo URL",
 "Datestamp",
 "Approximate Coordinates",
+"Corrections",
 );
 }
 
@@ -393,8 +396,11 @@ function itemToUniquipRow($item)
 	$uniquip = array();
 
 	$contacts = array();
+	$done = array();
 	foreach( $item->all( "oo:primaryContact", "oo:contact" ) as $contact )
 	{
+		if( @$done[$contact->toString()] ) { continue; }
+		$done[$contact->toString()] = true;
 		$c = array();
 		if( $contact->hasLabel() ) { $c["Name"] = (string)$contact->label(); }
 		if( $contact->has( "foaf:mbox" ) ) { 
@@ -412,11 +418,11 @@ function itemToUniquipRow($item)
 #"Type",
 	if( $item->isType( "oo:Equipment" ) )
 	{
-		$uniqip["Type"] = "equipment";
+		$uniquip["Type"] = "equipment";
 	}
 	if( $item->isType( "oo:Facility" ) )
 	{
-		$uniqip["Type"] = "facility";
+		$uniquip["Type"] = "facility";
 	}
 #"Name",
 	if( $item->hasLabel() )
@@ -567,8 +573,11 @@ function processItemPage( $item )
 			}
 		}
 	}
+	$done=array();
 	foreach( $item->all( "oo:primaryContact", "oo:contact" ) as $contact )
 	{
+		if( @$done[$contact->toString()] ) { continue; }
+		$done[$contact->toString()] = true;
 		$html []= "<p>Contact ";
 		if( $contact->hasLabel() ) { $html []= $contact->label(); }
 		if( $contact->has( "foaf:mbox" ) ) {

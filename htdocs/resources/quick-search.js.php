@@ -60,6 +60,18 @@ print "var availableTags = ".json_encode( array_keys( $data ) ).";";
         }
     });
 
+    $('#units-toggle').click(function() {
+        if( $('#units').text() == 'km' )
+        {
+            $('#units').text("miles");
+        }
+        else
+        {
+            $('#units').text("km");
+        }
+        quick_search();
+    });
+
     $('#qs-input').focus();
 
     quick_search();
@@ -90,6 +102,7 @@ print "var availableTags = ".json_encode( array_keys( $data ) ).";";
             $.get('/search', 
                 {
                    'term': text, 
+                   'units': $('#units').text(),
                    'sort': sort
                 }, 
                 function(results) { $('#results').html( results ); },

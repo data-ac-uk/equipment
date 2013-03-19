@@ -46,11 +46,19 @@ ul.bullets ul {
 	font-size: 100%;
 }
 
-div#content table td {
+table.status {
+	border-collapse: collapse;
+}
+table.status th {
+	background-color: #000;
+	color: #fff;
+	border: solid 1px #666;
+	font-weight: bold;
 	padding: 5px 3px;
 }
-div#content table th {
+table.status td {
 	padding: 5px 3px;
+	border: solid 1px #000;
 }
 i {
 	font-style: italic;

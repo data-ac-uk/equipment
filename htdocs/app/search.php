@@ -9,6 +9,11 @@ class search {
 		{
 			print "<p>No matches</p>";
 		}
+		$units = "km";
+		if( trim($_GET["units"])== "miles" )
+		{
+			$units = "miles";
+		}
 		$sort = @trim($_GET["sort"]);
 		if( $sort != "" )
 		{
@@ -35,7 +40,9 @@ class search {
 			{
 				$dist = round(sqrt( ($e2-$e)*($e2-$e) + ($n2-$n)*($n2-$n) ));
 				$key = sprintf( "%10d", $dist ).$key;
-				$dinfo = " - ". (round( $dist / 100 )/10)."km";
+				
+				if( $units == "miles" ) { $dist *= 0.621371192; }
+				$dinfo = " - ". (round( $dist / 100 )/10).$units;
 			}
 				
 			
