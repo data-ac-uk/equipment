@@ -224,7 +224,7 @@ $uniquip_file = $base_dir."/htdocs/data/uniquip.html";
 $fields = uniquipFields();
 $fh = fopen($uniquip_file, 'w') or die("can't open file: $uniquip_file" );
 
-fwrite( $fh, "<style>table { border-collapse: collapse; } td th { cellpadding: 4px; border: solid 1px #000 } th { color: #fff ; background-color: #000; }</style>" );
+fwrite( $fh, "<!doctype html>\n<html><style>body { font-family: sans-serif; } table { border-collapse: collapse; } td, th { padding: 4px; border: solid 1px #000 } th { color: #fff ; background-color: #000; }</style>" );
 fwrite( $fh, "<table>" );
 fwrite( $fh, "<tr><th>".join( "</th><th>", $fields )."</th></tr>\n" );
 foreach( $all_uniquip_rows as $row )
@@ -236,7 +236,7 @@ foreach( $all_uniquip_rows as $row )
 	}
 	fwrite( $fh, "<tr><td>".join( "</td><td>", $html_row )."</td></tr>\n" );
 }
-fwrite( $fh, "</table>" );
+fwrite( $fh, "</table></html>" );
 fclose($fh);
 
 exit;
@@ -478,7 +478,7 @@ function itemToUniquipRow($item)
 #"Datestamp",
 	if( $config_item["dataset_timestamp"] )
 	{
-		$uniquip["Datestamp"] = $config_item["dataset_timestamp"];
+		$uniquip["Datestamp"] = date( "c", $config_item["dataset_timestamp"] );
 	}
 #"Approximate Coordinates",
 	if( $config_item["org_lat"] )

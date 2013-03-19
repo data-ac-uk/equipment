@@ -74,11 +74,11 @@ print "var availableTags = ".json_encode( array_keys( $data ) ).";";
         } 
         else if( locations[sort_name] ) { 
             sort = locations[sort_name]["E"]+","+locations[sort_name]["N"];
-            $('#qs-sort').css('background-image','url(/resources/icons/accept.png');
+            $('#qs-sort').css('background-image','url(/resources/images/accept.png');
             $('#qs-clear-sort').show();
         }
         else {
-            $('#qs-sort').css('background-image','url(/resources/icons/cancel.png');
+            $('#qs-sort').css('background-image','url(/resources/images/cancel.png');
             $('#qs-clear-sort').show();
         }
     

@@ -9,7 +9,7 @@
 <label style='float: none;display:inline;' for='qs-sort'>Sort by distance from: </label>
 <input size='70' value='University of...'  id='qs-sort' style='padding-left:20px;display:inline; border:solid 1px #000; color: #999;
 background: top left no-repeat; ' /><div style='display:inline'>
-<img  src='/resources/icons/delete.png' style='vertical-align:top;cursor:pointer' id='qs-clear-sort'/></div>
+<img  src='/resources/images/delete.png' style='vertical-align:top;cursor:pointer' id='qs-clear-sort'/></div>
 </div>
 
 </div>
@@ -31,18 +31,44 @@ Development of equipment.data.ac.uk is funded by <a href="http://www.epsrc.ac.uk
 <p>If you would like to contribute your equipment and facilities data to this dataset, please see our <a href='/faq'>detailed publishing specification</a>.</p>
 
 </div>
-<div id='logos' class='sixteen columns'>
+<div class='sixteen columns'>
 <h2>Open Data</h2>
+
+<table>
+
+<tr>
+ <td style='width:40px;'><a href='data/uniquip.csv'><img src='/resources/images/file.png' /></a></td>
+ <td><strong><a href='data/uniquip.csv'>Combined Data</a></strong> 
+- Comma-Separated values (Loads in Excel)
+- Conforms to the <a href='/uniquip'>Uniquip standard</a>.
+</td>
+</tr>
+ 
+<tr>
+ <td style='width:40px;'><a href='data/uniquip.tsv'><img src='/resources/images/file.png' /></a></td>
+ <td><strong><a href='data/uniquip.tsv'>Combined Data</a></strong> 
+- Tab-Separated values
+- Conforms to the <a href='/uniquip'>Uniquip standard</a>.
+</td>
+</tr>
+
+<tr>
+ <td style='width:40px;'><a href='data/uniquip.tsv'><img src='/resources/images/file.png' /></a></td>
+ <td><strong><a href='data/status.json'>Ingest Status</a></strong> - JSON-encoded file describing the status of each ingested dataset. This is the data used to generate the <a href="/status">status page</a>.
+</td>
+</tr>
+</table>
+
+
 <p>The following organisations are providing open data used to create this service. A number of other UK universities are in the process of preparing their datasets and will be added in the next few months.</p>
 
-<ul>
-<li><a href='/status'>View per-institution data download status </a></li>
-</ul>
+<p>The <a href='/status'>status page</a> lets you download normalised RDF, CSV and TSV data per organisation, plus links to the source dataset and shows any issues encountered on the last ingestion.</p>
 
+<div id="logos">
 {{ @logos | raw }}
+</div>
 
-<!--
-<h2>Download</h2>
+<h2>Open Source</h2>
 
-TODO
--->
+<p>All the tools used to generate this site are open source and the software which builds the site is available for <a href="http://github.com/data-ac-uk/equipment">review and reuse</a>.</p>
+
