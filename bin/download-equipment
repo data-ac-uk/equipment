@@ -298,7 +298,7 @@ function kitcat_to_graph( $c )
 	$graph = new Graphite();
 	foreach( $items as $item )
 	{
-		$uri = "http://equipment.data.ac.uk/item/ukprn-".$c["org_ukprn"]."/".md5( $item["id"] );
+		$uri = $item["id"];
 
 		# assumption-- everything from kitcat is equipment		
 		$graph->addCompressedTriple( $uri, "rdf:type", "oo:Equipment" );
