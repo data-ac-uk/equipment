@@ -13,11 +13,14 @@ echo ini_get('max_execution_time'), ' | ', ini_get('max_input_time');
 
 # Then we process the cache files to produce a searchable website, and tabular data.
 
+# calculate base path
+$path = explode("/", __FILE__);
+array_pop( $path ); # lose filename
+array_pop( $path ); # lose bin
+$base_dir = join( "/", $path );
 
-require_once( "lib/arc2/ARC2.php" );
-require_once( "lib/Graphite/Graphite.php" );
-
-$base_dir = "/home/dataacuk/data.ac.uk/equipment";
+require_once( "$base_dir/lib/arc2/ARC2.php" );
+require_once( "$base_dir/lib/Graphite/Graphite.php" );
 
 $org_cache_dir = "$base_dir/htdocs/data/org";
 $item_cache_dir = "$base_dir/var/item";
