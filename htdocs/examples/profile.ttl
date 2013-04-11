@@ -6,7 +6,6 @@
 @prefix oo:      <http://purl.org/openorg/> .
 @prefix foaf:    <http://xmlns.com/foaf/0.1/> .
 @prefix vcard:   <http://www.w3.org/2006/vcard/ns#> .
-@prefix dcat:    <http://www.w3.org/ns/dcat#> .
 @prefix org:     <http://www.w3.org/ns/org#> .
 
 # Describe this document and state a license
@@ -35,7 +34,6 @@
 # facilities/equipment/capabilities to trigger the automatic aggregation of the data.
 
 <http://www.example.ac.uk/equipment.xls>
-        a dcat:Download ;
         oo:organization <http://id.example.ac.uk/> ;
         oo:corrections <mailto:bob@example.ac.uk> ;
         dcterms:subject <http://purl.org/openorg/theme/facilities> ;  
