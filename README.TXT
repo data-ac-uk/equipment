@@ -9,13 +9,14 @@ Quickstart:
  mkdir var/item
  mkdir htdocs/data
  mkdir htdocs/data/org
+ mkdir htdocs/tmp
+ chmod o+w htdocs/tmp
  cd lib
  git clone https://github.com/cgutteridge/Graphite.git
  git clone https://github.com/semsol/arc2.git
 
 TODO List:
 
- Add "miles" option to distance
  Use hub.data.ac.uk (or it's code) for autodiscovery
  add location info
  Add something clever with licenses
