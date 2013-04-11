@@ -1,4 +1,4 @@
-lib
-var
-htdocs/data
-htdocs/tmp/
+/lib
+/var
+/htdocs/data
+/htdocs/tmp/
