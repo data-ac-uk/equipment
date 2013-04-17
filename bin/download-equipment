@@ -1,6 +1,5 @@
 #!/usr/bin/php
 <?php
-echo ini_get('max_execution_time'), ' | ', ini_get('max_input_time');
 
 # This script downloads each of the equiment datasets for equipment.data.ac.uk
 # And processes them into common formats.
@@ -30,7 +29,6 @@ $config = read_config( "$base_dir/etc/test-list.tsv" );
 print "STAGE 1\n";
 foreach( $config as &$config_item )
 {
-	print_r( $config_item );
 	$config_item["errors"] = array();
 	$config_item["items"] = 0;
 	$config_item["skipped_items"] = 0;
@@ -46,6 +44,10 @@ foreach( $config as &$config_item )
 	elseif( $config_item["dataset_type"] == "kitcat" )
 	{
 		$graph = kitcat_to_graph( $config_item );
+	}
+	elseif( $config_item["dataset_type"] == "pure" )
+	{
+		$graph = pure_to_graph( $config_item );
 	}
 	else
 	{
@@ -93,7 +95,6 @@ $all_uniquip_rows = array();
 foreach( $config as &$config_item )
 {
 	$file = "$org_cache_dir/ukprn-".$config_item["org_ukprn"].".ttl";
-	print_r( $config_item );
 
 	$graph = new Graphite();
 	$graph->ns( "org", "http://www.w3.org/ns/org#" );	
@@ -280,6 +281,122 @@ function rdf_to_graph( $c )
 
 	return $graph;
 }
+
+
+#    <institution>University of Bath</institution>
+#    <uid>fc6f165a-c970-4d0b-a890-48d81286dd54</uid>
+#    <title>Peak Motus Software</title>
+#    <description/>
+#    <modified>2012-12-13T11:14:52.288Z</modified>
+#    <acquisitionDate>2001-07-01+01:00</acquisitionDate>
+#    <owner shortName="HEALTH DPT FOR">Health</owner>
+#    <phone>01225 383371</phone>
+#    <website/>
+#    <email>A.Wallbaum@bath.ac.uk</email>
+
+#                    [institution] => University of Bath
+#                    [uid] => 8eabb306-645e-4741-89d2-679292910dcf
+#                    [title] => NIR Spectrometer
+#                    [description] => SimpleXMLElement Object () 
+#                    [modified] => 2012-12-13T11:15:06.920Z
+#                    [acquisitionDate] => 2007-07-31+01:00
+#                    [owner] => Physics
+#                    [phone] => 01225 383042
+#                    [website] => SimpleXMLElement Object () 
+#                    [email] => J.C.Knight@bath.ac.uk
+
+# ignoring: institution, modified, acquisitionDate
+
+
+function pure_to_graph( $c )
+{
+	$content = file_get_contents( $c["dataset_url"] );
+
+	# fix to buggy XML
+	$lines = preg_split( "/\n/", $content );
+	$lines[1]= "<items>";
+	array_push( $lines, "</items>" );
+	$content = join( "\n", $lines );
+	$xml = simplexml_load_string( $content );
+
+	$graph = new Graphite();
+	$graph->ns( "org", "http://www.w3.org/ns/org#" );
+	foreach( $xml->equipment as $item )
+	{
+		$uri = "urn:uuid:".(string)$item->uid;
+		$graph->addCompressedTriple( $uri, "rdf:type", "oo:Equipment" );
+		$graph->addCompressedTriple( $uri, "rdfs:label", (string)$item->title, "literal" );
+		$graph->addCompressedTriple( $uri, "oo:formalOrganization", "http://id.learning-provider.data.ac.uk/ukprn/".$c["org_ukprn"] );
+		if( $item->description != "" )
+		{
+			# kitcat always makes HTML fragment descriptions	
+			$graph->addCompressedTriple( $uri, "dcterms:description", $item["description"], "http://purl.org/xtypes/Fragment-HTML" );
+		}
+
+
+		if( $item->owner != "" )
+		{
+			$org_id = "";
+			foreach( $item->owner->attributes() as $k=>$v )
+			{
+				if( $k == "shortName" ) { $org_id = $v; }
+			}
+			if( !isset( $org_id ) )
+			{ 
+				$org_id = md5( (string)$item->owner  ); 
+			}
+			$org_uri = "http://id.equipment.data.ac.uk/ukprn/".$c["org_ukprn"]."/org/".rawurlencode($org_id);
+			$graph->addCompressedTriple( $uri, "oo:organizationPart", $org_uri );
+			$graph->addCompressedTriple( $org_uri, "rdfs:label", (string)$item->owner );
+			$graph->addCompressedTriple( $org_uri, "rdf:type", "http://www.w3.org/ns/org#Organization" );
+			$graph->addCompressedTriple( "http://id.learning-provider.data.ac.uk/ukprn/".$c["org_ukprn"], "org:hasSubOrganization", $org_uri );
+		}
+			
+		if( $item->phone != "" || $item->email != "" )
+		{	
+			$graph->addCompressedTriple( $uri, "oo:contact", "$uri#contact1" );
+			$graph->addCompressedTriple( $uri, "oo:primaryContact", "$uri#contact1" );
+			if( $item->email != "" )
+			{
+				$graph->addCompressedTriple( "$uri#contact1", "foaf:mbox", "mailto:".$item->email );
+			}
+			if( $item->phone != "" )
+			{
+				addPhone( $graph, "$uri#contact1", $item->phone );
+			}
+		}
+
+
+		if( $item->website != "" )
+		{	
+			$graph->addCompressedTriple( $uri, "foaf:page", $item->website );
+		}
+	}
+
+	return $graph;
+}
+
+# adds a foaf:phone number to the URI in the $graph, but tries to do some sensible things.
+# 
+function addPhone( $graph, $uri, $phone_number )
+{
+	# remove whitespace
+	$phone_number = preg_replace( '/ /', '', $phone_number );
+
+	# remove (0) 
+	$phone_number = preg_replace( '/\(0\)/', '', $phone_number );
+
+	# if it contains weird characters, make it a literal, otherwise a tel: resource
+	if( preg_match( '/[^+\d]/', $phone_number  ) )
+	{
+		$graph->addCompressedTriple( $uri, "foaf:phone", $phone_number, "literal" );
+	}
+	else
+	{
+		$graph->addCompressedTriple( $uri, "foaf:phone", "tel:".$phone_number );
+	}
+}
+	
 
 # Input terms from kitcat JSON
 
