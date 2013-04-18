@@ -24,6 +24,9 @@ require_once( "$base_dir/lib/Graphite/Graphite.php" );
 $org_cache_dir = "$base_dir/htdocs/data/org";
 $item_cache_dir = "$base_dir/var/item";
 
+$bin_rapper = "rapper"; # assume it's in the path
+$bin_ntcat = "$base_dir/lib/ntcat/bin/ntcat";
+
 $config = read_config( "$base_dir/etc/test-list.tsv" );
 
 print "STAGE 1\n";
@@ -59,23 +62,27 @@ foreach( $config as &$config_item )
 
 	# filename has ukprn- as a prefix as in the future there may be data from organisations
 	# without a ukprn. Who can say for sure!
-	$cache_file = "$org_cache_dir/ukprn-".$config_item["org_ukprn"].".ttl";
+	$cache_file_ttl = "$org_cache_dir/ukprn-".$config_item["org_ukprn"].".ttl";
+	$cache_file_nt = "$org_cache_dir/ukprn-".$config_item["org_ukprn"].".nt";
 		
 	if( $graph != null && count( $graph->toArcTriples() ) > 0 ) 
 	{
 		# cache graph if it's set and has some triples
 
-		$fh = fopen($cache_file, 'w') or die("can't open cache_file: $cache_file" );
+		$fh = fopen($cache_file_ttl, 'w') or die("can't open cache_file: $cache_file_ttl" );
 		fwrite($fh, $graph->serialize( "Turtle" ) );
+		fclose($fh);
+		$fh = fopen($cache_file_nt, 'w') or die("can't open cache_file: $cache_file_nt" );
+		fwrite($fh, $graph->serialize( "NTriples" ) );
 		fclose($fh);
 		$config_item["dataset_timestamp"] = time();
 	}
 	else
 	{
-		if( file_exists( $cache_file ) )
+		if( file_exists( $cache_file_ttl ) )
 		{
 			$err = "Failed to get new data. Using cached version.";
-			$config_item["dataset_timestamp"] = filemtime( $cache_file );
+			$config_item["dataset_timestamp"] = filemtime( $cache_file_ttl );
 		}
 		else
 		{
@@ -244,6 +251,11 @@ foreach( $all_uniquip_rows as $row )
 }
 fwrite( $fh, "</table></html>" );
 fclose($fh);
+
+# Generate the combined RDF lists
+
+exec( "$bin_ntcat $base_dir/htdocs/data/org/*.nt > $base_dir/htdocs/data/equipment.nt" );
+exec( "$bin_rapper -e -i ntriples -o turtle $base_dir/htdocs/data/equipment.nt > $base_dir/htdocs/data/equipment.ttl" );
 
 exit;
 

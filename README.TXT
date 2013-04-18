@@ -2,6 +2,10 @@ equipment.data.ac.uk
 
 by Christopher Gutteridge, University of Southampton, 2013
 
+Dependencies
+ assumes php is installed (at /usr/bin/php)
+ assumes rapper is installed (and is in the path)
+
 Quickstart:
 
  mkdir lib
@@ -14,6 +18,9 @@ Quickstart:
  cd lib
  git clone https://github.com/cgutteridge/Graphite.git
  git clone https://github.com/semsol/arc2.git
+ git clone git@github.com:cgutteridge/ntcat.git
+
+Make htdocs/ available via the web (assumes it's the root of a vhost)
 
 TODO List:
 
