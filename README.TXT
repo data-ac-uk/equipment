@@ -18,7 +18,7 @@ Quickstart:
  cd lib
  git clone https://github.com/cgutteridge/Graphite.git
  git clone https://github.com/semsol/arc2.git
- git clone git@github.com:cgutteridge/ntcat.git
+ git clone https://github.com/cgutteridge/ntcat.git
 
 Make htdocs/ available via the web (assumes it's the root of a vhost)
 
