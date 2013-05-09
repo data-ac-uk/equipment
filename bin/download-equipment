@@ -21,8 +21,10 @@ $base_dir = join( "/", $path );
 require_once( "$base_dir/lib/arc2/ARC2.php" );
 require_once( "$base_dir/lib/Graphite/Graphite.php" );
 
+# one day this may all be in a config file...
 $org_cache_dir = "$base_dir/htdocs/data/org";
 $item_cache_dir = "$base_dir/var/item";
+$tmp_dir = "/tmp";
 
 $bin_rapper = "rapper"; # assume it's in the path
 $bin_ntcat = "$base_dir/lib/ntcat/bin/ntcat";
@@ -106,6 +108,7 @@ foreach( $config as &$config_item )
 	$graph = new Graphite();
 	$graph->ns( "org", "http://www.w3.org/ns/org#" );	
 	$graph->ns( "gr", "http://purl.org/goodrelations/v1#" );
+	$graph->ns( "oldcerif", "http://spi-fm.uca.es/neologism/cerif#" );
 
 	$n = $graph->load( "file://$file" );
 	$orguri = "http://id.learning-provider.data.ac.uk/ukprn/".$config_item["org_ukprn"];
@@ -134,7 +137,16 @@ foreach( $config as &$config_item )
 
 	$org_uniquip_rows = array();
 
-	foreach( $graph->allOfType( "oo:Facility" ) as $item )
+	$items = array();
+	foreach( $graph->allSubjects() as $resource )
+	{
+		if( $resource->isType( "oo:Facility", "oldcerif:Facility", "oo:Equipment", "oldcerif:Equipment" ))
+		{
+			$items[]=$resource;
+		}
+	}
+
+	foreach( $items as $item )
 	{
 		if( !itemLooksLegit( $item ) ) { $config_item["skipped_items"]++; continue; }
 		$config_item["items"]++;
@@ -145,16 +157,6 @@ foreach( $config as &$config_item )
 		processItemPage( $item );
 	}
 
-	foreach( $graph->allOfType( "oo:Equipment" ) as $item )
-	{
-		if( !itemLooksLegit( $item ) ) { $config_item["skipped_items"]++; continue; }
-		$config_item["items"]++;
-		$uniquip_row = itemToUniquipRow( $item );
-		$org_uniquip_rows []= $uniquip_row;
-		$all_uniquip_rows []= $uniquip_row;
-		$search_rows []= itemToSearchTerms( $item );
-		processItemPage( $item );
-	}
 
 	if( $config_item["skipped_items"] )
 	{		
@@ -282,14 +284,42 @@ function read_config( $file )
 	return $config;
 }
 
-function rdf_to_graph( $c )
+function rdf_to_graph( &$c )
 {
+	global $tmp_dir;
+	global $bin_rapper;
+
 	$graph = new Graphite();
 
 	print "Loading RDF: ".$c["dataset_url"]."\n";
-	$n = $graph->load( $c["dataset_url"] );
+	print "Downloading via Rapper\n";
 
-	if( $n==0 ) { return null; }
+	$ext = pathinfo($c["dataset_url"], PATHINFO_EXTENSION);	
+	$tmpfile_err = "$tmp_dir/data-eq-".md5( $c["dataset_url"]).".err";
+	$tmpfile_nt = "$tmp_dir/data-eq-".md5( $c["dataset_url"]).".nt";
+
+	$url = preg_replace( "/['\\\\]/", "", $c["dataset_url"] );
+	exec( "$bin_rapper -g '$url' -q > $tmpfile_nt 2> $tmpfile_err" );
+
+	$errors = file_get_contents( $tmpfile_err );
+	unlink( $tmpfile_err );
+
+	if( $errors != "" )
+	{
+		#unlink( $tmpfile_nt );
+		$c["errors"][] = "Parse error: ".$errors;
+		return null; 
+	}
+		
+	
+	$n = $graph->load( $tmpfile_nt );
+	unlink( $tmpfile_nt );
+
+	if( $n==0 ) 
+	{ 
+		$c["errors"][] = "No triples loaded";
+		return null; 
+	}
 
 	return $graph;
 }
@@ -320,9 +350,14 @@ function rdf_to_graph( $c )
 # ignoring: institution, modified, acquisitionDate
 
 
-function pure_to_graph( $c )
+function pure_to_graph( &$c )
 {
 	$content = file_get_contents( $c["dataset_url"] );
+	if( !$content )
+	{	
+		$c["errors"][] = "No content from URL";
+		return $null;
+	}
 
 	# fix to buggy XML
 	$lines = preg_split( "/\n/", $content );
@@ -422,7 +457,7 @@ function addPhone( $graph, $uri, $phone_number )
 #        "image": "http://equipment.lboro.ac.uk/item/x-ray-photoelectron-spectrometer/2121/image/image_41780.jpg",
 #        "link": "http://equipment.lboro.ac.uk/id/item/2121/x-ray-photoelectron-spectrometer.html"
 
-function kitcat_to_graph( $c )
+function kitcat_to_graph( &$c )
 {
 	$content = file_get_contents( $c["dataset_url"] );
 	$items = json_decode( $content, true );
@@ -548,11 +583,11 @@ function itemToUniquipRow($item)
 
 
 #"Type",
-	if( $item->isType( "oo:Equipment" ) )
+	if( $item->isType( "oo:Equipment", "oldcerif:Equipment" ) )
 	{
 		$uniquip["Type"] = "equipment";
 	}
-	if( $item->isType( "oo:Facility" ) )
+	if( $item->isType( "oo:Facility", "oldcerif:Facility" ) )
 	{
 		$uniquip["Type"] = "facility";
 	}
