@@ -60,6 +60,9 @@ table.status td {
 	padding: 5px 3px;
 	border: solid 1px #000;
 }
+table.status td img {
+	max-width: 150px
+}
 i {
 	font-style: italic;
 }

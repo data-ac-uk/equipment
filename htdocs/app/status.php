@@ -33,7 +33,7 @@ class status {
 			$c []= "<a href='/data/org/ukprn-".$feed["org_ukprn"].".tsv'>TSV</a>, ";
 			$c []= "<a href='/data/org/ukprn-".$feed["org_ukprn"].".ttl'>TTL</a></td>";
 			$c []= "<td>".$feed["items"]."</td>";
-			$c []= "<td>".date( "D M jS, Y\nG:i", $feed["dataset_timestamp"])."</td>";
+			$c []= "<td>".@date( "D M jS, Y\nG:i", $feed["dataset_timestamp"])."</td>";
 			$c []= "<td>".join ("<br />",$feed["errors"])."</td>";
 			$c []= "</tr>";
 		}
