@@ -36,6 +36,7 @@ h3 {
 .images img { 
 	display: block; 
 	margin-bottom: 10px;
+}
 dt { 
 	font-weight: bold;
 }
@@ -64,7 +65,7 @@ table.status td {
 	border: solid 1px #000;
 }
 table.status td img {
-	max-width: 150px
+	max-width: 150px;
 }
 i {
 	font-style: italic;
