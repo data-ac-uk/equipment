@@ -28,11 +28,14 @@ h3 {
 	background-color: #eeeeee;
 	padding: 2px 8px 2px 8px;
 }
-.uni-logo { 
+.images { 
 	float:right;
 	clear:right;
-	margin: 0 10px 10px 0;
+	margin-left: 10px;
 }
+.images img { 
+	display: block; 
+	margin-bottom: 10px;
 dt { 
 	font-weight: bold;
 }

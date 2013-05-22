@@ -75,7 +75,7 @@ foreach( $config as &$config_item )
 		fwrite($fh, $graph->serialize( "Turtle" ) );
 		fclose($fh);
 		$fh = fopen($cache_file_nt, 'w') or die("can't open cache_file: $cache_file_nt" );
-		fwrite($fh, $graph->serialize( "NTriples" ) );
+		fwrite($fh, @$graph->serialize( "NTriples" ) );
 		fclose($fh);
 		$config_item["dataset_timestamp"] = time();
 	}
@@ -849,14 +849,16 @@ function processItemPage( $item )
 	$html = array();
 	$html []= "<div class='search-result'>";
 	$html []= "<h2>".htmlspecialchars( $item->label() )."</h2>";
+	$html []= "<div class='images'>";
 	$html []= "<a class='uni-logo' title='".$config_item["org_name"]."' href='".$config_item["org_homepage"]."'><img width='200' src='".$config_item["org_logo"]."' /></a>";
-	if( $item->has( "foaf:page" ) )
-	{
-		$html []= "<p><a href='".$item->get("foaf:page")."'>More information</a>.</p>";
-	}
 	if( $item->has( "foaf:depiction" ) )
 	{
 		$html []= "<img width='200' src='".$item->get( "foaf:depiction" )."' />";
+	}
+	$html []= "</div>";
+	if( $item->has( "foaf:page" ) )
+	{
+		$html []= "<p><a href='".$item->get("foaf:page")."'>More information</a>.</p>";
 	}
 	if( $item->has( "dcterms:description" ) )
 	{
