@@ -36,7 +36,9 @@ foreach( $config as &$config_item )
 {
 	$config_item["errors"] = array();
 	$config_item["items"] = 0;
-	$config_item["skipped_items"] = 0;
+	$config_item["no_contact_items"] = 0;
+	$config_item["no_label_items"] = 0;
+	$config_item["no_label_or_desc_items"] = 0;
 	$graph = null;
 	if( $config_item["dataset_type"] == "rdf" )
 	{
@@ -142,13 +144,49 @@ foreach( $config as &$config_item )
 	{
 		if( $resource->isType( "oo:Facility", "oldcerif:Facility", "oo:Equipment", "oldcerif:Equipment" ))
 		{
+			if( !$resource->has( "rdfs:label" ) )
+			{
+				if( $resource->has( "dcterms:description" ) )
+				{	
+					# no label, use description
+					$graph->addCompressedTriple( $resource, "rdfs:label", substr( $resource->get( "dcterms:description" ), 0, 30 )."...", "label" );
+					$config_item["no_label_items"]++;
+				}
+				else	
+				{
+					$config_item["no_label_or_desc_items"]++;
+					continue;
+				}
+			}
+				
+				
+			if( !$resource->has( "oo:primaryContact", "oo:contact" ) )
+			{
+				$config_item["no_contact_items"]++;
+				$con_uri = "$resource#contact1";
+				$graph->addCompressedTriple( $resource, "oo:primaryContact", $con_uri );
+				$graph->addCompressedTriple( $resource, "oo:contact", $con_uri );
+				list( $scheme, $junk ) = preg_split( "/:/", $config_item["dataset_contact"] );
+				if( $scheme == "tel" )
+				{
+					addPhone( $graph, $con_uri, $config_item["dataset_contact"]  );
+				}
+				elseif( $scheme == "mailto" )
+				{
+					$graph->addCompressedTriple( $con_uri, "foaf:mbox", $config_item["dataset_contact"]  );
+				}
+				else
+				{
+					$graph->addCompressedTriple( $con_uri, "foaf:page", $config_item["dataset_contact"]  );
+				}
+			}
+
 			$items[]=$resource;
 		}
 	}
 
 	foreach( $items as $item )
 	{
-		if( !itemLooksLegit( $item ) ) { $config_item["skipped_items"]++; continue; }
 		$config_item["items"]++;
 		$uniquip_row = itemToUniquipRow( $item );
 		$org_uniquip_rows []= $uniquip_row;
@@ -158,9 +196,17 @@ foreach( $config as &$config_item )
 	}
 
 
-	if( $config_item["skipped_items"] )
+	if( $config_item["no_label_items"] )
 	{		
-		$config_item["errors"][] = $config_item["skipped_items"]." item".( $config_item["skipped_items"] == 1 ? "" : "s" )." had no contact listed and were skipped."; 
+		$config_item["errors"][] = $config_item["no_label_items"]." item".( $config_item["no_label_items"] == 1 ? "" : "s" )." had no label. Start of description used as label.";
+	}
+	if( $config_item["no_label_or_desc_items"] )
+	{		
+		$config_item["errors"][] = $config_item["no_label_or_desc_items"]." item".( $config_item["no_label_or_desc_items"] == 1 ? "" : "s" )." had no lable OR description and could not be included.";
+	}
+	if( $config_item["no_contact_items"] )
+	{		
+		$config_item["errors"][] = $config_item["no_contact_items"]." item".( $config_item["no_contact_items"] == 1 ? "" : "s" )." had no contact listed and were set to the default contact."; 
 	}
 
 	$uniquip_file = "$org_cache_dir/ukprn-".$config_item["org_ukprn"].".tsv";
@@ -272,7 +318,7 @@ function read_config( $file )
 		if( preg_match( "/^#/", $row ) ) { continue; } # skip commented lines
 
 		$cells = preg_split( "/\t/", chop( $row ) );	
-		if( sizeof( $cells ) != 7 ) { print "Bad Row in config:\n$row\n"; continue; }
+		if( sizeof( $cells ) != 8 ) { print "Bad Row in config:\n$row\n"; continue; }
 		$config []=  array( 
 			"org_ukprn" => $cells[0],	
 			"dataset_type" => $cells[1],	
@@ -281,6 +327,7 @@ function read_config( $file )
 			"org_url" => $cells[4],	
 			"org_logo" => $cells[5],	
 			"dataset_corrections" => $cells[6],	
+			"dataset_contact" => $cells[7],	
 		);
 	}
 	
