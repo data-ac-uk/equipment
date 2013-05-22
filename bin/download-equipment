@@ -40,11 +40,11 @@ foreach( $config as &$config_item )
 	$graph = null;
 	if( $config_item["dataset_type"] == "rdf" )
 	{
-		$graph = rdf_to_graph( $config_item ); # TODO
+		$graph = rdf_to_graph( $config_item );
 	}
-	elseif( $config_item["dataset_type"] == "uniquip_csv" )
+	elseif( $config_item["dataset_type"] == "uniquip/csv" )
 	{
-		$graph = uniquip_csv_to_graph( $config_item ); # TODO
+		$graph = uniquip_csv_to_graph( $config_item ); 
 	}
 	elseif( $config_item["dataset_type"] == "kitcat" )
 	{
@@ -269,7 +269,10 @@ function read_config( $file )
 	$config = array();	
 	foreach( $rows as $row )
 	{
+		if( preg_match( "/^#/", $row ) ) { continue; } # skip commented lines
+
 		$cells = preg_split( "/\t/", chop( $row ) );	
+		if( sizeof( $cells ) != 7 ) { print "Bad Row in config:\n$row\n"; continue; }
 		$config []=  array( 
 			"org_ukprn" => $cells[0],	
 			"dataset_type" => $cells[1],	
@@ -308,7 +311,7 @@ function rdf_to_graph( &$c )
 	{
 		#unlink( $tmpfile_nt );
 		$c["errors"][] = "Parse error: ".$errors;
-		return null; 
+		return false; 
 	}
 		
 	
@@ -318,34 +321,34 @@ function rdf_to_graph( &$c )
 	if( $n==0 ) 
 	{ 
 		$c["errors"][] = "No triples loaded";
-		return null; 
+		return false; 
 	}
 
 	return $graph;
 }
 
 
-#    <institution>University of Bath</institution>
-#    <uid>fc6f165a-c970-4d0b-a890-48d81286dd54</uid>
-#    <title>Peak Motus Software</title>
-#    <description/>
-#    <modified>2012-12-13T11:14:52.288Z</modified>
-#    <acquisitionDate>2001-07-01+01:00</acquisitionDate>
-#    <owner shortName="HEALTH DPT FOR">Health</owner>
-#    <phone>01225 383371</phone>
-#    <website/>
-#    <email>A.Wallbaum@bath.ac.uk</email>
+#	<institution>University of Bath</institution>
+#	<uid>fc6f165a-c970-4d0b-a890-48d81286dd54</uid>
+#	<title>Peak Motus Software</title>
+#	<description/>
+#	<modified>2012-12-13T11:14:52.288Z</modified>
+#	<acquisitionDate>2001-07-01+01:00</acquisitionDate>
+#	<owner shortName="HEALTH DPT FOR">Health</owner>
+#	<phone>01225 383371</phone>
+#	<website/>
+#	<email>A.Wallbaum@bath.ac.uk</email>
 
-#                    [institution] => University of Bath
-#                    [uid] => 8eabb306-645e-4741-89d2-679292910dcf
-#                    [title] => NIR Spectrometer
-#                    [description] => SimpleXMLElement Object () 
-#                    [modified] => 2012-12-13T11:15:06.920Z
-#                    [acquisitionDate] => 2007-07-31+01:00
-#                    [owner] => Physics
-#                    [phone] => 01225 383042
-#                    [website] => SimpleXMLElement Object () 
-#                    [email] => J.C.Knight@bath.ac.uk
+#					[institution] => University of Bath
+#					[uid] => 8eabb306-645e-4741-89d2-679292910dcf
+#					[title] => NIR Spectrometer
+#					[description] => SimpleXMLElement Object () 
+#					[modified] => 2012-12-13T11:15:06.920Z
+#					[acquisitionDate] => 2007-07-31+01:00
+#					[owner] => Physics
+#					[phone] => 01225 383042
+#					[website] => SimpleXMLElement Object () 
+#					[email] => J.C.Knight@bath.ac.uk
 
 # ignoring: institution, modified, acquisitionDate
 
@@ -356,7 +359,7 @@ function pure_to_graph( &$c )
 	if( !$content )
 	{	
 		$c["errors"][] = "No content from URL";
-		return $null;
+		return false;
 	}
 
 	# fix to buggy XML
@@ -394,7 +397,7 @@ function pure_to_graph( &$c )
 			}
 			$org_uri = "http://id.equipment.data.ac.uk/ukprn/".$c["org_ukprn"]."/org/".rawurlencode($org_id);
 			$graph->addCompressedTriple( $uri, "oo:organizationPart", $org_uri );
-			$graph->addCompressedTriple( $org_uri, "rdfs:label", (string)$item->owner );
+			$graph->addCompressedTriple( $org_uri, "rdfs:label", (string)$item->owner, "literal" );
 			$graph->addCompressedTriple( $org_uri, "rdf:type", "http://www.w3.org/ns/org#Organization" );
 			$graph->addCompressedTriple( "http://id.learning-provider.data.ac.uk/ukprn/".$c["org_ukprn"], "org:hasSubOrganization", $org_uri );
 		}
@@ -433,6 +436,9 @@ function addPhone( $graph, $uri, $phone_number )
 	# remove (0) 
 	$phone_number = preg_replace( '/\(0\)/', '', $phone_number );
 
+	# replace leading 0 with +44 (UK code). 
+	$phone_number = preg_replace( '/^0/', '+44', $phone_number );
+
 	# if it contains weird characters, make it a literal, otherwise a tel: resource
 	if( preg_match( '/[^+\d]/', $phone_number  ) )
 	{
@@ -447,15 +453,15 @@ function addPhone( $graph, $uri, $phone_number )
 
 # Input terms from kitcat JSON
 
-#        "id": "http://equipment.lboro.ac.uk/id/item/2121",
-#        "name": "X-ray Photoelectron Spectrometer",
-#        "manufacturer": "Thermo Scientific",
-#        "model": "K-Alpha",
-#        "description": "<p>Fully...",
-#        "contact1": "s.s.doak@lboro.ac.uk",
-#        "contact2": "",
-#        "image": "http://equipment.lboro.ac.uk/item/x-ray-photoelectron-spectrometer/2121/image/image_41780.jpg",
-#        "link": "http://equipment.lboro.ac.uk/id/item/2121/x-ray-photoelectron-spectrometer.html"
+#		"id": "http://equipment.lboro.ac.uk/id/item/2121",
+#		"name": "X-ray Photoelectron Spectrometer",
+#		"manufacturer": "Thermo Scientific",
+#		"model": "K-Alpha",
+#		"description": "<p>Fully...",
+#		"contact1": "s.s.doak@lboro.ac.uk",
+#		"contact2": "",
+#		"image": "http://equipment.lboro.ac.uk/item/x-ray-photoelectron-spectrometer/2121/image/image_41780.jpg",
+#		"link": "http://equipment.lboro.ac.uk/id/item/2121/x-ray-photoelectron-spectrometer.html"
 
 function kitcat_to_graph( &$c )
 {
@@ -522,6 +528,140 @@ function kitcat_to_graph( &$c )
 	return $graph;
 }
 
+function uniquip_csv_to_graph( &$c )
+{
+	$items = csv_to_array( $c );
+	if( !$items ) { return false; }
+	if( sizeof( $items ) == 0 )
+	{
+		$c["errors"][] = "No rows in CSV";
+		return false;
+	}
+
+	return uniquip_to_graph( $c, $items );
+}
+
+function uniquip_to_graph( &$c, $items )
+{
+	$graph = new Graphite();
+	foreach( $items as $item )
+	{
+		$id = md5( join( "|", $item ) );
+		$uri = "http://id.equipment.data.ac.uk/ukprn/".$c["org_ukprn"]."/item/".rawurlencode($id);
+
+		$graph->addCompressedTriple( $uri, "rdf:type", "oo:Equipment" );
+
+		# any &amp; or &gt; will be decoded in the label
+		$graph->addCompressedTriple( $uri, "rdfs:label", htmlspecialchars_decode($item["Name"]), "literal" );
+		$graph->addCompressedTriple( $uri, "oo:formalOrganization", "http://id.learning-provider.data.ac.uk/ukprn/".$c["org_ukprn"] );
+
+		# description assumed to contain HTML
+		if( @$item["Description"] != "" )
+		{
+			$graph->addCompressedTriple( $uri, "dcterms:description", $item["Description"], "http://purl.org/xtypes/Fragment-HTML" );
+		}
+
+
+		$contact1 = ( @$item["Contact Name"] != "" )
+		         || ( @$item["Contact Telephone"] != "" )
+		         || ( @$item["Contact Email"] != "" )
+		         || ( @$item["Contact URL"] != "" );
+
+		if( $contact1 )
+		{	
+			$graph->addCompressedTriple( $uri, "oo:contact", "$uri#contact1" );
+			$graph->addCompressedTriple( $uri, "oo:primaryContact", "$uri#contact1" );
+			if( @$item["Contact Name"] != "" )
+			{
+				$graph->addCompressedTriple( "$uri#contact1", "foaf:name", $item["Contact Name"], "literal" );
+			}
+			if( @$item["Contact URL"] != "" )
+			{
+				$graph->addCompressedTriple( "$uri#contact1", "foaf:page", $item["Contact URL"] );
+			}
+			if( @$item["Contact Telephone"] != "" )
+			{
+				addPhone( $graph, "$uri#contact1", $item["Contact Telephone"] );
+			}
+			if( @$item["Contact Email"] != "" )
+			{
+				$graph->addCompressedTriple( "$uri#contact1", "foaf:mbox", "mailto:".$item["Contact Email"] );
+			}
+		}
+
+
+
+		$contact2 = ( @$item["Secondary Contact Name"] != "" )
+		         || ( @$item["Secondary Contact Telephone"] != "" )
+		         || ( @$item["Secondary Contact Email"] != "" )
+		         || ( @$item["Secondary Contact URL"] != "" );
+
+		if( $contact2 )
+		{	
+			$graph->addCompressedTriple( $uri, "oo:contact", "$uri#contact2" );
+			if( @$item["Secondary Contact Name"] != "" )
+			{
+				$graph->addCompressedTriple( "$uri#contact2", "foaf:name", $item["Secondary Contact Name"], "literal" );
+			}
+			if( @$item["Secondary Contact URL"] != "" )
+			{
+				$graph->addCompressedTriple( "$uri#contact2", "foaf:page", $item["Secondary Contact URL"] );
+			}
+			if( @$item["Secondary Contact Telephone"] != "" )
+			{
+				addPhone( $graph, "$uri#contact2", $item["Secondary Contact Telephone"] );
+			}
+			if( @$item["Secondary Contact Email"] != "" )
+			{
+				$graph->addCompressedTriple( "$uri#contact2", "foaf:mbox", "mailto:".$item["Secondary Contact Email"] );
+			}
+		}
+
+
+
+		if( @$item["Web Address"] != "" )
+		{	
+			$graph->addCompressedTriple( $uri, "foaf:page", $item["Web Address"] );
+		}
+
+		if( @$item["Photo"] != "" )
+		{	
+			$graph->addCompressedTriple( $uri, "foaf:depiction", $item["Photo"] );
+		}
+
+		if( @trim($item["Department"]) != "" )
+		{
+			$org_id = md5( $item["Department"] );
+			$org_uri = "http://id.equipment.data.ac.uk/ukprn/".$c["org_ukprn"]."/org/".rawurlencode($org_id);
+			$graph->addCompressedTriple( $uri, "oo:organizationPart", $org_uri );
+			$graph->addCompressedTriple( $org_uri, "rdfs:label", $item["Department"], "literal" );
+			$graph->addCompressedTriple( $org_uri, "rdf:type", "http://www.w3.org/ns/org#Organization" );
+			$graph->addCompressedTriple( "http://id.learning-provider.data.ac.uk/ukprn/".$c["org_ukprn"], "org:hasSubOrganization", $org_uri );
+		}
+
+		if( @trim($item["Building"]) != "" )
+		{
+			$org_id = md5( $item["Building"] );
+			$org_uri = "http://id.equipment.data.ac.uk/ukprn/".$c["org_ukprn"]."/org/".rawurlencode($org_id);
+			$graph->addCompressedTriple( $uri, "oo:organizationPart", $org_uri );
+			$graph->addCompressedTriple( $org_uri, "rdfs:label", $item["Building"], "literal" );
+			$graph->addCompressedTriple( $org_uri, "rdf:type", "http://vocab.deri.ie/rooms#" );
+			# we are *not* automatically assuming the building belongs to the uni, just in case
+		}
+
+		# fields not yet handled:
+		#"Type",
+		#"Related Facility ID",
+		#"Technique",
+		#"Location",
+		#"ID",
+		#"Site Location",
+		#"Service Level",
+	}
+
+	return $graph;
+}
+
 function uniquipFields()
 {
 	return array( 
@@ -574,7 +714,7 @@ function itemToUniquipRow($item)
 			$c["Email"] = preg_replace( "/mailto:/","", $contact->getString( "foaf:mbox" ) );
 		}
 		if( $contact->has( "foaf:phone" ) ) { 
-			$c["Telephone"] = preg_replace( "/mailto:/","", $contact->getString( "foaf:phone" ) );
+			$c["Telephone"] = preg_replace( "/tel:/","", $contact->getString( "foaf:phone" ) );
 		}
 		$contacts []= $c;
 	}
@@ -679,6 +819,7 @@ function itemCacheID( $item )
 {
 	return md5( $item->uri );
 }
+
 function itemToSearchTerms( $item )
 {
 	global $config_item;
@@ -698,6 +839,7 @@ function itemToSearchTerms( $item )
 	$cells []= $config_item["org_northing"];
 	return join( "\t", $cells )."\n";
 }
+
 function processItemPage( $item )
 {
 	global $item_cache_dir;
@@ -768,3 +910,48 @@ function processItemPage( $item )
 	fwrite($fh, join( "", $html ) );
 	fclose( $fh );
 }	
+
+# this function adapted from http://www.php.net/manual/en/function.str-getcsv.php#99323
+# under license # http://creativecommons.org/licenses/by/3.0/legalcode
+# Credit: Jay Williams
+/**
+ * @link http://gist.github.com/385876
+ */
+function csv_to_array( &$c, $delimiter=',')
+{
+	$handle = fopen($c["dataset_url"], 'r');
+	if( $handle === false )
+	{	
+		$c["errors"][] = "No content from URL";
+		return false;
+	}
+
+	$header = false;
+	$data = array();
+	while (($row = fgetcsv($handle, 1000, $delimiter)) !== FALSE)
+	{
+		# clean up whitespace
+		foreach( $row as $key=>$value )
+		{
+			$row[$key] = trim( $value );
+		}
+
+		if(!$header)
+		{
+			$header = $row;
+		}
+		else
+		{
+			$data[] = array_combine($header, $row);
+		}
+	}
+	fclose($handle);
+
+	if( !$header )
+	{
+		$c["errors"][] = "Failed to parse CSV";
+		return false;
+	}
+
+	return $data;
+}
