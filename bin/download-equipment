@@ -20,6 +20,10 @@ $base_dir = join( "/", $path );
 
 require_once( "$base_dir/lib/arc2/ARC2.php" );
 require_once( "$base_dir/lib/Graphite/Graphite.php" );
+require_once( "$base_dir/lib/PHPExcel/Classes/PHPExcel/IOFactory.php" );
+
+# added as this was in the example for the xlsx code. Can't hurt.
+date_default_timezone_set('Europe/London');
 
 # one day this may all be in a config file...
 $org_cache_dir = "$base_dir/htdocs/data/org";
@@ -47,6 +51,10 @@ foreach( $config as &$config_item )
 	elseif( $config_item["dataset_type"] == "uniquip/csv" )
 	{
 		$graph = uniquip_csv_to_graph( $config_item ); 
+	}
+	elseif( $config_item["dataset_type"] == "uniquip/xlsx" )
+	{
+		$graph = uniquip_xlsx_to_graph( $config_item ); 
 	}
 	elseif( $config_item["dataset_type"] == "kitcat" )
 	{
@@ -184,7 +192,6 @@ foreach( $config as &$config_item )
 			$items[]=$resource;
 		}
 	}
-
 	foreach( $items as $item )
 	{
 		$config_item["items"]++;
@@ -575,6 +582,19 @@ function kitcat_to_graph( &$c )
 	return $graph;
 }
 
+function uniquip_xlsx_to_graph( &$c )
+{
+	$items = xlsx_to_array( $c );
+	if( !$items ) { return false; }
+	if( sizeof( $items ) == 0 )
+	{
+		$c["errors"][] = "No rows in XLSX";
+		return false;
+	}
+
+	return uniquip_to_graph( $c, $items );
+}
+
 function uniquip_csv_to_graph( &$c )
 {
 	$items = csv_to_array( $c );
@@ -591,10 +611,19 @@ function uniquip_csv_to_graph( &$c )
 function uniquip_to_graph( &$c, $items )
 {
 	$graph = new Graphite();
+	$n = 0;
 	foreach( $items as $item )
 	{
+		$n++;
+
 		$id = md5( join( "|", $item ) );
 		$uri = "http://id.equipment.data.ac.uk/ukprn/".$c["org_ukprn"]."/item/".rawurlencode($id);
+		if( $graph->resource( $uri )->has( "rdfs:label" ) )
+		{
+			$c["errors"][] = "Item $n appears to be a duplicate";
+			continue;
+		}
+			
 
 		$graph->addCompressedTriple( $uri, "rdf:type", "oo:Equipment" );
 
@@ -982,8 +1011,12 @@ function csv_to_array( &$c, $delimiter=',')
 		# clean up whitespace
 		foreach( $row as $key=>$value )
 		{
+			if( !$header ) { $value = clean_header( $value ); }
 			$row[$key] = trim( $value );
 		}
+
+		# skip entirely blank rows
+		if( join( "",$row ) == "" ) { continue; }
 
 		if(!$header)
 		{
@@ -1004,3 +1037,73 @@ function csv_to_array( &$c, $delimiter=',')
 
 	return $data;
 }
+
+# clean up headers for uniquip
+function clean_header( $value )
+{
+	# remove anything in brackets
+	$value = preg_replace( "/\([^)]*\)/","", $value );
+
+	# Remove leading and trailing whitespace
+	$value = trim( $value );
+
+	return $value;
+}
+
+function xlsx_to_array( &$c )
+{
+	global $tmp_dir;
+	$content = file_get_contents( $c["dataset_url"] );
+	if( !$content )
+	{	
+		$c["errors"][] = "No content from URL";
+		return false;
+	}
+
+	$tmpfile = "$tmp_dir/data-eq-".md5( $c["dataset_url"]).".xlsx";
+	$fh = fopen($tmpfile, 'w') or die("can't open tmp file: $tmpfile" );
+	fwrite($fh, $content );
+	fclose($fh);
+
+	$objPHPExcel = PHPExcel_IOFactory::load($tmpfile);
+
+	$sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
+
+	$header = false;
+	$data = array();
+	foreach( $sheetData as $row )
+	{
+		# clean up whitespace
+		foreach( $row as $key=>$value )
+		{
+			if( !$header ) { $value = clean_header( $value ); }
+			$row[$key] = trim( $value );
+		}
+
+		# skip entirely blank rows
+		if( join( "",$row ) == "" ) { continue; }
+
+		if(!$header)
+		{
+			$header = $row;
+		}
+		else
+		{
+			$data[] = array_combine($header, $row);
+		}
+	}
+
+	if( !$header )
+	{
+		$c["errors"][] = "Failed to parse document";
+		return false;
+	}
+
+	unlink( $tmpfile );
+
+	return $data;
+}
+
+
+
+
