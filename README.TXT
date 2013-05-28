@@ -19,6 +19,9 @@ Quickstart:
  git clone https://github.com/cgutteridge/Graphite.git
  git clone https://github.com/semsol/arc2.git
  git clone https://github.com/cgutteridge/ntcat.git
+ wget https://github.com/PHPOffice/PHPExcel/archive/PHPExcel_1.7.8.tar.gz 
+ tar xzvf PHPExcel_1.7.8 
+ ln -s PHPExcel-PHPExcel_1.7.8/ PHPExcel
 
 Make htdocs/ available via the web (assumes it's the root of a vhost)
 
