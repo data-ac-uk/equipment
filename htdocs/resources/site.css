@@ -73,4 +73,8 @@ i {
 body {
 	min-height: 101%;
 }
-#logos img { margin-right: 20px; margin-bottom:20px; }
+#logos img { 
+	margin-right: 20px; 
+	margin-bottom:20px; 
+	max-height: 80px;
+}
