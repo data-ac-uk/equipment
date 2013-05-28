@@ -8,7 +8,7 @@ class status {
 		$f3->set('content','content.html');
 		$c = array();
 		$status = json_decode( file_get_contents( 'data/status.json' ), true );
-		$c []= "<p>The data from each organistation has been normalised into <a href='/uniquip'>Uniquip Spreadsheet Format</a> and RDF encoded as Turtle (.ttl) and using the <a href='http://openorg.ecs.soton.ac.uk/wiki/Facilities_and_Equipment'>OpenOrg</a> pattern for equipment and facilities data.</p>";
+		$c []= "<p>The data from each organisation has been normalised into <a href='/uniquip'>Uniquip Spreadsheet Format</a> and RDF encoded as Turtle (.ttl) and using the <a href='http://openorg.ecs.soton.ac.uk/wiki/Facilities_and_Equipment'>OpenOrg</a> pattern for equipment and facilities data.</p>";
 		$c []= "<table class='status'>";
 		$c []= "<tr>";
 		$c []= "<th></th>";
