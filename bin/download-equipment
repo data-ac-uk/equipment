@@ -209,7 +209,7 @@ foreach( $config as &$config_item )
 	}
 	if( $config_item["no_label_or_desc_items"] )
 	{		
-		$config_item["errors"][] = $config_item["no_label_or_desc_items"]." item".( $config_item["no_label_or_desc_items"] == 1 ? "" : "s" )." had no lable OR description and could not be included.";
+		$config_item["errors"][] = $config_item["no_label_or_desc_items"]." item".( $config_item["no_label_or_desc_items"] == 1 ? "" : "s" )." had no label OR description and could not be included.";
 	}
 	if( $config_item["no_contact_items"] )
 	{		
