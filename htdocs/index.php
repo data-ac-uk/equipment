@@ -58,7 +58,7 @@ $f3->route('GET /',
 		if( $q != "" )
 		{
 			require_once( "app/search.php" );
-			$results = search::perform( $_GET["q"] );
+			$results = search::perform( $q );
 			$search .= "<div id='results-container'>";
   			$search .= "  <div id='results' class='sixteen columns'>";
 			if( sizeof($results) == 0 )
@@ -67,8 +67,8 @@ $f3->route('GET /',
 			}
 			else
 			{
-				$search .= "    <div>".count($results)." matches.</div>";		
-				$search .=      join( "", $results );
+				$search .= "<div>".count($results)." matches.</div>";		
+				$search .= join( "", $results );
 			}
 			$search .= "  </div>";
 			$search .= "</div>";

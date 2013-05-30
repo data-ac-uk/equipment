@@ -2,4 +2,5 @@
 /var
 /htdocs/data
 /htdocs/tmp/
+/etc/test-list.tsv
 /htdocs/ui/note.html
