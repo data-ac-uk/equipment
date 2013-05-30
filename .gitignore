@@ -2,8 +2,5 @@
 /var
 /htdocs/data
 /htdocs/tmp/
-<<<<<<< HEAD
 /etc/test-list.tsv
-=======
 /htdocs/ui/note.html
->>>>>>> 43fde6f44b1a4601240445e2c91a76ea8b67aad1
