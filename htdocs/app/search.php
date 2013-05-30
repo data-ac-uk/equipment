@@ -8,6 +8,7 @@ class search {
 		if( sizeof($results) == 0 )
 		{
 			print "<p>No matches</p>";
+			return;
 		}
 		print "<div>".count($results)." matches.</div>";		
 		print join( "", $results );
@@ -61,11 +62,6 @@ class search {
 				."<span class='result-title'>$title</span>"
 				."<span class='result-info'>".$org." $dinfo</span>"
 				."</a>";
-		}
-		if( sizeof( $results ) == 0 )
-		{
-			print "<p>No matches</p>";
-			return;
 		}
 
 		ksort( $results);
