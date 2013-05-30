@@ -20,6 +20,13 @@ $f3->set('DEBUG',3);
 $f3->set('AUTOLOAD',"app/");
 $f3->set('UI','ui/');
 
+if( file_exists( "ui/note.html" ) )
+{
+	$note = Template::instance()->render( "note.html" );
+	$f3->set( "note", $note );
+}
+
+
 $f3->route('GET /faq',
 	function() use($f3) {
                 $f3=Base::instance();
