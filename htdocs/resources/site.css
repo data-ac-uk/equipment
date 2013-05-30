@@ -17,7 +17,7 @@ h3 {
 	overflow-y: scroll;
 }
 #featured-result {
-	max-height: 400px;
+	height: 400px;
 	overflow-y: scroll;
 }
 #featured-result .description {
@@ -51,10 +51,11 @@ h3 {
 .images { 
 	float:right;
 	clear:right;
-	margin-left: 10px;
 }
 .images img { 
 	display: block; 
+	margin-left: 10px;
+	margin-right: 5px;
 	margin-bottom: 10px;
 }
 dt { 
