@@ -59,14 +59,17 @@ $f3->route('GET /',
 		{
 			require_once( "app/search.php" );
 			$results = search::perform( $_GET["q"] );
+			$search .= "<div id='results-container'>";
+  			$search .= "  <div id='results' class='sixteen columns'>";
 			if( sizeof($results) == 0 )
 			{
 				$search .= "<p>No matches</p>";
 			}
-			$search .= "<div id='results-container'>";
-  			$search .= "  <div id='results' class='sixteen columns'>";
-			$search .= "    <div>".count($results)." matches.</div>";		
-			$search .=      join( "", $results );
+			else
+			{
+				$search .= "    <div>".count($results)." matches.</div>";		
+				$search .=      join( "", $results );
+			}
 			$search .= "  </div>";
 			$search .= "</div>";
 		}
