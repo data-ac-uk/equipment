@@ -1,27 +1,9 @@
-<script src='/resources/quick-search.js.php' ></script>
 <p>This site aggregates open data about research facilities and major items of equipment from UK Universities.</p>
 <h2>Quick Search</h2>
-
-    <input id='qs-input' type='text' style='text-align:left;width:95%;font-size:140%;padding:0.1em;border:solid 1px #000;margin-bottom:3px' />
-    <div id='helpstring'>Enter 3 or more characters to begin search</div>
-
-<div class='ui-widget' id='sort-option'>
-<label style='float: none;display:inline;' for='qs-sort'>Sort by distance from: </label>
-<input size='70' value='University of...'  id='qs-sort' style='padding-left:20px;display:inline; border:solid 1px #000; color: #999;
-background: top left no-repeat; ' /><div style='display:inline'>
-<img  src='/resources/images/delete.png' style='vertical-align:top;cursor:pointer' id='qs-clear-sort'/></div>
-<span id='units-toggle' style='cursor:pointer' title='click to toggle'>Units: <span id='units' style='display:inline'>km</span></span>
-
 </div>
 
-</div>
+{{ @search | raw }}
 
-<div id='results-container' style='display:none'>
-<div id='results' class='eight columns'>
-</div>
-<div id='featured-result' class='eight columns'>
-</div>
-</div>
 <div class='sixteen columns' style='padding-top:1em'>
 
 <h2>About this Site</h2>

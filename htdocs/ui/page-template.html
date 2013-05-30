@@ -42,7 +42,7 @@
 <!-- Primary Page Layout
     ================================================== --> 
 
-<div class="container">
+<div class="container" style='border: dashed 4px orange; padding-bottom:10px;'>
   <div class="sixteen columns padding_top_30 ">
     <nav role="navigation" id="main-menu">
       <ul class="links inline clearfix">
@@ -53,6 +53,10 @@
       </ul>
     </nav>
   <h1>{{ @html_title }}</h1>
+    <div style='background-color: orange; padding: 1em; font-size:180%; margin-bottom: 2em'>
+      This is the development version of the site. Please do NOT use the data from here, but rather go to:
+      <a href='http://equipment.data.ac.uk/'>equipment.data.ac.uk</a>
+    </div>
   <F3:include href="{{@content}}"/>
   </div>
 </div>

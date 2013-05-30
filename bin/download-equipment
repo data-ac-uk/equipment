@@ -225,7 +225,7 @@ foreach( $config as &$config_item )
 		$tsv_row = array();
 		foreach( $fields as $field )
 		{
-			$tsv_row []= @preg_replace( "/[\t\n]/"," ",$row[$field] );
+			$tsv_row []= preg_replace( "/[\r\t\n]+/"," ",@$row[$field] );
 		}
 		fwrite( $fh, join( "\t", $tsv_row )."\n" );
 	}
@@ -267,7 +267,7 @@ foreach( $all_uniquip_rows as $row )
 	$tsv_row = array();
 	foreach( $fields as $field )
 	{
-		$tsv_row []= @preg_replace( "/[\t\n]/"," ",$row[$field] );
+		$tsv_row []= preg_replace( "/[\r\t\n]+/"," ",@$row[$field] );
 	}
 	fwrite( $fh, join( "\t", $tsv_row )."\n" );
 }
@@ -923,8 +923,6 @@ function processItemPage( $item )
 
 	# create cache for displaying results
 	$html = array();
-	$html []= "<div class='search-result'>";
-	$html []= "<h2>".htmlspecialchars( $item->label() )."</h2>";
 	$html []= "<div class='images'>";
 	$html []= "<a class='uni-logo' title='".$config_item["org_name"]."' href='".$config_item["org_homepage"]."'><img width='200' src='".$config_item["org_logo"]."' /></a>";
 	if( $item->has( "foaf:depiction" ) )
@@ -981,11 +979,14 @@ function processItemPage( $item )
 		$g = new Graphite();
 		$html []=  "<div class='corrections'>Issues with this record should be reported to ".$g->resource( $config_item["dataset_corrections"] )->prettyLink()."</div>";
 	}
-	$html []= "</div>";
+
+	$data = array( 
+		"title"=>(string)$item->label(),
+		"content"=>join( "", $html ) );
 
 	$file = $item_cache_dir."/".itemCacheID( $item );
 	$fh = fopen($file, 'w') or die("can't open file: $file" );
-	fwrite($fh, join( "", $html ) );
+	fwrite($fh, json_encode( $data ) );
 	fclose( $fh );
 }	
 

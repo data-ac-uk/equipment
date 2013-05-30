@@ -26,8 +26,28 @@ h3 {
 #results .search-result { 
 	border-bottom: solid 1px #333;
 	background-color: #eeeeee;
-	padding: 2px 8px 2px 8px;
+	padding: 6px 8px 2px 8px;
+	display: block;
+	text-decoration: none;
 }
+#results .search-result:hover { 
+	background-color: #dddddd;
+}
+/* on full width results */
+.sixteen .search-result {
+	text-align: right;
+}
+.sixteen .search-result .result-title { 
+	float: left;
+}
+.sixteen .search-result .result-info { 
+	font-size: 80%;
+}
+.eight .result-info {
+	font-size: 80%;
+	display: block;
+}
+	
 .images { 
 	float:right;
 	clear:right;

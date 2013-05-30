@@ -1,16 +1,26 @@
 <?php
 class search {
 
-	function page() {
+	function fragment() {
                 $f3=Base::instance();
 		global $_GET;
-
-		if( trim($_GET["term"])== "" )
+		$results = search::perform( $_GET["term"] );
+		if( sizeof($results) == 0 )
 		{
 			print "<p>No matches</p>";
 		}
+		print "<div>".count($results)." matches.</div>";		
+		print join( "", $results );
+	}
+
+	static function perform( $q ) {
+
+		if( trim($q) == "" )
+		{
+			return array();
+		}
 		$units = "km";
-		if( trim($_GET["units"])== "miles" )
+		if( @trim($_GET["units"])== "miles" )
 		{
 			$units = "miles";
 		}
@@ -20,7 +30,7 @@ class search {
 			list( $e,$n ) = preg_split( '/,/', $sort );
 		}
 		$lines = file( "../var/search.tsv" );
-		$terms = preg_split( '/\s+/', $_GET["term"] );
+		$terms = preg_split( '/\s+/', $q );
 		$results = array();
 		$titles = array();
 		foreach( $lines as $line )
@@ -42,15 +52,15 @@ class search {
 				$key = sprintf( "%10d", $dist ).$key;
 				
 				if( $units == "miles" ) { $dist *= 0.621371192; }
-				$dinfo = " - ". (round( $dist / 100 )/10).$units;
+				$dinfo = " - ". (round( $dist / 100 )/10)." ".$units;
 			}
 				
 			
 			$results [$key] =
-				"<div class='search-result' onclick='show_result(\"$code\")' style='cursor:pointer'>"
-				.$title
-				."<div style='font-size:70%'>".$org." $dinfo</div>"
-				."</div>";
+				"<a class='search-result' onclick='show_result(\"$code\"); return false;' href='/item/$code.html'>"
+				."<span class='result-title'>$title</span>"
+				."<span class='result-info'>".$org." $dinfo</span>"
+				."</a>";
 		}
 		if( sizeof( $results ) == 0 )
 		{
@@ -59,8 +69,7 @@ class search {
 		}
 
 		ksort( $results);
-		print "<div>".count($results)." matches.</div>";		
-		print join( "", $results );
+		return $results; 
 	}
 }
 		
