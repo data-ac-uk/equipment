@@ -938,10 +938,15 @@ function processItemPage( $item )
 	{
 		$html []= "<div class='description'>".$item->get("dcterms:description")."</div>";
 	}
-	if( $item->has( "org:organization" ) && $item->get( "org:organization" )->hasLabel() )
+	if( $item->has( "oo:organizationPart" ) && $item->get( "oo:organizationPart" )->hasLabel() )
 	{
-		$html []= "<div>Organization: ".$item->get("org:organization")->label()."</div>";
+		$html []= "<div>Part of Organization: ".$item->get("oo:organizationPart")->label()."</div>";
 	}
+#	foreach( $item->all( "dcterms:subject" ) as $subject )
+#	{
+#		$html []= "<div>Subject: ".$subject->label()."</div>";
+#	}
+		
 	if( $item->has( "gr:hasMakeAndModel" ) )
 	{
 		$make_and_model = $item->get( "gr:hasMakeAndModel" );
@@ -963,13 +968,13 @@ function processItemPage( $item )
 	{
 		if( @$done[$contact->toString()] ) { continue; }
 		$done[$contact->toString()] = true;
-		$html []= "<p>Contact ";
-		if( $contact->hasLabel() ) { $html []= $contact->label(); }
+		$html []= "<p>Contact&nbsp;";
+		if( $contact->hasLabel() ) { $html []= $contact->label()." "; }
 		if( $contact->has( "foaf:mbox" ) ) {
-			$html []= " ".$contact->get( "foaf:mbox" )->prettyLink();
+			$html []= $contact->get( "foaf:mbox" )->prettyLink()." ";
 		}
 		if( $contact->has( "foaf:phone" ) ) {
-			$html []= " ".$contact->get( "foaf:phone" )->prettyLink();
+			$html []= $contact->get( "foaf:phone" )->prettyLink()." ";
 		}
 		$html []= "</p>";
 	}
