@@ -225,7 +225,7 @@ foreach( $config as &$config_item )
 		$tsv_row = array();
 		foreach( $fields as $field )
 		{
-			$tsv_row []= @preg_replace( "/[\t\n]/"," ",$row[$field] );
+			$tsv_row []= preg_replace( "/[\r\t\n]+/"," ",@$row[$field] );
 		}
 		fwrite( $fh, join( "\t", $tsv_row )."\n" );
 	}
@@ -267,7 +267,7 @@ foreach( $all_uniquip_rows as $row )
 	$tsv_row = array();
 	foreach( $fields as $field )
 	{
-		$tsv_row []= @preg_replace( "/[\t\n]/"," ",$row[$field] );
+		$tsv_row []= preg_replace( "/[\r\t\n]+/"," ",@$row[$field] );
 	}
 	fwrite( $fh, join( "\t", $tsv_row )."\n" );
 }
@@ -923,8 +923,6 @@ function processItemPage( $item )
 
 	# create cache for displaying results
 	$html = array();
-	$html []= "<div class='search-result'>";
-	$html []= "<h2>".htmlspecialchars( $item->label() )."</h2>";
 	$html []= "<div class='images'>";
 	$html []= "<a class='uni-logo' title='".$config_item["org_name"]."' href='".$config_item["org_homepage"]."'><img width='200' src='".$config_item["org_logo"]."' /></a>";
 	if( $item->has( "foaf:depiction" ) )
@@ -940,10 +938,15 @@ function processItemPage( $item )
 	{
 		$html []= "<div class='description'>".$item->get("dcterms:description")."</div>";
 	}
-	if( $item->has( "org:organization" ) && $item->get( "org:organization" )->hasLabel() )
+	if( $item->has( "oo:organizationPart" ) && $item->get( "oo:organizationPart" )->hasLabel() )
 	{
-		$html []= "<div>Organization: ".$item->get("org:organization")->label()."</div>";
+		$html []= "<div>Part of Organization: ".$item->get("oo:organizationPart")->label()."</div>";
 	}
+#	foreach( $item->all( "dcterms:subject" ) as $subject )
+#	{
+#		$html []= "<div>Subject: ".$subject->label()."</div>";
+#	}
+		
 	if( $item->has( "gr:hasMakeAndModel" ) )
 	{
 		$make_and_model = $item->get( "gr:hasMakeAndModel" );
@@ -965,13 +968,13 @@ function processItemPage( $item )
 	{
 		if( @$done[$contact->toString()] ) { continue; }
 		$done[$contact->toString()] = true;
-		$html []= "<p>Contact ";
-		if( $contact->hasLabel() ) { $html []= $contact->label(); }
+		$html []= "<p>Contact&nbsp;";
+		if( $contact->hasLabel() ) { $html []= $contact->label()." "; }
 		if( $contact->has( "foaf:mbox" ) ) {
-			$html []= " ".$contact->get( "foaf:mbox" )->prettyLink();
+			$html []= $contact->get( "foaf:mbox" )->prettyLink()." ";
 		}
 		if( $contact->has( "foaf:phone" ) ) {
-			$html []= " ".$contact->get( "foaf:phone" )->prettyLink();
+			$html []= $contact->get( "foaf:phone" )->prettyLink()." ";
 		}
 		$html []= "</p>";
 	}
@@ -981,11 +984,14 @@ function processItemPage( $item )
 		$g = new Graphite();
 		$html []=  "<div class='corrections'>Issues with this record should be reported to ".$g->resource( $config_item["dataset_corrections"] )->prettyLink()."</div>";
 	}
-	$html []= "</div>";
+
+	$data = array( 
+		"title"=>(string)$item->label(),
+		"content"=>join( "", $html ) );
 
 	$file = $item_cache_dir."/".itemCacheID( $item );
 	$fh = fopen($file, 'w') or die("can't open file: $file" );
-	fwrite($fh, join( "", $html ) );
+	fwrite($fh, json_encode( $data ) );
 	fclose( $fh );
 }	
 

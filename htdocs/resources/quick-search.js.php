@@ -129,7 +129,7 @@ print "var availableTags = ".json_encode( array_keys( $data ) ).";";
 // to not put in the main namespace
 function show_result( id )
 {
-    $.get('item/'+id, function(page) {
+    $.get('item/'+id+".fragment", function(page) {
         $('#featured-result').scrollTop(0);
         $('#featured-result').html( page );
     }, 'html');

@@ -32,7 +32,6 @@ TODO List:
  Add something clever with licenses
  CERIF?
  per-site timeout
- accessible version of search
 
 ADDITIONAL CREDITS:
 
