@@ -58,7 +58,7 @@ class search {
 				
 			
 			$results [$key] =
-				"<a class='search-result' onclick='show_result(\"$code\"); return false;' href='/item/$code.html'>"
+				"<a class='search-result' onclick='show_result(\"$code\"); return false;' href='/item/$code'>"
 				."<span class='result-title'>$title</span>"
 				."<span class='result-info'>".$org." $dinfo</span>"
 				."</a>";

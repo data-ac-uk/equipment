@@ -245,8 +245,22 @@ foreach( $config as &$config_item )
 		fputcsv($fh, $csv_row);
 	}
 	fclose($fh);
-	
+
+	$json = array( 
+		"metadata"=>$config_item,
+		"records"=>$org_uniquip_rows,
+	);
+	$json_file = "$org_cache_dir/ukprn-".$config_item["org_ukprn"].".json";
+	$fh = fopen($json_file, 'w') or die("can't open file: $json_file" );
+	fwrite( $fh, json_encode( $json ) );
+	fclose( $fh );
 }
+
+$fields = uniquipFields();
+$file = $base_dir."/var/uniquip-fields.json";
+$fh = fopen($file, 'w') or die("can't open file: $file" );
+fwrite( $fh, json_encode( $fields ) );
+fclose( $fh );
 
 $file = $base_dir."/var/search.tsv";
 $fh = fopen($file, 'w') or die("can't open file: $file" );
@@ -796,6 +810,8 @@ function itemToUniquipRow($item)
 	}
 
 
+	$uniquip["__URI"] = (string)$item;
+	$uniquip["__ID"] = itemCacheID( $item );
 
 
 #"Type",
@@ -1109,7 +1125,4 @@ function xlsx_to_array( &$c )
 
 	return $data;
 }
-
-
-
 

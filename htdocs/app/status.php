@@ -24,14 +24,16 @@ class status {
 		foreach( $status as $feed )
 		{
 			$c []= "<tr>";
-			$c []= "<td><a href='".$feed["org_url"]."'><img src='".$feed["org_logo"]."' /></a></td>";
+			#$c []= "<td><a href='".$feed["org_url"]."'><img src='".$feed["org_logo"]."' /></a></td>";
+			$c []= "<td><a href='/org/ukprn-".$feed["org_ukprn"]."'>view</a></td>";
 			$c []= "<td>".$feed["org_ukprn"]."</td>";
 			$c []= "<td>".$feed["org_name"]."</td>";
 			$c []= "<td>".$feed["dataset_type"]."</td>";
 			$c []= "<td><a href='".$feed["dataset_url"]."'>dataset</a></td>";
-			$c []= "<td><a href='/data/org/ukprn-".$feed["org_ukprn"].".csv'>CSV</a>, ";
+			$c []= "<td><a href='/data/org/ukprn-".$feed["org_ukprn"].".json'>JSON</a>, ";
+			$c []= "<a href='/data/org/ukprn-".$feed["org_ukprn"].".csv'>CSV</a>, ";
 			$c []= "<a href='/data/org/ukprn-".$feed["org_ukprn"].".tsv'>TSV</a>, ";
-			$c []= "<a href='/data/org/ukprn-".$feed["org_ukprn"].".ttl'>TTL</a></td>";
+			$c []= "<a href='/data/org/ukprn-".$feed["org_ukprn"].".ttl'>RDF (TTL)</a></td>";
 			$c []= "<td>".$feed["items"]."</td>";
 			$c []= "<td>".@date( "D M jS, Y\nG:i", $feed["dataset_timestamp"])."</td>";
 			$c []= "<td>".join ("<br />",$feed["errors"])."</td>";
