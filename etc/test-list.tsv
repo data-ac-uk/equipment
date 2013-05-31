@@ -1,8 +1,0 @@
-#10004113	kitcat	http://equipment.lboro.ac.uk/api/public/items.json	University of Loughborough	http://www.lboro.ac.uk/	http://kit-catalogue.lboro.ac.uk/project/images/lboro.png	mailto:kit-catalogue@lboro.ac.uk
-#10007158	rdf	http://id.southampton.ac.uk/dataset/facilities/latest	University of Southampton	http://www.soton.ac.uk/	http://www.southampton.ac.uk/images/bg_logo_small.png	mailto:facshare@soton.ac.uk
-10007795	rdf	http://data.leeds.ac.uk/equipment/	University of Leeds	http://www.leeds.ac.uk/	http://data.leeds.ac.uk/assets/img/logo.png	mailto:g.burnell@leeds.ac.uk	mailto:g.burnell@leeds.ac.uk
-#
-10000824	uniquip/xlsx	http://equipment-dev.ecs.soton.ac.uk/test/bournemouth.xlsx	University of Bournemouth	http://www.bournemouth.ac.uk/	http://upload.wikimedia.org/wikipedia/en/thumb/2/20/BournemouthUniversity.jpg/200px-BournemouthUniversity.jpg	mailto:NOCORRECTIONS@example.ac.uk	mailto:NOCONTACT@example.ac.uk
-10007774	rdf	https://source.data.ox.ac.uk/archive/public/research-facilities/latest.rdf	University of Oxford	http://www.ox.ac.uk/	https://static.data.ox.ac.uk/brandmark.gif	mailto:opendata@oucs.ox.ac.uk	mailto:opendata@oucs.ox.ac.uk
-10007160	uniquip/csv	http://magic.surrey.ac.uk/equipment/servlet/EquipmentFeed	University of Surrey	http://www.surrey.ac.uk/	http://upload.wikimedia.org/wikipedia/en/thumb/b/bd/University_of_Surrey_Logo.svg/248px-University_of_Surrey_Logo.svg.png	mailto:XXX@yyy.com	mailto:contacts@XXX.YYY.com
-10007850	pure	http://www.equipsouthwest.org.uk/share/institution/bath	University of Bath	http://www.bath.ac.uk	http://www.bath.ac.uk/homepage/images/logos/logo.gif	mailto:research-equipment-sharing@bath.ac.uk	mailto:research-equipment-sharing@bath.ac.uk
