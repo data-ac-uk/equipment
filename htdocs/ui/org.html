@@ -23,10 +23,12 @@ table.info th { padding: 0.2em 1em 0.2em 0.2em; border:solid 1px #000; font-weig
       <td><a href='/item/{{ @record["__ID"] }}.html'>{{ @record["__ID"] }}</a></td>
     </tr>
     <F3:repeat group="{{ @fields }}" value="{{ @field }}">
-      <tr>
-        <th>{{ @field }}:</th>
-        <td>{{ @ markup(@record[@field]) }}</td>
-      </tr>
+      <F3:check if="{{ @ trim( @record[@field] ) != '' }}">
+        <tr>
+          <th>{{ @field }}:</th>
+          <td>{{ @ markup(@record[@field]) }}</td>
+        </tr>
+      </F3:check>
     </F3:repeat>
   </table>
 </F3:repeat>
