@@ -23,23 +23,54 @@ class status {
 		$c []= "</tr>";
 		foreach( $status as $feed )
 		{
+			$org_id = "ukprn-".$feed["org_ukprn"];
 			$c []= "<tr>";
 			#$c []= "<td><a href='".$feed["org_url"]."'><img src='".$feed["org_logo"]."' /></a></td>";
-			$c []= "<td><a href='/org/ukprn-".$feed["org_ukprn"]."'>view</a></td>";
+			$c []= "<td><a href='/org/$org_id'>view</a></td>";
 			$c []= "<td>".$feed["org_ukprn"]."</td>";
 			$c []= "<td>".$feed["org_name"]."</td>";
 			$c []= "<td>".$feed["dataset_type"]."</td>";
 			$c []= "<td><a href='".$feed["dataset_url"]."'>dataset</a></td>";
-			$c []= "<td><a href='/data/org/ukprn-".$feed["org_ukprn"].".json'>JSON</a>, ";
-			$c []= "<a href='/data/org/ukprn-".$feed["org_ukprn"].".csv'>CSV</a>, ";
-			$c []= "<a href='/data/org/ukprn-".$feed["org_ukprn"].".tsv'>TSV</a>, ";
-			$c []= "<a href='/data/org/ukprn-".$feed["org_ukprn"].".ttl'>RDF&nbsp;(TTL)</a></td>";
+			$c []= "<td><a href='/data/org/$org_id.json'>JSON</a>, ";
+			$c []= "<a href='/data/org/$org_id.csv'>CSV</a>, ";
+			$c []= "<a href='/data/org/$org_id.tsv'>TSV</a>, ";
+			$c []= "<a href='/data/org/$org_id.ttl'>RDF&nbsp;(TTL)</a></td>";
 			$c []= "<td>".$feed["items"]."</td>";
 			$c []= "<td>".@date( "D M jS, Y\nG:i", $feed["dataset_timestamp"])."</td>";
-			$c []= "<td>".join ("<br />",$feed["errors"])."</td>";
+			$c []= "<td>";
+			if( sizeof( $feed["errors"] ) <= 3 )
+			{
+				$c []= join ("<br />",$feed["errors"]);
+			}
+			else
+			{
+				$head_errors = array();
+				$tail_errors = $feed["errors"]; 
+				$head_errors[]=array_shift( $tail_errors );
+				$head_errors[]=array_shift( $tail_errors );
+				$c []= join ("<br />",$head_errors );
+				$c []= "<div class='show-errors-button' id='show-all-$org_id' style='display:none'>";
+				$c []= "<a href='#' onclick='
+jQuery(\"#errors-$org_id\").css(\"display\",\"block\");
+jQuery(\"#show-all-$org_id\").css(\"display\",\"none\");
+return false;
+'>show additional ".sizeof( $tail_errors )." issue".(sizeof( $tail_errors )>1?"s":"")."</a>";
+				$c []= "</div>";
+				$c []= "<div class='additional-errors' id='errors-$org_id' >";
+				$c []= join ("<br />",$tail_errors );
+				$c []= "</div>";
+			}
+	
+			$c []= "</td>";
 			$c []= "</tr>";
 		}
 		$c []= "</table>";
+		$c []= "<script type='text/javascript'>
+jQuery( document ).ready( function() { 
+	jQuery( \".additional-errors\" ).css('display','none');
+	jQuery( \".show-errors-button\" ).css('display','block');
+} );
+</script>";
 		#$c []= "<pre>".htmlspecialchars( print_r($status ,true))."</pre>";
 
 		$f3->set('html_content',join("",$c));
