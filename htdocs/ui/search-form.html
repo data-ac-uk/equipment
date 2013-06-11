@@ -1,15 +1,21 @@
-<form>
-<div class='sixteen columns' style='padding-top:1em'>
-  <input id='qs-input' autocomplete='off' name='q' type='text' value='{{ @q }}'  style='display:inline-block;text-align:left;width:50%;font-size:140%;padding:0.1em;border:solid 1px #000;margin-bottom:3px' />
-  <input id='search-button' type='submit' value='Search'  style='display:inline-block;text-align:left;font-size:140%;padding:0.1em;border:solid 1px #000;margin-bottom:3px'  />
-  <div id='helpstring' style='display:none'>Enter 3 or more characters to begin search</div>
-  <div class='ui-widget' id='sort-option' style='display:none'>
-    <label style='float: none;display:inline;' for='qs-sort'>Sort by distance from: </label>
-    <input size='70' value='University of...'  autocomplete='off' id='qs-sort' style='padding-left:20px;display:inline; border:solid 1px #000; color: #999;
-background: top left no-repeat; ' /><div style='display:inline'>
-    <img  src='/resources/images/delete.png' style='vertical-align:top;cursor:pointer' id='qs-clear-sort'/></div>
-    <span id='units-toggle' style='cursor:pointer' title='click to toggle'>Units: <span id='units' style='display:inline'>km</span></span>
-  </div>
-</div>
-</form>
-
+  <form>
+    <div style='border: 1px solid #999; background-color: #eee; padding:5px '>
+      <div style='width:90%; border:solid 1px #eee'>
+        <div style='padding-top:5px;font-weight: bold; padding-right: 10px; font-size:150%;display: inline-block; border: solid 1px #eee; vertical-align:top'>Search:</div>
+        <div style='display: inline-block; border: solid 1px #eee; width:80%'>
+          <input id='qs-input' autocomplete='off' name='q' type='text' value='{{ @q }}'  style='display:inline-block;text-align:left;width:50%;font-size:140%;padding:0.1em;border:solid 1px #000;margin-bottom:3px' />
+          <input id='search-button' type='submit' value='Search'  style='display:inline-block;text-align:left;font-size:140%;padding:0.1em;border:solid 1px #000;margin-bottom:3px'  />
+          <div id='helpstring' style='display:none'>Enter 3 or more characters to begin search</div>
+        </div>
+      </div>
+      <div class='ui-widget' id='sort-option' style='display:none'>
+        <label style='float: none;display:inline;' for='qs-sort'>Sort by distance from: </label>
+        <input size='70' value='University of...'  autocomplete='off' id='qs-sort' style='padding-left:20px;display:inline; border:solid 1px #000; color: #999; 
+background: #fff top left no-repeat; ' />
+        <div style='display:inline'>
+          <img src='/resources/images/delete.png' style='vertical-align:top;cursor:pointer' id='qs-clear-sort'/></div>
+          <span id='units-toggle' style='cursor:pointer' title='click to toggle'>Units: <span id='units' style='display:inline'>km</span></span>
+        </div>
+      </div>
+    </div>
+  </form>

@@ -1,22 +1,36 @@
-<p>This site aggregates open data about research facilities and major items of equipment from UK Universities.</p>
-<h2>Quick Search</h2>
-</div>
+<p style='font-size:150%;margin-top:0.5em'>Enabling access to UK HE research equipment</p>
 
 {{ @search | raw }}
-
 <div class='sixteen columns' style='padding-top:1em'>
 
+<p style='font-size:130%'>
+This site allows users to search for research equipment and facilities that are available from UK HE institutions. It’s very simple to use! Enter the name, or part name, of the equipment or facility you are searching for, select from the drop down list then make contact.    	
+</p>
+
+
+
 <h2>About this Site</h2>
-<p>
-Development of equipment.data.ac.uk is funded by <a href="http://www.epsrc.ac.uk">EPSRC</a> in response to the need to improve the visibility and enable the equipment sharing discussion among UK universities. The project is supported by <a href='http://www.rcuk.ac.uk/Pages/Home.aspx'>RCUK</a> with the aim to deliver a national "shop window" for research equipment - enabling searching across UK HE equipment datasets.</p>
 
-<p>Along with this UK HE equipment search portal, the project team can provide technical support and guidance to institutions in the process of establishing their equipment dataset and publishing. The project team is also exploring the benefits of open data publishing with the Open Data Institute and the Gateway to Research project, linking wider datasets to increase data richness. If you would like technical advice with the publishing of your equipment dataset to enable its discovery by this search function please use the <a href='http://dev.data.ac.uk/get-in-touch/'>contact form</a>.
+<p>The development of equipment.data is funded by 
+<a href="http://www.epsrc.ac.uk">EPSRC</a>
+in response to the need to improve visibility and utilisation of UK research equipment. This relatively simple technology enables searching across all published UK research equipment databases through one aggregation “portal”, allowing greater accessibility with the aim to improve efficiency and stimulate greater collaboration in the sector. The technology behind this development has been a partnership between a number of UK universities, primarily outcomes of the UNIQUIP Project. The development has the backing of 
+<a href='http://www.rcuk.ac.uk/Pages/Home.aspx'>RCUK</a> 
+as its preferred medium for national equipment data sharing offering a scalable solution, without the need for complex software systems.
+</p>
 
-<p>If you would like to contribute your equipment and facilities data to this dataset, please see our <a href='/faq'>detailed publishing specification</a>.</p>
+<h2>Adding your research equipment data</h2>
+
+<p>Adding your institution’s research equipment data is easier than you may think, 
+see the <a href='/faq'>Frequently Asked Questions</a> page.
+The project team can provide technical support and guidance regarding the requirements for publishing your equipment dataset. Please use the <a href='http://www.data.ac.uk/get-in-touch/'>contact form</a> in the first instance. </p>
+
+<p>A “<a href='/status'>status</a>” function is included in the header to this page which provides a list of contributors and allows you to check the quality of your data upload, detailing any issues encountered on the last ingestion. You can also download normalised RDF, CSV and TSV data per organisation, and obtain links to the source dataset.</p>
 
 </div>
+
+
 <div class='sixteen columns'>
-<h2>Open Data</h2>
+<h2>Equipment Data Downloads</h2>
 
 <table>
 
@@ -50,14 +64,6 @@ Development of equipment.data.ac.uk is funded by <a href="http://www.epsrc.ac.uk
 </tr>
 </table>
 
-
-<p>The following organisations are providing open data used to create this service. A number of other UK universities are in the process of preparing their datasets and will be added in the next few months.</p>
-
-<p>The <a href='/status'>status page</a> lets you download normalised RDF, CSV and TSV data per organisation, plus links to the source dataset and shows any issues encountered on the last ingestion.</p>
-
-<div id="logos">
-{{ @logos | raw }}
-</div>
 
 <h2>Open Source</h2>
 

@@ -7,7 +7,7 @@ class search {
 		$results = search::perform( $_GET["term"] );
 		if( sizeof($results) == 0 )
 		{
-			print "<p>No matches</p>";
+			print "<p style='margin-top:1em'>No matches.</p><p>Tip: If you are  trying out the system, 'laser' or 'microscope' return plenty of results.</p>";
 			return;
 		}
 		print "<div>".count($results)." matches.</div>";		
