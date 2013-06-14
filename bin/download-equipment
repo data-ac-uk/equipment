@@ -940,10 +940,10 @@ function processItemPage( $item )
 	# create cache for displaying results
 	$html = array();
 	$html []= "<div class='images'>";
-	$html []= "<a class='uni-logo' title='".$config_item["org_name"]."' href='".$config_item["org_homepage"]."'><img width='200' src='".$config_item["org_logo"]."' /></a>";
+	$html []= "<a class='uni-logo' title='".$config_item["org_name"]."' href='".$config_item["org_homepage"]."'><img style='max-width:200px' src='".$config_item["org_logo"]."' /></a>";
 	if( $item->has( "foaf:depiction" ) )
 	{
-		$html []= "<img width='200' src='".$item->get( "foaf:depiction" )."' />";
+		$html []= "<img style='max-width:200px' src='".$item->get( "foaf:depiction" )."' />";
 	}
 	$html []= "</div>";
 	if( $item->has( "foaf:page" ) )
