@@ -43,7 +43,7 @@ class search {
 				if( !preg_match( '/\b'.$term.'/i', $line ) ) { continue 2; }
 			}
 			$line = chop( $line );
-			list( $words,$code,$title,$org,$e2,$n2) = preg_split( '/\t/', $line );
+			@list( $words,$code,$title,$org,$e2,$n2) = preg_split( '/\t/', $line );
 		
 			$key = strtoupper($title).$code;
 			$dinfo = "";
