@@ -629,7 +629,6 @@ function uniquip_to_graph( &$c, $items )
 	foreach( $items as $item )
 	{
 		$n++;
-
 		$id = md5( join( "|", $item ) );
 		$uri = "http://id.equipment.data.ac.uk/ukprn/".$c["org_ukprn"]."/item/".rawurlencode($id);
 		if( $graph->resource( $uri )->has( "rdfs:label" ) )
@@ -649,6 +648,10 @@ function uniquip_to_graph( &$c, $items )
 		if( @$item["Description"] != "" )
 		{
 			$graph->addCompressedTriple( $uri, "dcterms:description", $item["Description"], "http://purl.org/xtypes/Fragment-HTML" );
+		}
+		if( @$item["ID"] != "" )
+		{
+			$graph->addCompressedTriple( $uri, "skos:notation", $item["ID"], "http://id.equipment.data.ac.uk/ukprn/".$c["org_ukprn"]."/equipment-id-scheme" );
 		}
 
 
@@ -851,6 +854,10 @@ function itemToUniquipRow($item)
 #"Secondary Contact Email",
 	@$uniquip["Secondary Contact Email"] = $contacts[1]["Email"];
 #"ID",
+	if( $item->has( "skos:notation" ) )
+	{
+		$uniquip["ID"] = $item->getString( "skos:notation" );
+	}
 #"Photo",
 	if( $item->has( "foaf:depiction" ) )
 	{
