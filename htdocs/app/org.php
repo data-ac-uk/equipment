@@ -5,7 +5,7 @@ class org {
 	{
                 $f3=Base::instance();
 		$id = $f3->get( "PARAMS.id" );
-		$id = preg_replace( '/[^-a-z0-9]/','',$id );
+		$id = preg_replace( '/[^-a-z0-9]/i','',$id );
 
 		$data = json_decode( file_get_contents( "data/org/$id.json" ), true );
 		$fields = json_decode( file_get_contents( "../var/uniquip-fields.json" ), true );
