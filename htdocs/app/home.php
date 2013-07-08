@@ -5,9 +5,30 @@ class home {
 	{
                 $f3=Base::instance();
 
+		$remote_addr = $_SERVER['REMOTE_ADDR'];
+		$hostname = gethostbyaddr($remote_addr);
+
+		$defaultsort = "";
+
+		if( preg_match( "/([a-z0-9-]+\.ac\.uk)$/", $hostname, $r ) )
+		{
+			$domain = $r[1];
+			print "<p>x</P><P>$remote_addr</p><p>$hostname</p>";
+			$rows = file( "../var/learning-providers-plus.tsv" );
+			foreach( $rows as $line )
+			{
+				$cells = preg_split( "/\t/", $line );
+				if( $cells[9] == "http://www.".$domain."/" )
+				{
+					$defaultsort = $cells[1];
+				}
+			}
+		}
+
 		$q = "";
 		if( @$_GET["q"] ) { $q = $_GET["q"]; }
 		$f3->set('q', $q );
+		$f3->set('defaultsort', $defaultsort );
 		$search = Template::instance()->render( "search-form.html" );
 
 		if( $q != "" )
