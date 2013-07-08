@@ -46,6 +46,15 @@ $f3->route('GET /uniquip',
 		print Template::instance()->render( "page-template.html" );
 	}
 );
+$f3->route('GET /poster',
+	function() use($f3) {
+                $f3=Base::instance();
+
+		$f3->set('html_title', "Poster" );
+		$f3->set('content','poster.html');
+		print Template::instance()->render( "page-template.html" );
+	}
+);
 $f3->route('GET /', 'home->page' );
 $f3->route('GET /status', 'status->page' );
 $f3->route('GET /search', 'search->fragment' );
