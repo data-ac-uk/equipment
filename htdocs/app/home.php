@@ -13,7 +13,6 @@ class home {
 		if( preg_match( "/([a-z0-9-]+\.ac\.uk)$/", $hostname, $r ) )
 		{
 			$domain = $r[1];
-			print "<p>x</P><P>$remote_addr</p><p>$hostname</p>";
 			$rows = file( "../var/learning-providers-plus.tsv" );
 			foreach( $rows as $line )
 			{
