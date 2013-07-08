@@ -10,8 +10,12 @@
       </div>
       <div class='ui-widget' id='sort-option' style='display:none'>
         <label style='float: none;display:inline;' for='qs-sort'>Sort by distance from: </label>
-        <input size='70' value='University of...'  autocomplete='off' id='qs-sort' style='padding-left:20px;display:inline; border:solid 1px #000; color: #999; 
-background: #fff top left no-repeat; ' />
+      <F3:check if="{{ @defaultsort == '' }}">
+        <input size='70' value='University of...' autocomplete='off' id='qs-sort' style='padding-left:20px;display:inline; border:solid 1px #000; color: #999; background: #fff top left no-repeat; ' />
+      </F3:check>
+      <F3:check if="{{ @defaultsort != '' }}">
+        <input size='70' value='{{ @defaultsort }}' autocomplete='off' id='qs-sort' style='padding-left:20px;display:inline; border:solid 1px #000; color: #999; background: #fff top left no-repeat; ' />
+      </F3:check>
         <div style='display:inline'>
           <img src='/resources/images/delete.png' style='vertical-align:top;cursor:pointer' id='qs-clear-sort'/></div>
           <span id='units-toggle' style='cursor:pointer' title='click to toggle'>Units: <span id='units' style='display:inline'>km</span></span>
