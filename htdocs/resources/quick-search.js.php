@@ -1,24 +1,31 @@
 $(function() {
 <?php
 
-$lp_rows = file( '../../var/learning-providers-plus.tsv' );
-$title_row = array_shift( $lp_rows );
-$fields = preg_split( "/\t/", chop($title_row) );
+$files = array( 
+	'../../var/learning-providers-plus.tsv',
+	'../../var/extra-orgs.tsv' );
+
 $data = array();
-foreach( $lp_rows as $row )
+foreach( $files as $file )
 {
-    $cells = preg_split( "/\t/", chop($row) );
-    $r = array();
-    
-    for( $i=0; $i<sizeof($fields); ++$i )
-    {
-        $r[$fields[$i]] = $cells[$i];
-    }
-    if( $r["EASTING"] == "" ) {
-        # we don't have data for Northern Ireland universities
-        continue;
-    }
-    $data[$r["PROVIDER_NAME"]] = array( "E"=> $r["EASTING"],"N"=> $r["NORTHING"] );
+	$rows = file( $file );
+	$title_row = array_shift( $rows );
+	$fields = preg_split( "/\t/", chop($title_row) );
+	foreach( $rows as $row )
+	{
+    		$cells = preg_split( "/\t/", chop($row) );
+    		$r = array();
+    		
+    		for( $i=0; $i<sizeof($fields); ++$i )
+    		{
+        		$r[$fields[$i]] = $cells[$i];
+    		}
+    		if( $r["EASTING"] == "" ) {
+        		# we don't have data for Northern Ireland universities
+        		continue;
+    		}
+    		$data[$r["PROVIDER_NAME"]] = array( "E"=> $r["EASTING"],"N"=> $r["NORTHING"] );
+	}
 }
 print "var locations = ".json_encode( $data ).";";
 print "var availableTags = ".json_encode( array_keys( $data ) ).";";
