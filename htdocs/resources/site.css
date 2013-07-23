@@ -99,3 +99,6 @@ body {
 	margin-bottom:20px; 
 	max-height: 80px;
 }
+br {
+	clear: none;
+}
