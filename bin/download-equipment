@@ -68,7 +68,7 @@ foreach( $config as &$config_item )
 	{
 		$err = "Unknown type: ".$config_item["dataset_type"];
 		$config_item["errors"][] = $err;
-		print "$err\n";
+		print "$err ".$config_item["org_ukprn"]."\n";
 		continue;
 	}
 
@@ -101,7 +101,7 @@ foreach( $config as &$config_item )
 			$err = "Failed to get new data. Also no cache available.";
 		}
 		$config_item["errors"][] = $err;
-		print "$err\n";
+		print "$err ".$config_item["org_ukprn"]."\n";
 	}
 }	
 
@@ -426,7 +426,7 @@ function pure_to_graph( &$c )
 	$content = file_get_contents( $c["dataset_url"] );
 	if( !$content )
 	{	
-		$c["errors"][] = "No content from URL";
+		$c["errors"][] = "No content from URL [".$c["dataset_url"]."]";
 		return false;
 	}
 
@@ -1029,7 +1029,7 @@ function csv_to_array( &$c, $delimiter=',')
 	$handle = fopen($c["dataset_url"], 'r');
 	if( $handle === false )
 	{	
-		$c["errors"][] = "No content from URL";
+		$c["errors"][] = "No content from URL [".$c["dataset_url"]."]";
 		return false;
 	}
 
@@ -1085,7 +1085,7 @@ function xlsx_to_array( &$c )
 	$content = file_get_contents( $c["dataset_url"] );
 	if( !$content )
 	{	
-		$c["errors"][] = "No content from URL";
+		$c["errors"][] = "No content from URL [".$c["dataset_url"]."]";
 		return false;
 	}
 
