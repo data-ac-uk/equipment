@@ -13,7 +13,6 @@ class home {
 		if( preg_match( "/([a-z0-9-]+\.ac\.uk)$/", $hostname, $r ) )
 		{
 			$domain = $r[1];
-			print "<p>x</P><P>$remote_addr</p><p>$hostname</p>";
 			$rows = file( "../var/learning-providers-plus.tsv" );
 			foreach( $rows as $line )
 			{
@@ -53,7 +52,7 @@ class home {
 		{
 			$search .= "<div id='results-container' style='display:none'>";
   			$search .= "  <div id='results' class='eight columns'></div>";
-  			$search .= "  <div id='featured-result' class='eight columns'></div>";
+  			$search .= "  <div id='featured-result' class='seven columns'></div>";
 			$search .= "</div>";
 			# only do js on a javascript version of the UI
 			$search .= "<script src='/resources/quick-search.js.php' ></script>";
