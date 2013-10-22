@@ -12,12 +12,12 @@
 
 <> a oo:OrganizationProfileDocument ;
         dcterms:license <http://creativecommons.org/publicdomain/zero/1.0/> ;
-        foaf:primaryTopic <http://id.example.ac.uk> .
+        foaf:primaryTopic <http://id.example.ac.uk/> .
 
 # Some information about the organisation, most of this is optional but the
 # prefLabel, logo and sameAs to the learning-provider URI is strongly encouraged.
 
-<http://id.example.ac.uk>
+<http://id.example.ac.uk/>
         a org:FormalOrganization ;
         skos:prefLabel “The University of Example” ;
         skos:hiddenLabel “Example” ;
