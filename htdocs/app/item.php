@@ -21,14 +21,6 @@ class item {
 			return;
 		}
 
-		if( $suffix == "ttl" )
-		{
-			$ttl = file_get_contents( "../var/item/$id.ttl" );
-			header( "Content-type: text/turtle" );
-			print $ttl;
-			return;
-		}
-
 		print "unknown suffix";
 	}
 
@@ -44,6 +36,13 @@ class item {
 		}
 		
 		if( !isset($suffix) )
+		{
+			# would do clever content negotiation, but...
+			# for now...
+			$suffix = "html";
+		}
+
+		if( $suffix == "html" )
 		{
 			$data = json_decode( file_get_contents( "../var/item/$id" ), true );
 	
