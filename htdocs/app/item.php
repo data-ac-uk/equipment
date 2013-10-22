@@ -3,26 +3,65 @@ class item {
 
 	function fragment() {
                 $f3=Base::instance();
-		$id = $f3->get( "PARAMS.id" );
-		$id = preg_replace( '/[^a-f0-9]/','',$id );
+		@list( $id, $suffix ) = preg_split( '/\./', $f3->get( "PARAMS.id" ), 2 );
 
-		$data = json_decode( file_get_contents( "../var/item/$id" ), true );
-		print "<h2>".$data["title"]."</h2>";
+		if( !preg_match( '/^[a-f0-9]+$/',$id ) )
+		{
+			print "error- bad id.";
+			return;
+		}
+		
+		if( !isset($suffix) )
+		{
+			$data = json_decode( file_get_contents( "../var/item/$id" ), true );
 
-		print $data["content"];
+			print "<h2>".$data["title"]."</h2>";
+			print $data["content"];
+
+			return;
+		}
+
+		if( $suffix == "ttl" )
+		{
+			$ttl = file_get_contents( "../var/item/$id.ttl" );
+			header( "Content-type: text/turtle" );
+			print $ttl;
+			return;
+		}
+
+		print "unknown suffix";
 	}
 
 	function page()
 	{
                 $f3=Base::instance();
-		$id = $f3->get( "PARAMS.id" );
-		$id = preg_replace( '/[^a-f0-9]/','',$id );
+		@list( $id, $suffix ) = preg_split( '/\./', $f3->get( "PARAMS.id" ), 2 );
 
-		$data = json_decode( file_get_contents( "../var/item/$id" ), true );
+		if( !preg_match( '/^[a-f0-9]+$/',$id ) )
+		{
+			print "error- bad id $id";
+			return;
+		}
+		
+		if( !isset($suffix) )
+		{
+			$data = json_decode( file_get_contents( "../var/item/$id" ), true );
+	
+			$f3->set('html_title', $data["title"] );
+			$f3->set('content','content.html');
+			$f3->set('html_content', $data["content"] );
+			print Template::instance()->render( "page-template.html" );
+			return;
+		}
 
-		$f3->set('html_title', $data["title"] );
-		$f3->set('content','content.html');
-		$f3->set('html_content', $data["content"] );
-		print Template::instance()->render( "page-template.html" );
+		if( $suffix == "ttl" )
+		{
+			$ttl = file_get_contents( "../var/item/$id.ttl" );
+			header( "Content-type: text/turtle" );
+			print $ttl;
+			return;
+		}
+
+		print "unknown suffix";
 	}
 }

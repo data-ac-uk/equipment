@@ -200,6 +200,7 @@ foreach( $config as &$config_item )
 		$all_uniquip_rows []= $uniquip_row;
 		$search_rows []= itemToSearchTerms( $item );
 		processItemPage( $item );
+		processItemTurtle( $item );
 	}
 
 
@@ -937,6 +938,48 @@ function itemToSearchTerms( $item )
 	$cells []= $config_item["org_easting"];
 	$cells []= $config_item["org_northing"];
 	return join( "\t", $cells )."\n";
+}
+
+function processItemTurtle( $item )
+{
+	global $item_cache_dir;
+	global $config_item;
+
+	$ig = new Graphite();
+	graphCopy( $item->g, $ig, $item );
+
+	if( $item->has( "gr:hasMakeAndModel" ) )
+	{
+		$make_and_model = $item->get( "gr:hasMakeAndModel" );
+		graphCopy( $item->g, $ig, $make_and_model );
+		if( $make_and_model->has( "gr:hasManufacturer" ) )
+		{
+			$manufacturer = $make_and_model->get( "gr:hasManufacturer" );
+			graphCopy( $item->g, $ig, $manufacturer );
+		}
+	}
+	foreach( $item->all( "oo:primaryContact", "oo:contact" ) as $contact )
+	{
+		if( @$done[$contact->toString()] ) { continue; }
+		$done[$contact->toString()] = true;
+		graphCopy( $item->g, $ig, $contact );
+	}
+
+	$file = $item_cache_dir."/".itemCacheID( $item ).".ttl";
+	file_put_contents( $file, $ig->serialize( "Turtle" ) ) or die("can't write file: $file" );
+}
+
+function graphCopy( $g1, $g2, $item )
+{
+	foreach( $item->relations() as $rel )
+	{
+		if( $rel->nodeType() != "#relation" ) { continue; }
+
+		foreach( $item->all( $rel ) as $obj )
+		{
+			$g2->addTriple( "$item", "$rel", "$obj", $obj->datatype(), $obj->language() );
+		}
+	}
 }
 
 function processItemPage( $item )
