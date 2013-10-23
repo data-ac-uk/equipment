@@ -79,7 +79,7 @@
 <p >sidebar: American spelling of &ldquo;organization&rdquo;? Yes, we use the american spelling in the data structures. Sorry if that annoys people, but we decided to keep the &ldquo;z&rdquo; in all the semantics rather than have a muddle of UK and US spelling which is certain to create errors.</p>
 
 
-<div class='code'>{{ htmlspecialchars( file_get_contents( "examples/profile.ttl" )); }}</div>
+<div class='code'>{{ preg_replace( "/\n/", "<br/>", htmlspecialchars( file_get_contents( "examples/profile.ttl" ))); }}</div>
 
 <p >This isn&rsquo;t everything that can go in a profile document, but it should be a summary of your organisation, not a complete data catalog.</p>
 <p >We strongly recommend using a CC0 license (public domain dedication) for the organisational document. This makes it easy for 3rd parties to use it and combine many such documents without problems. It is very possible you won&rsquo;t be willing to CC0 license your equipment data, but the profile document should not contain anything you don&rsquo;t want widely and freely reused, so CC0 is appropriate for it.</p>
