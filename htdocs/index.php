@@ -58,6 +58,7 @@ $f3->route('GET /poster',
 $f3->route('GET /', 'home->page' );
 $f3->route('GET /status', 'status->page' );
 $f3->route('GET /search', 'search->fragment' );
+$f3->route('GET /data/search', 'search->data' );
 $f3->route('GET	/org/@id', 'org->page' );
 $f3->route('GET	/item/@id', 'item->page' );
 $f3->route('GET /item/@id.fragment', 'item->fragment' );

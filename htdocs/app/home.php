@@ -33,7 +33,7 @@ class home {
 		if( $q != "" )
 		{
 			require_once( "app/search.php" );
-			$results = search::perform( $q );
+			$results = search::render( search::perform( $q ) );
 			$search .= "<div id='results-container'>";
   			$search .= "  <div id='results' class='sixteen columns'>";
 			if( sizeof($results) == 0 )

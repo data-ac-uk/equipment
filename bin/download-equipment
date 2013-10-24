@@ -68,7 +68,7 @@ foreach( $config as &$config_item )
 	{
 		$err = "Unknown type: ".$config_item["dataset_type"];
 		$config_item["errors"][] = $err;
-		print "$err\n";
+		print "$err ".$config_item["org_ukprn"]."\n";
 		continue;
 	}
 
@@ -101,7 +101,7 @@ foreach( $config as &$config_item )
 			$err = "Failed to get new data. Also no cache available.";
 		}
 		$config_item["errors"][] = $err;
-		print "$err\n";
+		print "$err ".$config_item["org_ukprn"]."\n";
 	}
 }	
 
@@ -200,6 +200,7 @@ foreach( $config as &$config_item )
 		$all_uniquip_rows []= $uniquip_row;
 		$search_rows []= itemToSearchTerms( $item );
 		processItemPage( $item );
+		processItemTurtle( $item );
 	}
 
 
@@ -392,8 +393,60 @@ function rdf_to_graph( &$c )
 		return false; 
 	}
 
-	return $graph;
+	$aliases = array();
+	foreach( array( "oo:Equipment", "oo:Facility" ) as $type )
+	{
+		foreach( $graph->allOfType( $type ) as $item  )
+		{
+
+			$id = md5( "$item" );
+			$uri = "http://id.equipment.data.ac.uk/item/$id";
+			$url = "http://equipment.data.ac.uk/item/$id.html";
+			$graph->addCompressedTriple( "$item", "http://id.equipment.data.ac.uk/ns/hasCode", $id, "literal" );
+			$graph->addCompressedTriple( "$item", "http://id.equipment.data.ac.uk/ns/hasURI", "$uri", "literal" );
+			$graph->addCompressedTriple( "$item", "http://id.equipment.data.ac.uk/ns/hasPage", "$url" );
+			$aliases[ "$item" ] = $uri;	
+		}
+	}
+
+	$graph2 = cloneGraphWithAliases( $graph, $aliases );
+
+	return $graph2;
 }
+
+function cloneGraphWithAliases( $g1, $aliases )
+{
+	$g2 = new Graphite();
+
+	$triples = $g1->toArcTriples();
+	foreach( $triples as &$t )
+	{
+		if( @$aliases[$t["s"]] ) { $t["s"] = $aliases[$t["s"]]; }
+		if( @$aliases[$t["p"]] ) { $t["p"] = $aliases[$t["p"]]; }
+
+		if( $t["o_type"] == "literal" )
+		{
+			if( @$aliases[$t["o_datatype"]] ) { $t["o_datatype"] = $aliases[$t["o_datatype"]]; }
+		}
+
+		if( $t["o_type"] == "resource" )
+		{
+			if( @$aliases[$t["o"]] ) { $t["o"] = $aliases[$t["o"]]; }
+		}
+	}
+
+	foreach( $aliases as $from=>$to )
+	{
+		$triples []= array( 
+			"s" => $to,
+			"p" => "http://www.w3.org/2002/07/owl#sameAs",
+			"o" => $from,
+			"o_type" => "resource" );
+	}
+	$g2->addTriples( $triples );
+	return $g2;
+}
+			
 
 
 #	<institution>University of Bath</institution>
@@ -426,7 +479,7 @@ function pure_to_graph( &$c )
 	$content = file_get_contents( $c["dataset_url"] );
 	if( !$content )
 	{	
-		$c["errors"][] = "No content from URL";
+		$c["errors"][] = "No content from URL [".$c["dataset_url"]."]";
 		return false;
 	}
 
@@ -441,8 +494,16 @@ function pure_to_graph( &$c )
 	$graph->ns( "org", "http://www.w3.org/ns/org#" );
 	foreach( $xml->equipment as $item )
 	{
-		$uri = "urn:uuid:".(string)$item->uid;
+		$id = (string)$item->uid;
+		$uri = "http://id.equipment.data.ac.uk/item/$id";
+		$url = "http://equipment.data.ac.uk/item/$id.html";
+
 		$graph->addCompressedTriple( $uri, "rdf:type", "oo:Equipment" );
+
+		$graph->addCompressedTriple( "$item", "http://id.equipment.data.ac.uk/ns/hasCode", $id, "literal" );
+		$graph->addCompressedTriple( "$item", "http://id.equipment.data.ac.uk/ns/hasURI", "$uri", "literal" );
+		$graph->addCompressedTriple( "$item", "http://id.equipment.data.ac.uk/ns/hasPage", "$url" );
+
 		$graph->addCompressedTriple( $uri, "rdfs:label", (string)$item->title, "literal" );
 		$graph->addCompressedTriple( $uri, "oo:formalOrganization", "http://id.learning-provider.data.ac.uk/ukprn/".$c["org_ukprn"] );
 		if( $item->description != "" )
@@ -539,57 +600,67 @@ function kitcat_to_graph( &$c )
 	$graph = new Graphite();
 	foreach( $items as $item )
 	{
-		$uri = $item["id"];
+		$their_uri = $item["id"];
 
 		# assumption-- everything from kitcat is equipment		
 		$graph->addCompressedTriple( $uri, "rdf:type", "oo:Equipment" );
 
-		$graph->addCompressedTriple( $uri, "rdfs:label", $item["name"], "literal" );
-		$graph->addCompressedTriple( $uri, "oo:formalOrganization", "http://id.learning-provider.data.ac.uk/ukprn/".$c["org_ukprn"] );
+		$id = md5( "$item" );
+		$our_uri = "http://id.equipment.data.ac.uk/item/$id";
+		$url = "http://equipment.data.ac.uk/item/$id.html";
+
+		$graph->addCompressedTriple( $our_uri, "http://id.equipment.data.ac.uk/ns/hasCode", $id, "literal" );
+		$graph->addCompressedTriple( $our_uri, "http://id.equipment.data.ac.uk/ns/hasURI", "$our_uri", "literal" );
+		$graph->addCompressedTriple( $our_uri, "http://id.equipment.data.ac.uk/ns/hasPage", "$url" );
+		$graph->addCompressedTriple( $our_uri, "owl:sameAs", "$their_uri" );
+
+
+		$graph->addCompressedTriple( $our_uri, "rdfs:label", $item["name"], "literal" );
+		$graph->addCompressedTriple( $our_uri, "oo:formalOrganization", "http://id.learning-provider.data.ac.uk/ukprn/".$c["org_ukprn"] );
 
 		if( $item["model"] != ""  || $item["manufacturer"] != "" )
 		{
-			$graph->addCompressedTriple( $uri, "gr:hasMakeAndModel", "$uri#model" );
-			$graph->addCompressedTriple( "$uri#model", "rdf:type", "gr:ProductOrServiceModel" );
+			$graph->addCompressedTriple( $our_uri, "gr:hasMakeAndModel", "$our_uri#model" );
+			$graph->addCompressedTriple( "$our_uri#model", "rdf:type", "gr:ProductOrServiceModel" );
 			if( $item["model"] != "" )
 			{
-				$graph->addCompressedTriple( "$uri#model", "rdfs:label", $item["model"], "literal" ); 
+				$graph->addCompressedTriple( "$our_uri#model", "rdfs:label", $item["model"], "literal" ); 
 			}
 			if( $item["manufacturer"] != "" )
 			{
-				$graph->addCompressedTriple( "$uri#model", "gr:hasManufacturer", "$uri#manu" );
-				$graph->addCompressedTriple( "$uri#manu", "rdf:type", "gr:BusinessEntity" );
-				$graph->addCompressedTriple( "$uri#manu", "rdfs:label", $item["manufacturer"], "literal" ); 
+				$graph->addCompressedTriple( "$our_uri#model", "gr:hasManufacturer", "$our_uri#manu" );
+				$graph->addCompressedTriple( "$our_uri#manu", "rdf:type", "gr:BusinessEntity" );
+				$graph->addCompressedTriple( "$our_uri#manu", "rdfs:label", $item["manufacturer"], "literal" ); 
 			}
 		}
 
 		if( $item["description"] != "" )
 		{
 			# kitcat always makes HTML fragment descriptions	
-			$graph->addCompressedTriple( $uri, "dcterms:description", $item["description"], "http://purl.org/xtypes/Fragment-HTML" );
+			$graph->addCompressedTriple( $our_uri, "dcterms:description", $item["description"], "http://purl.org/xtypes/Fragment-HTML" );
 		}
 		
 		if( $item["contact1"] != "" )
 		{	
-			$graph->addCompressedTriple( $uri, "oo:contact", "$uri#contact1" );
-			$graph->addCompressedTriple( $uri, "oo:primaryContact", "$uri#contact1" );
-			$graph->addCompressedTriple( "$uri#contact1", "foaf:mbox", "mailto:".$item["contact1"] );
+			$graph->addCompressedTriple( $our_uri, "oo:contact", "$our_uri#contact1" );
+			$graph->addCompressedTriple( $our_uri, "oo:primaryContact", "$our_uri#contact1" );
+			$graph->addCompressedTriple( "$our_uri#contact1", "foaf:mbox", "mailto:".$item["contact1"] );
 		}
 
 		if( $item["contact2"] != "" )
 		{	
-			$graph->addCompressedTriple( $uri, "oo:contact", "$uri#contact2" );
-			$graph->addCompressedTriple( "$uri#contact2", "foaf:mbox", "mailto:".$item["contact2"] );
+			$graph->addCompressedTriple( $our_uri, "oo:contact", "$our_uri#contact2" );
+			$graph->addCompressedTriple( "$our_uri#contact2", "foaf:mbox", "mailto:".$item["contact2"] );
 		}
 
 		if( $item["link"] != "" )
 		{	
-			$graph->addCompressedTriple( $uri, "foaf:page", $item["link"] );
+			$graph->addCompressedTriple( $our_uri, "foaf:page", $item["link"] );
 		}
 
 		if( $item["image"] != "" )
 		{	
-			$graph->addCompressedTriple( $uri, "foaf:depiction", $item["image"] );
+			$graph->addCompressedTriple( $our_uri, "foaf:depiction", $item["image"] );
 		}
 	}
 	
@@ -630,15 +701,18 @@ function uniquip_to_graph( &$c, $items )
 	{
 		$n++;
 		$id = md5( join( "|", $item ) );
-		$uri = "http://id.equipment.data.ac.uk/ukprn/".$c["org_ukprn"]."/item/".rawurlencode($id);
+		$uri = "http://id.equipment.data.ac.uk/item/$id";
 		if( $graph->resource( $uri )->has( "rdfs:label" ) )
 		{
 			$c["errors"][] = "Item $n appears to be a duplicate";
 			continue;
 		}
 			
-
+		$url = "http://equipment.data.ac.uk/item/$id.html";
 		$graph->addCompressedTriple( $uri, "rdf:type", "oo:Equipment" );
+		$graph->addCompressedTriple( $uri, "http://id.equipment.data.ac.uk/ns/hasCode", $id, "literal" );
+		$graph->addCompressedTriple( $uri, "http://id.equipment.data.ac.uk/ns/hasURI", $uri, "literal" );
+		$graph->addCompressedTriple( $uri, "http://id.equipment.data.ac.uk/ns/hasPage", "$url" );
 
 		# any &amp; or &gt; will be decoded in the label
 		$graph->addCompressedTriple( $uri, "rdfs:label", htmlspecialchars_decode($item["Name"]), "literal" );
@@ -916,7 +990,7 @@ function itemLooksLegit( $item )
 
 function itemCacheID( $item )
 {
-	return md5( $item->uri );
+	return $item->getLiteral( "http://id.equipment.data.ac.uk/ns/hasCode" );
 }
 
 function itemToSearchTerms( $item )
@@ -937,6 +1011,50 @@ function itemToSearchTerms( $item )
 	$cells []= $config_item["org_easting"];
 	$cells []= $config_item["org_northing"];
 	return join( "\t", $cells )."\n";
+}
+
+function processItemTurtle( $item )
+{
+	global $item_cache_dir;
+	global $config_item;
+
+	$ig = new Graphite();
+	graphCopy( $item->g, $ig, $item );
+
+	if( $item->has( "gr:hasMakeAndModel" ) )
+	{
+		$make_and_model = $item->get( "gr:hasMakeAndModel" );
+		graphCopy( $item->g, $ig, $make_and_model );
+		if( $make_and_model->has( "gr:hasManufacturer" ) )
+		{
+			$manufacturer = $make_and_model->get( "gr:hasManufacturer" );
+			graphCopy( $item->g, $ig, $manufacturer );
+		}
+	}
+	foreach( $item->all( "oo:primaryContact", "oo:contact" ) as $contact )
+	{
+		if( @$done[$contact->toString()] ) { continue; }
+		$done[$contact->toString()] = true;
+		graphCopy( $item->g, $ig, $contact );
+	}
+
+	$file = $item_cache_dir."/".itemCacheID( $item ).".ttl";
+	file_put_contents( $file, $ig->serialize( "Turtle" ) ) or die("can't write file: $file" );
+}
+
+function graphCopy( $g1, $g2, $item )
+{
+	foreach( $item->relations() as $rel )
+	{
+		if( $rel->nodeType() != "#relation" ) { continue; }
+
+		foreach( $item->all( $rel ) as $obj )
+		{
+			$datatype = $obj->datatype();
+			if( @!$datatype && $obj->nodeType() == "#literal" ) { $datatype = "literal"; }
+			$g2->addTriple( "$item", "$rel", "$obj", $datatype, $obj->language() );
+		}
+	}
 }
 
 function processItemPage( $item )
@@ -1029,7 +1147,7 @@ function csv_to_array( &$c, $delimiter=',')
 	$handle = fopen($c["dataset_url"], 'r');
 	if( $handle === false )
 	{	
-		$c["errors"][] = "No content from URL";
+		$c["errors"][] = "No content from URL [".$c["dataset_url"]."]";
 		return false;
 	}
 
@@ -1085,7 +1203,7 @@ function xlsx_to_array( &$c )
 	$content = file_get_contents( $c["dataset_url"] );
 	if( !$content )
 	{	
-		$c["errors"][] = "No content from URL";
+		$c["errors"][] = "No content from URL [".$c["dataset_url"]."]";
 		return false;
 	}
 
