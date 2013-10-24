@@ -362,6 +362,7 @@ function rdf_to_graph( &$c )
 	global $bin_rapper;
 
 	$graph = new Graphite();
+	$graph->ns( "oldcerif", "http://spi-fm.uca.es/neologism/cerif#" );
 
 	print "Loading RDF: ".$c["dataset_url"]."\n";
 	print "Downloading via Rapper\n";
@@ -394,7 +395,7 @@ function rdf_to_graph( &$c )
 	}
 
 	$aliases = array();
-	foreach( array( "oo:Equipment", "oo:Facility" ) as $type )
+	foreach( array( "oo:Facility", "oldcerif:Facility", "oo:Equipment", "oldcerif:Equipment" ) as $type )
 	{
 		foreach( $graph->allOfType( $type ) as $item  )
 		{
@@ -500,9 +501,9 @@ function pure_to_graph( &$c )
 
 		$graph->addCompressedTriple( $uri, "rdf:type", "oo:Equipment" );
 
-		$graph->addCompressedTriple( "$item", "http://id.equipment.data.ac.uk/ns/hasCode", $id, "literal" );
-		$graph->addCompressedTriple( "$item", "http://id.equipment.data.ac.uk/ns/hasURI", "$uri", "literal" );
-		$graph->addCompressedTriple( "$item", "http://id.equipment.data.ac.uk/ns/hasPage", "$url" );
+		$graph->addCompressedTriple( "$uri", "http://id.equipment.data.ac.uk/ns/hasCode", $id, "literal" );
+		$graph->addCompressedTriple( "$uri", "http://id.equipment.data.ac.uk/ns/hasURI", "$uri", "literal" );
+		$graph->addCompressedTriple( "$uri", "http://id.equipment.data.ac.uk/ns/hasPage", "$url" );
 
 		$graph->addCompressedTriple( $uri, "rdfs:label", (string)$item->title, "literal" );
 		$graph->addCompressedTriple( $uri, "oo:formalOrganization", "http://id.learning-provider.data.ac.uk/ukprn/".$c["org_ukprn"] );
@@ -991,6 +992,18 @@ function itemLooksLegit( $item )
 
 function itemCacheID( $item )
 {
+	if( !$item->has( "http://id.equipment.data.ac.uk/ns/hasCode" ) )
+	{
+		print $item->dumpText();
+		print "missing hasCode";
+		exit( 1 );
+	}
+	if( $item->getLiteral( "http://id.equipment.data.ac.uk/ns/hasCode" ) == "" )
+	{
+		print $item->dumpText();
+		print "empty hasCode";
+		exit( 1 );
+	}
 	return $item->getLiteral( "http://id.equipment.data.ac.uk/ns/hasCode" );
 }
 
