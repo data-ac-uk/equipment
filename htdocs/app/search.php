@@ -102,7 +102,7 @@ class search {
 			$ttl_url = "../var/item/".$result["item_code"].".ttl";
 			$rgraph->load( $ttl_url );
 		}
-		print $rgraph->serialize( "Turtle" );
+		print $rgraph->serialize( "RDFXML" );
 	}
 
 	static function render( $results )
