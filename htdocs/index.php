@@ -63,5 +63,58 @@ $f3->route('GET	/org/@id', 'org->page' );
 $f3->route('GET	/item/@id', 'item->page' );
 $f3->route('GET /item/@id.fragment', 'item->fragment' );
 
+$f3->set('ONERROR',function() use($f3) {
+ 	$f3=Base::instance();
+
+	$error = $f3->get('ERROR');
+	$error_title = constant('Base::HTTP_'.$error['code']);
+	
+	
+   	$f3->set('html_title', "{$error['code']} {$error_title}" );
+	$f3->set('content','content.html');
+	
+	$c[] = "<h2>{$error_title}</h2>";
+	
+	switch($error['code']){
+		case "404":
+			$c[] = "<p>The requested URL {$_SERVER['REDIRECT_URL']} was not found on this server.</p>";
+		break;
+	}
+	
+	if($f3->get('DEBUG')>0){
+		$c[] = "<hr/>";
+		$c[] = "<p>{$error['text']}</p>";
+		foreach ($error['trace'] as $frame) {
+			$line='';
+			if (isset($frame['file']) && 
+				(empty($frame['class']) || $frame['class']!='Magic') &&
+				(empty($frame['function']) || !preg_match('/^(?:(?:trigger|user)_error|__call|call_user_func)/',$frame['function']))
+				) {
+				
+				$addr=$f3->fixslashes($frame['file']).':'.$frame['line'];
+				if (isset($frame['class']))
+					$line.=$frame['class'].$frame['type'];
+				if (isset($frame['function'])) {
+					$line.=$frame['function'];
+					if (!preg_match('/{.+}/',$frame['function'])) {
+						$line.='(';
+						if (!empty($frame['args']))
+							$line.=$f3->csv($frame['args']);
+						$line.=')';
+					}
+				}
+				$str=$addr.' '.$line;
+				$c[] = '&bull; '.nl2br($f3->encode($str)).'<br />';
+			}
+		}
+	}
+	
+	$f3->set('html_content',join("",$c));
+
+	print Template::instance()->render( "page-template.html" );
+	exit();
+});
+
+
 $f3->run();
 exit;
