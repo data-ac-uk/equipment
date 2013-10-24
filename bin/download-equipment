@@ -363,6 +363,7 @@ function rdf_to_graph( &$c )
 
 	$graph = new Graphite();
 	$graph->ns( "oldcerif", "http://spi-fm.uca.es/neologism/cerif#" );
+	$graph->ns( "gr", "http://purl.org/goodrelations/v1#" );
 
 	print "Loading RDF: ".$c["dataset_url"]."\n";
 	print "Downloading via Rapper\n";
