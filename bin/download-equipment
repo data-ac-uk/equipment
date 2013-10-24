@@ -602,12 +602,13 @@ function kitcat_to_graph( &$c )
 	{
 		$their_uri = $item["id"];
 
-		# assumption-- everything from kitcat is equipment		
-		$graph->addCompressedTriple( $uri, "rdf:type", "oo:Equipment" );
 
-		$id = md5( "$item" );
+		$id = md5( $their_uri );
 		$our_uri = "http://id.equipment.data.ac.uk/item/$id";
 		$url = "http://equipment.data.ac.uk/item/$id.html";
+
+		# assumption-- everything from kitcat is equipment		
+		$graph->addCompressedTriple( $our_uri, "rdf:type", "oo:Equipment" );
 
 		$graph->addCompressedTriple( $our_uri, "http://id.equipment.data.ac.uk/ns/hasCode", $id, "literal" );
 		$graph->addCompressedTriple( $our_uri, "http://id.equipment.data.ac.uk/ns/hasURI", "$our_uri", "literal" );
