@@ -26,12 +26,12 @@ class item {
 
 	function page()
 	{
-                $f3=Base::instance();
+        $f3=Base::instance();
 		@list( $id, $suffix ) = preg_split( '/\./', $f3->get( "PARAMS.id" ), 2 );
 
 		if( !preg_match( '/^[a-f0-9]+$/',$id ) )
 		{
-			print "error- bad id $id";
+			$f3->error(500,"error- bad id $id");
 			return;
 		}
 		
@@ -44,6 +44,8 @@ class item {
 
 		if( $suffix == "html" )
 		{
+			if(!file_exists( "../var/item/$id")) { $f3->error(404); }
+	
 			$data = json_decode( file_get_contents( "../var/item/$id" ), true );
 	
 			$f3->set('html_title', $data["title"] );
@@ -55,12 +57,14 @@ class item {
 
 		if( $suffix == "ttl" )
 		{
+			if(!file_exists( "../var/item/$id.ttl")) { $f3->error(404); }
 			$ttl = file_get_contents( "../var/item/$id.ttl" );
 			header( "Content-type: text/turtle" );
 			print $ttl;
 			return;
 		}
-
-		print "unknown suffix";
+		
+		$f3->error(500,"unknown suffix");
+		
 	}
 }
