@@ -88,7 +88,7 @@ class search {
 		}
 		$base_url = "http://equipment.data.ac.uk/";
 
-		$feed_url = $base_url."/data/search?q=".urlencode( $q );
+		$feed_url = $base_url."data/search?q=".urlencode( $q );
 		$rgraph = new Graphite();
 		$rgraph->ns( "rss", "http://purl.org/rss/1.0/" );
 		$rgraph->addCompressedTriple( $feed_url, "rdf:type", "rss:channel" );
