@@ -35,6 +35,9 @@ $bin_ntcat = "$base_dir/lib/ntcat/bin/ntcat";
 
 $config = read_config( "$base_dir/etc/test-list.tsv" );
 
+#builds an array of items to catch old records for deletion.
+$item_cache_items = array();
+
 print "STAGE 1\n";
 foreach( $config as &$config_item )
 {
@@ -327,6 +330,9 @@ fclose($fh);
 exec( "$bin_ntcat $base_dir/htdocs/data/org/*.nt > $base_dir/htdocs/data/equipment.nt" );
 exec( "$bin_rapper -e -i ntriples -o turtle $base_dir/htdocs/data/equipment.nt > $base_dir/htdocs/data/equipment.ttl" );
 
+# "Tidy up:"
+echo "Tidying up old cache items";
+check_and_remove_items($item_cache_dir);
 exit;
 
 
@@ -1031,7 +1037,8 @@ function processItemTurtle( $item )
 {
 	global $item_cache_dir;
 	global $config_item;
-
+	global $item_cache_items;
+	
 	$ig = new Graphite();
 	graphCopy( $item->g, $ig, $item );
 
@@ -1052,8 +1059,23 @@ function processItemTurtle( $item )
 		graphCopy( $item->g, $ig, $contact );
 	}
 
-	$file = $item_cache_dir."/".itemCacheID( $item ).".ttl";
+	$itemid = itemCacheID( $item );
+	$file = itemCachePath( $itemid , "ttl");
 	file_put_contents( $file, $ig->serialize( "Turtle" ) ) or die("can't write file: $file" );
+}
+
+function itemCachePath( $itemid, $suffix = false ){
+	global $item_cache_dir;
+	
+	$path = "{$item_cache_dir}/".substr($itemid,0,2)."/".substr($itemid,2,2);
+	if(!file_exists($path)){
+		mkdir($path,0755,true);
+	}
+	$path .= "/".$itemid;
+	if($suffix !== false) {
+		$path .= ".".$suffix;
+	}
+	return $path;
 }
 
 function graphCopy( $g1, $g2, $item )
@@ -1074,6 +1096,7 @@ function graphCopy( $g1, $g2, $item )
 function processItemPage( $item )
 {
 	global $item_cache_dir;
+	global $item_cache_items;
 	global $config_item;
 
 	# create cache for displaying results
@@ -1144,7 +1167,12 @@ function processItemPage( $item )
 		"title"=>(string)$item->label(),
 		"content"=>join( "", $html ) );
 
-	$file = $item_cache_dir."/".itemCacheID( $item );
+	$itemid = itemCacheID( $item );
+	
+	#add to array
+	$item_cache_items[] = $itemid;
+	
+	$file = itemCachePath($itemid, "html");
 	$fh = fopen($file, 'w') or die("can't open file: $file" );
 	fwrite($fh, json_encode( $data ) );
 	fclose( $fh );
@@ -1265,3 +1293,34 @@ function xlsx_to_array( &$c )
 	return $data;
 }
 
+
+
+function check_and_remove_items($dir) 
+{ 
+	global $item_cache_items;
+	
+    $root = scandir($dir); 
+    foreach($root as $value) 
+    { 
+        if($value === '.' || $value === '..') {
+			continue;
+		} 
+        if(is_file("$dir/$value")) {
+			$id = pathinfo($value,PATHINFO_FILENAME);
+			
+			if(!in_array($id,$item_cache_items)){
+				unlink("$dir/$value");
+				echo "delete $dir/$value \n";
+			}
+			
+			continue;
+		} 
+        
+		check_and_remove_items("$dir/$value");
+		
+    }  
+	#catch . and ..
+	if(count(scandir($dir))==2){
+		rmdir($dir);
+	}
+}
