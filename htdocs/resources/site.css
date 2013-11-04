@@ -3,7 +3,14 @@
 	margin-top: 1em;
 	margin-bottom: 1em;
 }
-h1 { padding-right: 300px; }
+h1 { 
+	padding-right: 300px; 
+	font-size:150%;
+	margin-top:0px;
+	border-bottom:1px;
+	color: #333333;
+	font-weight: 400;
+}
 h2 {
 	margin-top: 1em;
 }

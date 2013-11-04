@@ -31,7 +31,7 @@ class item {
 
 		if( !preg_match( '/^[a-f0-9]+$/',$id ) )
 		{
-			$f3->error(500,"error- bad id $id");
+			$f3->error(404,"error- bad id $id");
 			return;
 		}
 		
@@ -64,7 +64,7 @@ class item {
 			return;
 		}
 		
-		$f3->error(500,"unknown suffix");
+		$f3->error(404,"unknown suffix");
 		
 	}
 }

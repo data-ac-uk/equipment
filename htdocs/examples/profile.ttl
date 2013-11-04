@@ -19,10 +19,10 @@
 
 <http://id.example.ac.uk/>
         a org:FormalOrganization ;
-        skos:prefLabel “The University of Example” ;
-        skos:hiddenLabel “Example” ;
-        skos:hiddenLabel “Example U” ;
-        vcard:sortLabel “Example, University of” ;
+        skos:prefLabel "The University of Example" ;
+        skos:hiddenLabel "Example" ;
+        skos:hiddenLabel "Example U" ;
+        vcard:sortLabel "Example, University of" ;
         vcard:tel <tel:+441234567890> ;
         foaf:logo <http://www.example.ac.uk/example-logo.png> ;
         foaf:homepage <http://www.example.ac.uk/> ;
