@@ -513,7 +513,7 @@ function pure_to_graph( &$c )
 	$graph->ns( "org", "http://www.w3.org/ns/org#" );
 	foreach( $xml->equipment as $item )
 	{
-		$id = (string)$item->uid;
+		$id = md5((string)$item->uid);
 		$uri = "http://id.equipment.data.ac.uk/item/$id";
 		$url = "http://equipment.data.ac.uk/item/$id.html";
 
