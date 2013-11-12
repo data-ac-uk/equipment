@@ -47,13 +47,16 @@ class search {
 		
 			$key = strtoupper($title).$code;
 			$dinfo = "";
-			if( @$e )
+			if( @$e && ($n2 != 0 && $e2 != 0 ) )
 			{
-				$dist = round(sqrt( ($e2-$e)*($e2-$e) + ($n2-$n)*($n2-$n) ));
+				$dist = round(sqrt( pow($e2-$e,2) + pow($n2-$n,2)));
 				$key = sprintf( "%10d", $dist ).$key;
 				
 				if( $units == "miles" ) { $dist *= 0.621371192; }
 				$dinfo = (round( $dist / 100 )/10)." ".$units;
+			}else{
+				$key = "9999999999".$key;
+				$dinfo = NULL;
 			}
 				
 			$results[$key] = array(
@@ -88,7 +91,7 @@ class search {
 		}
 		$base_url = "http://equipment.data.ac.uk/";
 
-		$feed_url = $base_url."/data/search?q=".urlencode( $q );
+		$feed_url = $base_url."data/search?q=".urlencode( $q );
 		$rgraph = new Graphite();
 		$rgraph->ns( "rss", "http://purl.org/rss/1.0/" );
 		$rgraph->addCompressedTriple( $feed_url, "rdf:type", "rss:channel" );

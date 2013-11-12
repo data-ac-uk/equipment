@@ -12,7 +12,7 @@ class status {
 		$c []= "<table class='status'>";
 		$c []= "<tr>";
 		$c []= "<th></th>";
-		$c []= "<th>UKPRN</th>";
+		$c []= "<th>ID</th>";
 		$c []= "<th>Organisation</th>";
 		$c []= "<th>Type</th>";
 		$c []= "<th>Source</th>";
@@ -23,18 +23,18 @@ class status {
 		$c []= "</tr>";
 		foreach( $status as $feed )
 		{
-			$org_id = "ukprn-".$feed["org_ukprn"];
+			$org_id = "{$feed["org_idscheme"]}/{$feed["org_id"]}";
 			$c []= "<tr>";
 			#$c []= "<td><a href='".$feed["org_url"]."'><img src='".$feed["org_logo"]."' /></a></td>";
 			$c []= "<td><a href='/org/$org_id'>view</a></td>";
-			$c []= "<td>".$feed["org_ukprn"]."</td>";
+			$c []= "<td>".$feed["org_idscheme"]."/".$feed["org_id"]."</td>";
 			$c []= "<td>".$feed["org_name"]."</td>";
 			$c []= "<td>".$feed["dataset_type"]."</td>";
 			$c []= "<td><a href='".$feed["dataset_url"]."'>dataset</a></td>";
-			$c []= "<td><a href='/data/org/$org_id.json'>JSON</a>, ";
-			$c []= "<a href='/data/org/$org_id.csv'>CSV</a>, ";
-			$c []= "<a href='/data/org/$org_id.tsv'>TSV</a>, ";
-			$c []= "<a href='/data/org/$org_id.ttl'>RDF&nbsp;(TTL)</a></td>";
+			$c []= "<td><a href='/org/$org_id.json'>JSON</a>, ";
+			$c []= "<a href='/org/$org_id.csv'>CSV</a>, ";
+			$c []= "<a href='/org/$org_id.tsv'>TSV</a>, ";
+			$c []= "<a href='/org/$org_id.ttl'>RDF&nbsp;(TTL)</a></td>";
 			$c []= "<td>".$feed["items"]."</td>";
 			$c []= "<td>".@date( "D M jS, Y\nG:i", $feed["dataset_timestamp"])."</td>";
 			$c []= "<td>";

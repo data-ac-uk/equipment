@@ -44,9 +44,11 @@ class item {
 
 		if( $suffix == "html" )
 		{
-			if(!file_exists( "../var/item/$id")) { $f3->error(404); }
-	
-			$data = json_decode( file_get_contents( "../var/item/$id" ), true );
+			
+			$path = $this->itemCachePath($id,"html");
+			if(!file_exists( $path )) { $f3->error(404); }
+			
+			$data = json_decode( file_get_contents( $path ), true );
 	
 			$f3->set('html_title', $data["title"] );
 			$f3->set('content','content.html');
@@ -57,8 +59,9 @@ class item {
 
 		if( $suffix == "ttl" )
 		{
-			if(!file_exists( "../var/item/$id.ttl")) { $f3->error(404); }
-			$ttl = file_get_contents( "../var/item/$id.ttl" );
+			$path = $this->itemCachePath($id,"ttl");
+			if(!file_exists( $path)) { $f3->error(404); }
+			$ttl = file_get_contents( $path );
 			header( "Content-type: text/turtle" );
 			print $ttl;
 			return;
@@ -67,4 +70,16 @@ class item {
 		$f3->error(404,"unknown suffix");
 		
 	}
+	
+	function itemCachePath( $itemid, $suffix = false ){
+	
+		$path = "../var/item/".substr($itemid,0,2)."/".substr($itemid,2,2);
+	
+		$path .= "/".$itemid;
+		if($suffix !== false) {
+			$path .= ".".$suffix;
+		}
+		return $path;
+	}
+	
 }
