@@ -503,11 +503,6 @@ function pure_to_graph( &$c )
 		return false;
 	}
 
-	# fix to buggy XML
-	$lines = preg_split( "/\n/", $content );
-	$lines[1]= "<items>";
-	array_push( $lines, "</items>" );
-	$content = join( "\n", $lines );
 	$xml = simplexml_load_string( $content );
 
 	$graph = new Graphite();
