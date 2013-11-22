@@ -59,9 +59,27 @@ $f3->route('GET /', 'home->page' );
 $f3->route('GET /status', 'status->page' );
 $f3->route('GET /search', 'search->fragment' );
 $f3->route('GET /data/search', 'search->data' );
-$f3->route('GET	/org/@id', 'org->page' );
+$f3->route('GET	/org/@type/@id', 'org->page' );
 $f3->route('GET	/item/@id', 'item->page' );
 $f3->route('GET /item/@id.fragment', 'item->fragment' );
+
+$f3->route('GET /org/ukprn-@id',
+    function() {
+        $f3=Base::instance();
+		$id = $f3->get('PARAMS.id');
+		$type = (substr($id,0,1)=='X') ? 'other' : 'ukprn';
+		$f3->reroute("/org/$type/$id");
+    }
+);
+
+$f3->route('GET /data/org/ukprn-@id',
+    function() {
+        $f3=Base::instance();
+		$id = $f3->get('PARAMS.id');
+		$type = (substr($id,0,1)=='X') ? 'other' : 'ukprn';
+		$f3->reroute("/org/$type/$id");
+    }
+);
 
 $f3->set('ONERROR',function() use($f3) {
  	$f3=Base::instance();

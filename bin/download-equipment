@@ -35,6 +35,9 @@ $bin_ntcat = "$base_dir/lib/ntcat/bin/ntcat";
 
 $config = read_config( "$base_dir/etc/test-list.tsv" );
 
+#builds an array of items to catch old records for deletion.
+$item_cache_items = array();
+
 print "STAGE 1\n";
 foreach( $config as &$config_item )
 {
@@ -74,8 +77,8 @@ foreach( $config as &$config_item )
 
 	# filename has ukprn- as a prefix as in the future there may be data from organisations
 	# without a ukprn. Who can say for sure!
-	$cache_file_ttl = "$org_cache_dir/ukprn-".$config_item["org_ukprn"].".ttl";
-	$cache_file_nt = "$org_cache_dir/ukprn-".$config_item["org_ukprn"].".nt";
+	$cache_file_ttl = "$org_cache_dir/{$config_item["org_idscheme"]}-{$config_item["org_id"]}.ttl";
+	$cache_file_nt = "$org_cache_dir/{$config_item["org_idscheme"]}-{$config_item["org_id"]}.nt";
 		
 	if( $graph != null && count( $graph->toArcTriples() ) > 0 ) 
 	{
@@ -113,7 +116,7 @@ $search_rows = array();
 $all_uniquip_rows = array();
 foreach( $config as &$config_item )
 {
-	$file = "$org_cache_dir/ukprn-".$config_item["org_ukprn"].".ttl";
+	$file = "$org_cache_dir/{$config_item["org_idscheme"]}-{$config_item["org_id"]}.ttl";
 
 	$graph = new Graphite();
 	$graph->ns( "org", "http://www.w3.org/ns/org#" );	
@@ -121,7 +124,16 @@ foreach( $config as &$config_item )
 	$graph->ns( "oldcerif", "http://spi-fm.uca.es/neologism/cerif#" );
 
 	$n = $graph->load( "file://$file" );
-	$orguri = "http://id.learning-provider.data.ac.uk/ukprn/".$config_item["org_ukprn"];
+
+	switch($config_item["org_idscheme"]){
+		case "ukprn":
+			$orguri = "http://id.learning-provider.data.ac.uk/{$config_item["org_idscheme"]}/{$config_item["org_id"]}";
+		break;
+		default:
+			$orguri = "http://id.equipment.data.ac.uk/org/{$config_item["org_idscheme"]}/{$config_item["org_id"]}";
+		break;
+	}
+	
 	$graph->load( $orguri );
 	$org = $graph->resource( $orguri );
 
@@ -217,7 +229,7 @@ foreach( $config as &$config_item )
 		$config_item["errors"][] = $config_item["no_contact_items"]." item".( $config_item["no_contact_items"] == 1 ? "" : "s" )." had no contact listed and were set to the default contact."; 
 	}
 
-	$uniquip_file = "$org_cache_dir/ukprn-".$config_item["org_ukprn"].".tsv";
+	$uniquip_file = "$org_cache_dir/{$config_item["org_idscheme"]}-{$config_item["org_id"]}.tsv";
 	$fields = uniquipFields();
 	$fh = fopen($uniquip_file, 'w') or die("can't open file: $uniquip_file" );
 	fwrite( $fh, join( "\t", $fields )."\n" );
@@ -232,7 +244,7 @@ foreach( $config as &$config_item )
 	}
 	fclose($fh);
 
-	$uniquip_file = "$org_cache_dir/ukprn-".$config_item["org_ukprn"].".csv";
+	$uniquip_file = "$org_cache_dir/{$config_item["org_idscheme"]}-{$config_item["org_id"]}.csv";
 	$fields = uniquipFields();
 	$fh = fopen($uniquip_file, 'w') or die("can't open file: $uniquip_file" );
 	fputcsv($fh, $fields);
@@ -251,7 +263,7 @@ foreach( $config as &$config_item )
 		"metadata"=>$config_item,
 		"records"=>$org_uniquip_rows,
 	);
-	$json_file = "$org_cache_dir/ukprn-".$config_item["org_ukprn"].".json";
+	$json_file = "$org_cache_dir/{$config_item["org_idscheme"]}-{$config_item["org_id"]}.json";
 	$fh = fopen($json_file, 'w') or die("can't open file: $json_file" );
 	fwrite( $fh, json_encode( $json ) );
 	fclose( $fh );
@@ -327,6 +339,9 @@ fclose($fh);
 exec( "$bin_ntcat $base_dir/htdocs/data/org/*.nt > $base_dir/htdocs/data/equipment.nt" );
 exec( "$bin_rapper -e -i ntriples -o turtle $base_dir/htdocs/data/equipment.nt > $base_dir/htdocs/data/equipment.ttl" );
 
+# "Tidy up:"
+echo "Tidying up old cache items\n";
+check_and_remove_items($item_cache_dir);
 exit;
 
 
@@ -341,8 +356,11 @@ function read_config( $file )
 
 		$cells = preg_split( "/\t/", chop( $row ) );	
 		if( sizeof( $cells ) != 8 ) { print "Bad Row in config:\n$row\n"; continue; }
+		$org_id = explode("/",$cells[0],2);
 		$config []=  array( 
-			"org_ukprn" => $cells[0],	
+			"org_ukprn" => ($org_id[0]=='ukprn') ? $org_id[1] : NULL,
+			"org_idscheme" => $org_id[0],
+			"org_id" => $org_id[1],
 			"dataset_type" => $cells[1],	
 			"dataset_url" => $cells[2],	
 			"org_name" => $cells[3],	
@@ -498,7 +516,7 @@ function pure_to_graph( &$c )
 	$graph->ns( "oldcerif", "http://spi-fm.uca.es/neologism/cerif#" );
 	foreach( $xml->equipment as $item )
 	{
-		$id = (string)$item->uid;
+		$id = md5((string)$item->uid);
 		$uri = "http://id.equipment.data.ac.uk/item/$id";
 		$url = "http://equipment.data.ac.uk/item/$id.html";
 
@@ -509,7 +527,9 @@ function pure_to_graph( &$c )
 		$graph->addCompressedTriple( "$uri", "http://id.equipment.data.ac.uk/ns/hasPage", "$url" );
 
 		$graph->addCompressedTriple( $uri, "rdfs:label", (string)$item->title, "literal" );
-		$graph->addCompressedTriple( $uri, "oo:formalOrganization", "http://id.learning-provider.data.ac.uk/ukprn/".$c["org_ukprn"] );
+		if($c["org_idscheme"]=='ukprn'){
+			$graph->addCompressedTriple( $uri, "oo:formalOrganization", "http://id.learning-provider.data.ac.uk/ukprn/".$c["org_ukprn"] );
+		}
 		if( $item->description != "" )
 		{
 			# kitcat always makes HTML fragment descriptions	
@@ -528,11 +548,13 @@ function pure_to_graph( &$c )
 			{ 
 				$org_id = md5( (string)$item->owner  ); 
 			}
-			$org_uri = "http://id.equipment.data.ac.uk/ukprn/".$c["org_ukprn"]."/org/".rawurlencode($org_id);
+			$org_uri = "http://id.equipment.data.ac.uk/org/{$c['org_idscheme']}/{$c["org_id"]}/org/".rawurlencode($org_id);
 			$graph->addCompressedTriple( $uri, "oo:organizationPart", $org_uri );
 			$graph->addCompressedTriple( $org_uri, "rdfs:label", (string)$item->owner, "literal" );
 			$graph->addCompressedTriple( $org_uri, "rdf:type", "http://www.w3.org/ns/org#Organization" );
-			$graph->addCompressedTriple( "http://id.learning-provider.data.ac.uk/ukprn/".$c["org_ukprn"], "org:hasSubOrganization", $org_uri );
+			if($c["org_idscheme"]=='ukprn'){
+				$graph->addCompressedTriple( "http://id.learning-provider.data.ac.uk/ukprn/".$c["org_ukprn"], "org:hasSubOrganization", $org_uri );
+			}
 		}
 			
 		if( $item->phone != "" || $item->email != "" )
@@ -623,8 +645,9 @@ function kitcat_to_graph( &$c )
 
 
 		$graph->addCompressedTriple( $our_uri, "rdfs:label", $item["name"], "literal" );
-		$graph->addCompressedTriple( $our_uri, "oo:formalOrganization", "http://id.learning-provider.data.ac.uk/ukprn/".$c["org_ukprn"] );
-
+		if($c["org_idscheme"]=='ukprn'){
+			$graph->addCompressedTriple( $our_uri, "oo:formalOrganization", "http://id.learning-provider.data.ac.uk/ukprn/".$c["org_ukprn"] );
+		}
 		if( $item["model"] != ""  || $item["manufacturer"] != "" )
 		{
 			$graph->addCompressedTriple( $our_uri, "gr:hasMakeAndModel", "$our_uri#model" );
@@ -723,8 +746,9 @@ function uniquip_to_graph( &$c, $items )
 
 		# any &amp; or &gt; will be decoded in the label
 		$graph->addCompressedTriple( $uri, "rdfs:label", htmlspecialchars_decode($item["Name"]), "literal" );
-		$graph->addCompressedTriple( $uri, "oo:formalOrganization", "http://id.learning-provider.data.ac.uk/ukprn/".$c["org_ukprn"] );
-
+		if($c["org_idscheme"]=='ukprn'){
+			$graph->addCompressedTriple( $uri, "oo:formalOrganization", "http://id.learning-provider.data.ac.uk/ukprn/".$c["org_ukprn"] );
+		}
 		# description assumed to contain HTML
 		if( @$item["Description"] != "" )
 		{
@@ -732,7 +756,7 @@ function uniquip_to_graph( &$c, $items )
 		}
 		if( @$item["ID"] != "" )
 		{
-			$graph->addCompressedTriple( $uri, "skos:notation", $item["ID"], "http://id.equipment.data.ac.uk/ukprn/".$c["org_ukprn"]."/equipment-id-scheme" );
+			$graph->addCompressedTriple( $uri, "skos:notation", $item["ID"], "http://id.equipment.data.ac.uk/org/{$c['org_idscheme']}/{$c["org_id"]}/equipment-id-scheme" );
 		}
 
 
@@ -806,17 +830,19 @@ function uniquip_to_graph( &$c, $items )
 		if( @trim($item["Department"]) != "" )
 		{
 			$org_id = md5( $item["Department"] );
-			$org_uri = "http://id.equipment.data.ac.uk/ukprn/".$c["org_ukprn"]."/org/".rawurlencode($org_id);
+			$org_uri = "http://id.equipment.data.ac.uk/org/{$c['org_idscheme']}/{$c["org_id"]}/org/".rawurlencode($org_id);
 			$graph->addCompressedTriple( $uri, "oo:organizationPart", $org_uri );
 			$graph->addCompressedTriple( $org_uri, "rdfs:label", $item["Department"], "literal" );
 			$graph->addCompressedTriple( $org_uri, "rdf:type", "http://www.w3.org/ns/org#Organization" );
-			$graph->addCompressedTriple( "http://id.learning-provider.data.ac.uk/ukprn/".$c["org_ukprn"], "org:hasSubOrganization", $org_uri );
+			if($c["org_idscheme"]=='ukprn'){
+				$graph->addCompressedTriple( "http://id.learning-provider.data.ac.uk/ukprn/".$c["org_ukprn"], "org:hasSubOrganization", $org_uri );
+			}
 		}
 
 		if( @trim($item["Building"]) != "" )
 		{
 			$org_id = md5( $item["Building"] );
-			$org_uri = "http://id.equipment.data.ac.uk/ukprn/".$c["org_ukprn"]."/org/".rawurlencode($org_id);
+			$org_uri = "http://id.equipment.data.ac.uk/org/{$c['org_idscheme']}/{$c["org_id"]}/org/".rawurlencode($org_id);
 			$graph->addCompressedTriple( $uri, "oo:organizationPart", $org_uri );
 			$graph->addCompressedTriple( $org_uri, "rdfs:label", $item["Building"], "literal" );
 			$graph->addCompressedTriple( $org_uri, "rdf:type", "http://vocab.deri.ie/rooms#" );
@@ -1036,7 +1062,8 @@ function processItemTurtle( $item )
 {
 	global $item_cache_dir;
 	global $config_item;
-
+	global $item_cache_items;
+	
 	$ig = new Graphite();
 	graphCopy( $item->g, $ig, $item );
 
@@ -1057,8 +1084,23 @@ function processItemTurtle( $item )
 		graphCopy( $item->g, $ig, $contact );
 	}
 
-	$file = $item_cache_dir."/".itemCacheID( $item ).".ttl";
+	$itemid = itemCacheID( $item );
+	$file = itemCachePath( $itemid , "ttl");
 	file_put_contents( $file, $ig->serialize( "Turtle" ) ) or die("can't write file: $file" );
+}
+
+function itemCachePath( $itemid, $suffix = false ){
+	global $item_cache_dir;
+	
+	$path = "{$item_cache_dir}/".substr($itemid,0,2)."/".substr($itemid,2,2);
+	if(!file_exists($path)){
+		mkdir($path,0755,true);
+	}
+	$path .= "/".$itemid;
+	if($suffix !== false) {
+		$path .= ".".$suffix;
+	}
+	return $path;
 }
 
 function graphCopy( $g1, $g2, $item )
@@ -1079,6 +1121,7 @@ function graphCopy( $g1, $g2, $item )
 function processItemPage( $item )
 {
 	global $item_cache_dir;
+	global $item_cache_items;
 	global $config_item;
 
 	# create cache for displaying results
@@ -1149,7 +1192,12 @@ function processItemPage( $item )
 		"title"=>(string)$item->label(),
 		"content"=>join( "", $html ) );
 
-	$file = $item_cache_dir."/".itemCacheID( $item );
+	$itemid = itemCacheID( $item );
+	
+	#add to array
+	$item_cache_items[] = $itemid;
+	
+	$file = itemCachePath($itemid, "html");
 	$fh = fopen($file, 'w') or die("can't open file: $file" );
 	fwrite($fh, json_encode( $data ) );
 	fclose( $fh );
@@ -1270,3 +1318,34 @@ function xlsx_to_array( &$c )
 	return $data;
 }
 
+
+
+function check_and_remove_items($dir) 
+{ 
+	global $item_cache_items;
+	
+    $root = scandir($dir); 
+    foreach($root as $value) 
+    { 
+        if($value === '.' || $value === '..') {
+			continue;
+		} 
+        if(is_file("$dir/$value")) {
+			$id = pathinfo($value,PATHINFO_FILENAME);
+			
+			if(!in_array($id,$item_cache_items)){
+				unlink("$dir/$value");
+				echo "delete $dir/$value \n";
+			}
+			
+			continue;
+		} 
+        
+		check_and_remove_items("$dir/$value");
+		
+    }  
+	#catch . and ..
+	if(count(scandir($dir))==2){
+		rmdir($dir);
+	}
+}
