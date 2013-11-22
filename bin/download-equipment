@@ -494,6 +494,8 @@ function pure_to_graph( &$c )
 
 	$graph = new Graphite();
 	$graph->ns( "org", "http://www.w3.org/ns/org#" );
+	$graph->ns( "gr", "http://purl.org/goodrelations/v1#" );
+	$graph->ns( "oldcerif", "http://spi-fm.uca.es/neologism/cerif#" );
 	foreach( $xml->equipment as $item )
 	{
 		$id = (string)$item->uid;
@@ -600,6 +602,8 @@ function kitcat_to_graph( &$c )
 	$items = json_decode( $content, true );
 
 	$graph = new Graphite();
+	$graph->ns( "gr", "http://purl.org/goodrelations/v1#" );
+	$graph->ns( "oldcerif", "http://spi-fm.uca.es/neologism/cerif#" );
 	foreach( $items as $item )
 	{
 		$their_uri = $item["id"];
