@@ -2,7 +2,7 @@
 class item {
 
 	function fragment() {
-                $f3=Base::instance();
+		$f3=Base::instance();
 		@list( $id, $suffix ) = preg_split( '/\./', $f3->get( "PARAMS.id" ), 2 );
 
 		if( !preg_match( '/^[a-f0-9]+$/',$id ) )
@@ -13,7 +13,7 @@ class item {
 		
 		if( !isset($suffix) )
 		{
-			$data = json_decode( file_get_contents( "../var/item/$id" ), true );
+			$data = json_decode( file_get_contents( $this->itemCachePath($id,"html") ), true );
 
 			print "<h2>".$data["title"]."</h2>";
 			print $data["content"];
