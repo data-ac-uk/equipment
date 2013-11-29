@@ -1,0 +1,62 @@
+#!/usr/bin/php
+<?php
+
+# This script uses the list of learning providers to auto discover any opds
+# This takes the list of files to download from a configuration file, which is
+# generated from the data at hub.data.ac.uk
+
+
+require_once( "../etc/eq_config.php" );
+
+
+require_once( "{$eq_config->pwd}/lib/arc2/ARC2.php" );
+require_once( "{$eq_config->pwd}/lib/Graphite/Graphite.php" );
+
+require_once( "{$eq_config->pwd}/lib/opd/OrgProfileDocument.php" );
+
+
+$lps = "{$eq_config->pwd}/var/learning-providers-plus.tsv";
+
+$homepages = $eq_config->opds->autodiscovers;
+
+$rows = file( $lps );
+
+$config = array();	
+foreach( $rows as $row )
+{
+	if( preg_match( "/^#/", $row ) ) { continue; } # skip commented lines
+	$cells = preg_split( "/\t/", chop( $row ) );	
+	if($cells[0]=='UKPRN') { continue; } #Header line
+	
+	
+	$homepages[] = $cells[9];
+}
+
+
+foreach($homepages as $url)
+{
+	try{ 
+		$opd = OrgProfileDocument::discover( $url);
+	}
+	catch( OPD_Discover_Exception $e )
+	{
+		continue;
+	}
+	catch( OPD_Load_Exception $e )
+	{
+		continue;
+	}
+	catch( OPD_Parse_Exception $e )
+	{
+	    continue;
+	}
+	catch( Exception $e )
+	{
+		continue;
+	}
+	
+	$opds[] = $opd->opd_url;
+
+}
+
+file_put_contents("{$eq_config->pwd}/var/autodiscovered-opds.json", json_encode($opds));
