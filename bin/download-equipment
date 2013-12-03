@@ -139,6 +139,9 @@ foreach( $config as &$config_item )
 
 	$postcode= $org->get( "http://data.ordnancesurvey.co.uk/ontology/postcode/postcode" );
 	$config_item["org_homepage"] = $org->getLiteral( "foaf:homepage" );
+	if(!strlen($config_item["org_homepage"]) && strlen($config_item["org_url"])){
+		$config_item["org_homepage"] = $config_item["org_url"];
+	}
 	$config_item["org_easting"] = "";
 	$config_item["org_northing"] = "";	
 	$config_item["org_lat"] = "";
@@ -843,6 +846,11 @@ function uniquip_to_graph( &$c, $items )
 			$graph->addCompressedTriple( $org_uri, "rdf:type", "http://vocab.deri.ie/rooms#" );
 			# we are *not* automatically assuming the building belongs to the uni, just in case
 		}
+		
+		if( @$item["Corrections"] != "" )
+		{
+			$graph->addCompressedTriple( $uri, "oo:corrections", strtolower($item["Corrections"]) );
+		}
 
 		# fields not yet handled:
 		#"Type",
@@ -1000,7 +1008,10 @@ function itemToUniquipRow($item)
 		$uniquip["Approximate Coordinates"] = $config_item["org_lat"]." ".$config_item["org_long"];
 	}
 #"Corrections"
-	if( $config_item["dataset_corrections"] )
+	if( $item->has( "oo:corrections" ) )
+	{
+		$uniquip["Corrections"] = $item->getString( "oo:corrections" );
+	}elseif( $config_item["dataset_corrections"] )
 	{
 		$uniquip["Corrections"] = $config_item["dataset_corrections"];
 	}
@@ -1176,7 +1187,11 @@ function processItemPage( $item )
 		}
 		$html []= "</p>";
 	}
-	if( $config_item["dataset_corrections"] )
+	if( $item->has( "oo:corrections" ) )
+	{
+		$html []=  "<div class='corrections'>Issues with this record should be reported to ".$item->get( "oo:corrections" )->prettyLink()."</div>";
+		
+	}elseif( $config_item["dataset_corrections"] )
 	{
 		# use the graphite URL link renderer
 		$g = new Graphite();
