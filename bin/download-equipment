@@ -381,6 +381,7 @@ function rdf_to_graph( &$c )
 
 	$graph = new Graphite();
 	$graph->ns( "oldcerif", "http://spi-fm.uca.es/neologism/cerif#" );
+	$graph->ns( "gr", "http://purl.org/goodrelations/v1#" );
 
 	print "Loading RDF: ".$c["dataset_url"]."\n";
 	print "Downloading via Rapper\n";
@@ -502,15 +503,12 @@ function pure_to_graph( &$c )
 		return false;
 	}
 
-	# fix to buggy XML
-	$lines = preg_split( "/\n/", $content );
-	$lines[1]= "<items>";
-	array_push( $lines, "</items>" );
-	$content = join( "\n", $lines );
 	$xml = simplexml_load_string( $content );
 
 	$graph = new Graphite();
 	$graph->ns( "org", "http://www.w3.org/ns/org#" );
+	$graph->ns( "gr", "http://purl.org/goodrelations/v1#" );
+	$graph->ns( "oldcerif", "http://spi-fm.uca.es/neologism/cerif#" );
 	foreach( $xml->equipment as $item )
 	{
 		$id = md5((string)$item->uid);
@@ -621,6 +619,8 @@ function kitcat_to_graph( &$c )
 	$items = json_decode( $content, true );
 
 	$graph = new Graphite();
+	$graph->ns( "gr", "http://purl.org/goodrelations/v1#" );
+	$graph->ns( "oldcerif", "http://spi-fm.uca.es/neologism/cerif#" );
 	foreach( $items as $item )
 	{
 		$their_uri = $item["id"];
