@@ -16,11 +16,14 @@
 
 require_once( "../etc/eq_config.php" );
 
+require_once( "../equipment.php" );
+
+
 $base_dir = $eq_config->pwd;
 
 require_once( "$base_dir/lib/arc2/ARC2.php" );
 require_once( "$base_dir/lib/Graphite/Graphite.php" );
 
-require_once( "download-functions.php" );
+$eq = new equipment($eq_config);
 
-read_config_new();
+$eq->read_config();
