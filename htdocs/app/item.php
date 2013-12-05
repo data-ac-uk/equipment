@@ -1,8 +1,10 @@
 <?php
 class item {
 
-	function fragment() {
-		$f3=Base::instance();
+	function fragment() 
+	{
+                $f3=Base::instance();
+		
 		@list( $id, $suffix ) = preg_split( '/\./', $f3->get( "PARAMS.id" ), 2 );
 
 		if( !preg_match( '/^[a-f0-9]+$/',$id ) )
@@ -26,7 +28,7 @@ class item {
 
 	function page()
 	{
-        $f3=Base::instance();
+		$f3=Base::instance();
 		@list( $id, $suffix ) = preg_split( '/\./', $f3->get( "PARAMS.id" ), 2 );
 
 		if( !preg_match( '/^[a-f0-9]+$/',$id ) )
@@ -71,12 +73,13 @@ class item {
 		
 	}
 	
-	function itemCachePath( $itemid, $suffix = false ){
-	
+	function itemCachePath( $itemid, $suffix = false )
+	{
 		$path = "../var/item/".substr($itemid,0,2)."/".substr($itemid,2,2);
 	
 		$path .= "/".$itemid;
-		if($suffix !== false) {
+		if($suffix !== false) 
+		{
 			$path .= ".".$suffix;
 		}
 		return $path;

@@ -3,7 +3,7 @@ class org {
 
 	function page()
 	{
-        $f3=Base::instance();
+		$f3=Base::instance();
 				
 		$idtype = $f3->get( "PARAMS.type" );
 		$idtype = preg_replace( '/[^-a-z0-9]/i','',$idtype );
@@ -15,10 +15,10 @@ class org {
 
 		switch($suffix){
 		
-				case "json":
-				case "csv":
-				case "tsv":
-				case "ttl":
+			case "json":
+			case "csv":
+			case "tsv":
+			case "ttl":
 				if(!file_exists("data/org/$idtype-$id.$suffix")){
 					$f3->error(404);
 				}
@@ -26,7 +26,7 @@ class org {
 				print file_get_contents( "data/org/$idtype-$id.$suffix" );
 			break;
 			case "":
-			case ".html":
+			case "html":
 				if(!file_exists("data/org/$idtype-$id.json")){
 					$f3->error(404);
 				}
