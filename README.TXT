@@ -13,6 +13,7 @@ Quickstart:
  mkdir lib
  mkdir var
  mkdir var/item
+ mkdir var/datasets
  mkdir htdocs/data
  mkdir htdocs/data/org
  mkdir htdocs/tmp
@@ -21,6 +22,7 @@ Quickstart:
  git clone https://github.com/cgutteridge/Graphite.git
  git clone https://github.com/semsol/arc2.git
  git clone https://github.com/cgutteridge/ntcat.git
+ git clone https://github.com/data-ac-uk/OPDLib.git
  wget https://github.com/PHPOffice/PHPExcel/archive/PHPExcel_1.7.8.tar.gz 
  tar xzvf PHPExcel_1.7.8 
  ln -s PHPExcel-PHPExcel_1.7.8/ PHPExcel

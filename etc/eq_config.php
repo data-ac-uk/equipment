@@ -24,6 +24,19 @@ $eq_config->id->overides = array(
 
 
 $eq_config->conformsToMap = array(
-	"http://openorg.ecs.soton.ac.uk/wiki/Facilities_and_Equipment" => "rdf",
-	"http://equipment.data.ac.uk/uniquip" => "uniquip"
+	"rdf" => "http://openorg.ecs.soton.ac.uk/wiki/Facilities_and_Equipment",
+	"uniquip"=>"http://equipment.data.ac.uk/uniquip",
+	"kitcat"=>"http://equipment.data.ac.uk/kitcat-items-json"
 );
+
+$eq_config->licences = array(
+	"ogl" => array('uri'=>"http://www.nationalarchives.gov.uk/doc/open-government-licence/", "label"=>"OGL - The (UK) Open Government License for Public Sector Information"),
+	"odca" => array('uri'=>"http://opendatacommons.org/licenses/by/", "label"=>"ODCA - Open Data Commons Attribution License"),
+	"cc0" => array('uri'=>"http://creativecommons.org/publicdomain/zero/1.0/", "label"=>"CC0 - Public Domain Dedication")
+);
+
+
+$eq_config->db = (object) NULL;
+$eq_config->db->connection = "mysql:host=localhost;port=3306;dbname=equipment";
+$eq_config->db->user = 'equipment';
+$eq_config->db->password = 'equipment';
