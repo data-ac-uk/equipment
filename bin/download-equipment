@@ -726,14 +726,14 @@ function uniquip_to_graph( &$c, $items )
 	{
 		$n++;
 		$id = md5( join( "|", $item ) );
-		$uri = "http://id.equipment.data.ac.uk/item/$id";
+		$uri = "{$this->config->uribase}item/$id";
 		if( $graph->resource( $uri )->has( "rdfs:label" ) )
 		{
 			$c["errors"][] = "Item $n appears to be a duplicate";
 			continue;
 		}
 			
-		$url = "http://equipment.data.ac.uk/item/$id.html";
+		$url = "http://{$this->config->host}/item/$id.html";
 		$graph->addCompressedTriple( $uri, "rdf:type", "oo:Equipment" );
 		$graph->addCompressedTriple( $uri, "http://id.equipment.data.ac.uk/ns/hasCode", $id, "literal" );
 		$graph->addCompressedTriple( $uri, "http://id.equipment.data.ac.uk/ns/hasURI", $uri, "literal" );

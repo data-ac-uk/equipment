@@ -24,10 +24,10 @@ require_once( "{$eq_config->pwd}/lib/OPDLib/OrgProfileDocument.php" );
 
 
 
-require_once( "{$eq_config->pwd}/equipment.php" );
+require_once( "{$eq_config->pwd}/dataacukEquipment.php" );
 
 
-$eq = new equipment($eq_config);
+$eq = new dataacukEquipment($eq_config);
 $eq->launch_db();
 $eq->db->dryrun = $dryrun;
 
@@ -85,6 +85,8 @@ foreach($homepages as $url)
 	$insf['opd_lastseen'] = 'NOW()';
 	$ins['opd_type'] = (string)$opd->result['CONTENT_TYPE'];
 	$ins['opd_cache'] = (string)$opd->result['CONTENT'];
+	$ins['opd_src'] = 'autodiscovered';
+
 
 	$res = $eq->db->fetch_one('autoOPDs', array('opd_id' => $ins['opd_id']), array(), "`opd_id`");
 	if(isset($res['opd_id']))

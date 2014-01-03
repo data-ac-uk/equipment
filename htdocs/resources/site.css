@@ -80,6 +80,7 @@ ul.bullets ul {
 
 table.status {
 	border-collapse: collapse;
+	width:100%;
 }
 table.status th {
 	background-color: #000;
@@ -87,13 +88,38 @@ table.status th {
 	border: solid 1px #666;
 	font-weight: bold;
 	padding: 5px 3px;
+	vertical-align:middle;
 }
 table.status td {
 	padding: 5px 3px;
 	border: solid 1px #000;
+	vertical-align:middle;
+	height: 25px;
+	text-align: center;
 }
 table.status td img {
 	max-width: 150px;
+}
+table.status td img.issue {
+	vertical-align:-20%;
+	margin-right: 2px;
+}
+
+table.status td span.issuebox {	
+	cursor: pointer;
+}
+
+table.status td img.gong {
+	max-width: 20px;
+	vertical-align:-28%;
+
+}
+
+
+table.status .org_logo{
+	margin: 3px;
+	max-width: 60px;
+	max-height: 25px;
 }
 i {
 	font-style: italic;

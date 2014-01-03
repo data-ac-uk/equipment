@@ -1,9 +1,7 @@
 #!/usr/bin/php
 <?php
 
-# This script uses the list of learning providers to auto discover any opds
-# This takes the list of files to download from a configuration file, which is
-# generated from the data at hub.data.ac.uk
+# Crawls found opds looinkg for organiations and datasets
 
 if(in_array('--dryrun',$argv)){
 	$dryrun = true;
@@ -21,10 +19,10 @@ require_once( "{$eq_config->pwd}/lib/OPDLib/OrgProfileDocument.php" );
 
 
 
-require_once( "{$eq_config->pwd}/equipment.php" );
+require_once( "{$eq_config->pwd}/dataacukEquipment.php" );
 
 
-$eq = new equipment($eq_config);
+$eq = new dataacukEquipment($eq_config);
 $eq->launch_db();
 $eq->db->dryrun = $dryrun;
 
@@ -100,6 +98,7 @@ foreach($opds as $opd){
 						$datas[$durl] = array(
 							"conformsTo"=>$graph->resource( $g )->getString('dcterms:conformsTo'),
 							"license"=>$graph->resource( $g )->getString('dcterms:license'),
+							"contact"=>$graph->resource( $g )->getString('oo:contact'),
 							"corrections"=>$graph->resource( $g )->getString('oo:corrections'),
 							"type"=>array($gpsn)
 						);
@@ -140,10 +139,12 @@ foreach($opds as $opd){
 		$din['data_org'] = $res['org_uri'];
 		$din['data_conforms'] = $dv['conformsTo'];
 		$din['data_license'] = $dv['license'];
+		$din['data_contact'] = $dv['contact'];
 		$din['data_corrections'] = $dv['corrections'];
 		$din['data_type'] = join(",",$dv['type']);
 		$din['data_ena'] = 1;
 		$din['data_hash'] = md5($dk);
+		$din['data_src'] = $opd['opd_src'];
 		$dinraw['data_lastseen'] = 'NOW()';
 		
 		
