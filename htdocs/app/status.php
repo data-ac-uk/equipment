@@ -101,7 +101,7 @@ class status {
 				$c []= "</td>";
 				
 				
-				$c []= "<td> <img src='/resources/images/gongs/equipment-data-{$set["crawl_gong"]}-30.png' class=\"gong\" title=\"".ucwords($set["crawl_gong"])."\"/> ".ucwords($set["crawl_gong"])."</td>";
+				$c []= "<td> <a href=\"/compliance?dataset={$set['data_hash']}#summary\"><img src='/resources/images/gongs/equipment-data-{$set["crawl_gong"]}-30.png' class=\"gong\" title=\"".ucwords($set["crawl_gong"])."\"/> ".ucwords($set["crawl_gong"])."</a></td>";
 				$c []= "</tr>";
 			}	
 	

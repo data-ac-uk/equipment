@@ -1027,7 +1027,7 @@ class dataacukEquipment
 				$set['crawl_timestamp'] = date('c',strtotime($set['crawl_timestamp']));
 			
 
-				$org['org_datasets'][] = $set;
+				$org['org_datasets'][$set['data_hash']] = $set;
 			
 				$V2['totals']['datasets']++;
 			
