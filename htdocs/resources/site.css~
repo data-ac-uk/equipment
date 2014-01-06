@@ -120,7 +120,7 @@ table.status td img.gong {
 table.status .org_logo{
 	margin: -3px;
 	max-width: 80px;
-	max-height: 30px;
+	max-height: 100%;
 }
 i {
 	font-style: italic;

@@ -28,7 +28,7 @@ class status {
 		$c []= "</tr>";
 		foreach( $status['orgs'] as $feed )
 		{
-			
+						
 			$c []= "<tr >";
 			$c []= "<td rowspan=\"".count($feed['org_datasets'])."\"><a href='".$feed["org_url"]."'><img src='".$feed["org_logo"]."' class=\"org_logo\"/></a></td>";
 			
@@ -38,6 +38,7 @@ class status {
 			$c []= "</td>";
 			
 		
+			
 			
 			foreach($feed['org_datasets'] as $set){
 				$c []= "<td><a href='".$set["data_uri"]."' title=\"Raw source downloaded from: {$set["data_uri"]}\">dataset</a></td>";

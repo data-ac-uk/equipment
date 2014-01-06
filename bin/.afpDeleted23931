@@ -38,7 +38,7 @@ file_put_contents($eq->config->misc->megant,"");
 $stage++;
 echo "Stage $stage: Downloading datasets\n";
 
-$datasets = $eq->db->fetch_many('datasets', array('data_ena' => 1), array());
+$datasets = $eq->db->fetch_many('datasets', array('data_ena' => 1, 'data_uri'=>"http://equipment.lboro.ac.uk/api/public/items.json"), array());
 
 foreach($datasets as $set){
 	

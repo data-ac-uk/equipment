@@ -190,7 +190,7 @@ class dataacukEquipment
 				$gongs['opd'] = 3;
 				$gongs['opd-auto'] = 2;
 			break;
-			case "default":
+			default:
 				$gongs['opd'] = 1;
 				$gongs['opd-auto'] = 1;
 			break;
@@ -225,7 +225,7 @@ class dataacukEquipment
 		
 		$graph = new eqGraphite();
 		$graph->ns( "oldcerif", "http://spi-fm.uca.es/neologism/cerif#" );
-		
+
 		$tmpfile_err = "{$this->config->cachepath}/{$set['data_hash']}.err";
 		$tmpfile_nt = "{$this->config->cachepath}/{$set['data_hash']}.nt";
 		
@@ -255,7 +255,6 @@ class dataacukEquipment
 		{
 			foreach( $graph->allOfType( $type ) as $item  )
 			{
-
 				$id = md5( "$item" );
 				$uri = "http://id.equipment.data.ac.uk/item/$id";
 				$url = "http://equipment.data.ac.uk/item/$id.html";
@@ -268,6 +267,154 @@ class dataacukEquipment
 		
 		return  $graph->cloneGraphWithAliases( $aliases );
 	}
+	
+	
+	function parse_kitcat($set,$path, &$notes){
+		$content = file_get_contents( $path );
+		$items = json_decode( $content, true );
+
+		$graph = new eqGraphite();
+		foreach( $items as $item )
+		{
+			$their_uri = $item["id"];
+
+
+			$id = md5( $their_uri );
+			$our_uri = "http://id.equipment.data.ac.uk/item/$id";
+			$url = "http://equipment.data.ac.uk/item/$id.html";
+
+			# assumption-- everything from kitcat is equipment		
+			$graph->addCompressedTriple( $our_uri, "rdf:type", "oo:Equipment" );
+
+			$graph->addCompressedTriple( $our_uri, "http://id.equipment.data.ac.uk/ns/hasCode", $id, "literal" );
+			$graph->addCompressedTriple( $our_uri, "http://id.equipment.data.ac.uk/ns/hasURI", "$our_uri", "literal" );
+			$graph->addCompressedTriple( $our_uri, "http://id.equipment.data.ac.uk/ns/hasPage", "$url" );
+			$graph->addCompressedTriple( $our_uri, "owl:sameAs", "$their_uri" );
+
+
+			$graph->addCompressedTriple( $our_uri, "rdfs:label", $item["name"], "literal" );
+			if($set['org']["org_idscheme"]=='ukprn'){
+				$graph->addCompressedTriple( $our_uri, "oo:formalOrganization", "http://id.learning-provider.data.ac.uk/ukprn/".$set['org']["org_id"] );
+			}
+			if( $item["model"] != ""  || $item["manufacturer"] != "" )
+			{
+				$graph->addCompressedTriple( $our_uri, "gr:hasMakeAndModel", "$our_uri#model" );
+				$graph->addCompressedTriple( "$our_uri#model", "rdf:type", "gr:ProductOrServiceModel" );
+				if( $item["model"] != "" )
+				{
+					$graph->addCompressedTriple( "$our_uri#model", "rdfs:label", $item["model"], "literal" ); 
+				}
+				if( $item["manufacturer"] != "" )
+				{
+					$graph->addCompressedTriple( "$our_uri#model", "gr:hasManufacturer", "$our_uri#manu" );
+					$graph->addCompressedTriple( "$our_uri#manu", "rdf:type", "gr:BusinessEntity" );
+					$graph->addCompressedTriple( "$our_uri#manu", "rdfs:label", $item["manufacturer"], "literal" ); 
+				}
+			}
+
+			if( $item["description"] != "" )
+			{
+				# kitcat always makes HTML fragment descriptions	
+				$graph->addCompressedTriple( $our_uri, "dcterms:description", $item["description"], "http://purl.org/xtypes/Fragment-HTML" );
+			}
+		
+			if( $item["contact1"] != "" )
+			{	
+				$graph->addCompressedTriple( $our_uri, "oo:contact", "$our_uri#contact1" );
+				$graph->addCompressedTriple( $our_uri, "oo:primaryContact", "$our_uri#contact1" );
+				$graph->addCompressedTriple( "$our_uri#contact1", "foaf:mbox", "mailto:".$item["contact1"] );
+			}
+
+			if( $item["contact2"] != "" )
+			{	
+				$graph->addCompressedTriple( $our_uri, "oo:contact", "$our_uri#contact2" );
+				$graph->addCompressedTriple( "$our_uri#contact2", "foaf:mbox", "mailto:".$item["contact2"] );
+			}
+
+			if( $item["link"] != "" )
+			{	
+				$graph->addCompressedTriple( $our_uri, "foaf:page", $item["link"] );
+			}
+
+			if( $item["image"] != "" )
+			{	
+				$graph->addCompressedTriple( $our_uri, "foaf:depiction", $item["image"] );
+			}
+		}
+		
+		return $graph;
+	}
+	
+	
+	
+	
+	
+	# clean up headers for uniquip
+	function parse_uniquip_clean_header( $value )
+	{
+		# remove anything in brackets
+		$value = preg_replace( "/\([^)]*\)/","", $value );
+
+		# Remove leading and trailing whitespace
+		$value = trim( $value );
+
+		return $value;
+	}
+	
+	/**
+		Parses uniquip xls
+		@return bool
+		@param $set array
+		@param $path string
+	**/
+	function parse_uniquip_xls($set,$path, &$notes){
+		
+
+		require_once( "{$this->config->pwd}/lib/PHPExcel/Classes/PHPExcel/IOFactory.php" );
+		
+		$graph = new eqGraphite();
+		$row = 0;
+		$thisset = array("ids"=>array());
+		
+		$objPHPExcel = PHPExcel_IOFactory::load($path);
+
+		$sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);
+
+		$header = false;
+		$data = array();
+		foreach( $sheetData as $row )
+		{
+			# clean up whitespace
+			foreach( $row as $key=>$value )
+			{
+				if( !$header ) { $value = $this->parse_uniquip_clean_header( $value ); }
+				$row[$key] = trim( $value );
+			}
+
+			# skip entirely blank rows
+			if( join( "",$row ) == "" ) { continue; }
+
+			if(!$header)
+			{
+				$header = $row;
+			}
+			else
+			{
+				$line = array_combine($header, $row);
+				$this->parse_uniquip_line($set,$line, $row, $notes, $graph);
+			}
+		}
+
+		if( !$header )
+		{
+			$notes["errors"][] = "Failed to parse document";
+		}
+
+		
+		return $graph;
+		
+	}
+	
 	
 	/**
 		Parses uniquip csv
@@ -317,9 +464,9 @@ class dataacukEquipment
 		$item['item_org'] = $set['data_org'];
 		$item['item_dataset'] = $set['data_uri'];
 			
-		if(strlen($line['Location'])){
+		if(isset($line['Location']) && strlen($line['Location'])){
 			$luri = parse_url($line['Location']);
-			if($luri['host']=="en.wikipedia.org"){
+			if(isset($luri['host']) && $luri['host']=="en.wikipedia.org"){
 				$page = explode("/",$luri['path'],3);
 				$location = $this->location_extract("http://dbpedia.org/resource/{$page[2]}");
 				$item['item_location'] = $location['loc_uri'];
@@ -338,8 +485,9 @@ class dataacukEquipment
 				$itemU["itemU_f_{$k}"] = $line[$v];
 			}
 		}
+		if(isset($itemU['itemU_f_type']))
+			$itemU['itemU_f_type'] = strtolower($itemU['itemU_f_type']);
 		
-		$itemU['itemU_f_type'] = strtolower($itemU['itemU_f_type']);
 		$this->db->insert('itemUniquips',$itemU,array("itemU_updated"=>"NOW()"),"REPLACE");
 	
 		//Start Build graph.
@@ -458,7 +606,7 @@ class dataacukEquipment
 		}
 		
 		//If have used a wikipedia location
-		if(strlen($location['loc_uri'])){
+		if(isset($location['loc_uri']) && strlen($location['loc_uri'])){
 			$graph->addCompressedTriple( $uri, "foaf:based_near", $location['loc_uri']);
 		}
 
@@ -584,12 +732,16 @@ class dataacukEquipment
 	
 	function parse_graph(&$set,&$graph,&$notes, $type){
 		
+
+		$graph->ns( "oldcerif", "http://spi-fm.uca.es/neologism/cerif#" );
+		
 		$run = array("no_label_items"=>0,"no_label_or_desc_items"=>0, "no_contact_items"=>0);
 		$items = array();
 		foreach( $graph->allSubjects() as $resource )
 		{
 			if( $resource->isType( "oo:Facility", "oldcerif:Facility", "oo:Equipment", "oldcerif:Equipment" ))
 			{
+
 				if( !$resource->has( "rdfs:label" ) )
 				{
 					if( $resource->has( "dcterms:description" ) )
@@ -604,6 +756,7 @@ class dataacukEquipment
 						continue;
 					}
 				}
+				
 				
 				
 				if( !$resource->has( "oo:primaryContact", "oo:contact" ) )
@@ -626,7 +779,6 @@ class dataacukEquipment
 						$graph->addCompressedTriple( $con_uri, "foaf:page", $set["data_contact"]  );
 					}
 				}
-
 				$items[]=$resource;
 			}
 		}
@@ -665,7 +817,7 @@ class dataacukEquipment
 		# without a ukprn. Who can say for sure!
 		$cache_file_ttl = "$org_cache_dir/{$set['org']['org_idscheme']}-{$set['org']['org_id']}.ttl";
 		$cache_file_nt = "$org_cache_dir/{$set['org']['org_idscheme']}-{$set['org']['org_id']}.nt";
-
+		
 		$fh = fopen($cache_file_ttl, 'w') or die("can't open cache_file: $cache_file_ttl" );
 		fwrite($fh, $graph->serialize( "Turtle" ) );
 		fclose($fh);
@@ -835,9 +987,10 @@ class dataacukEquipment
 		
 		//V1 new status-v1.json
 		$V2 = array();
+		$V2['orgs'] = array();
+		$V2['totals'] = array("orgs"=>0,"datasets"=>0,"items"=>0);
 		
-		
-		$orgs = $this->db->fetch_many('orgs', array('org_ena' => 1), array());
+		$orgs = $this->db->fetch_many('orgs', array('org_ena' => 1, 'sort:0'=>'a:org_sort'), array());
 		
 		foreach($orgs as $org){
 			
@@ -876,8 +1029,9 @@ class dataacukEquipment
 
 				$org['org_datasets'][] = $set;
 			
+				$V2['totals']['datasets']++;
 			
-				
+				$V2['totals']['items']+=$set['crawl_records'];
 			
 				//Legacy v1 status
 				$line = array();
@@ -905,9 +1059,12 @@ class dataacukEquipment
 			}
 			
 			
-			$V2[] = $org;
-					
+			$V2['orgs'][] = $org;
+		
+			$V2['totals']['orgs']++;	
 		}
+		
+	
 		
 		file_put_contents("{$this->config->pwd}/htdocs/data/status-v1.json",json_encode($V1));
 		file_put_contents("{$this->config->pwd}/htdocs/data/status-v2.json",json_encode($V2));
@@ -983,7 +1140,7 @@ class dataacukEquipment
 		}
 
 		$data = array( 
-			"title"=>(string)$item->label(),
+			"title"=> utf8_encode((string)$item->label() ),
 			"content"=> utf8_encode( join("",$html) ) ) ;
 
 		$itemid = $this->misc_item_cacheid( $item );
@@ -1314,10 +1471,20 @@ class eqDB extends DB\SQL {
 		return $this->lastinsertid();
 	}
 	
-	function where($params, $paramsraw, &$query, &$infields, &$i){		
+	function where($params, $paramsraw, &$query, &$infields, &$i, &$orderby = array()){		
+		
+		$orderby = array();
 		
 		foreach($params as $k=>$v){
-			if(substr($v,0,2)=="<:"){
+			if(substr($k,0,5)=='sort:'){
+				if(substr($v,0,2)=="a:"){
+					$orderby[] = substr($v,2)." ASC";
+				}elseif(substr($v,0,2)=="d:"){
+					$orderby[] = substr($v,2)." DESC";
+				}else{
+					$orderby[] = "$v ASC";
+				}
+			}elseif(substr($v,0,2)=="<:"){
 				$query[] = "`$k` < ?";
 				$infields[$i] = substr($v,2);
 			}elseif(substr($v,0,2)==">:"){
@@ -1377,9 +1544,12 @@ class eqDB extends DB\SQL {
 			$fieldsup[] = "`$k` = $v";
 		}
 				
-		$this->where($params, $paramsraw, $query, $infields, $i);
+		$this->where($params, $paramsraw, $query, $infields, $i, $orderby);
 	
 		$sql = "UPDATE {$table} SET ".join(", ",$fieldsup)." WHERE ".join(" AND ", $query);
+		
+		if(count($orderby))
+			$sql .= "ORDER BY ".join(", ",$orderby);
 		
 		if($limit)
 			$sql .= " Limit ".$limit;
@@ -1421,9 +1591,11 @@ class eqDB extends DB\SQL {
 		$query = array();
 		$infields = array();
 		
-		$this->where($params, $paramsraw, $query, $infields, $i);
+		$this->where($params, $paramsraw, $query, $infields, $i,$orderby);
 		
 		$sql = "SELECT {$what} FROM {$table} WHERE ".join(" AND ", $query);
+		if(count($orderby))
+			$sql .= " ORDER BY ".join(", ",$orderby);
 		
 		if($limit)
 			$sql .= " Limit ".$limit;

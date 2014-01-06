@@ -136,7 +136,7 @@ foreach($opds as $opd){
 		$dinraw = array();
 		
 		$din['data_uri'] = $dk;
-		$din['data_org'] = $res['org_uri'];
+		$din['data_org'] = $orgin['org_uri'];
 		$din['data_conforms'] = $dv['conformsTo'];
 		$din['data_license'] = $dv['license'];
 		$din['data_contact'] = $dv['contact'];
