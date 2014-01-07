@@ -76,6 +76,8 @@ foreach($homepages as $url)
 		continue;
 	}
 	
+	echo "Found at $url\n";
+	
 	$ins = array();
 	$insf = array();
 	

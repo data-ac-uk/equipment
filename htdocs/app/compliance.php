@@ -15,7 +15,7 @@ class compliance {
 
 
 		$summary = array();
-		$summary['data'] = array("desc" => "Data is on equipment.data.", "gongs"=>array(1,1,1));
+		$summary['data'] = array("desc" => "Data is on the internet and in a acceptable format.", "gongs"=>array(1,1,1));
 		$summary['opd'] = array("desc" => "Description of dataset is provided by a remotely hosted OPD", "gongs"=>array(0,1,1));
 		$summary['opd-auto'] = array("desc" => "The OPD is discovered via autodiscovery.", "gongs"=>array(0,0,1));
 		$summary['licence'] = array("desc" => "The OPD/dataset has a recognised and supported open licence (eg CCO,ODCA or OGL)", "gongs"=>array(0,0,1));
@@ -89,8 +89,8 @@ class compliance {
 		$c []= "<td> <img src='/resources/images/gongs/equipment-data-bronze-30.png' class=\"gong\" title=\"Bronze\"/> Bronze</td>";
 		$c []= "<td> <img src='/resources/images/gongs/equipment-data-silver-30.png' class=\"gong\" title=\"Silver\"/> Silver</td>";
 		$c []= "<td> <img src='/resources/images/gongs/equipment-data-gold-30.png' class=\"gong\" title=\"Gold\"/> Gold</td>";
-		
-		$c []= "<td> <img src='/resources/images/gongs/equipment-data-{$dataset["crawl_gong"]}-30.png' class=\"gong\" title=\"".ucwords($dataset["crawl_gong"])."\"/> ".ucwords($dataset["crawl_gong"])."</td>";
+		if($hashash)
+			$c []= "<td> <img src='/resources/images/gongs/equipment-data-{$dataset["crawl_gong"]}-30.png' class=\"gong\" title=\"".ucwords($dataset["crawl_gong"])."\"/> ".ucwords($dataset["crawl_gong"])."</td>";
 				
 		$c []= "</tr>";
 		

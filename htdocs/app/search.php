@@ -25,11 +25,85 @@ class search {
 		{
 			$units = "miles";
 		}
+		$loc = false;
 		$sort = @trim($_GET["sort"]);
 		if( $sort != "" )
 		{
 			list( $e,$n ) = preg_split( '/,/', $sort );
+			$loc = true;
 		}
+		
+		$f3=Base::instance();
+		 
+		$eq = $f3->eq;
+		$eq->launch_db();
+		
+		$sql_from = "FROM itemUniquips
+		INNER JOIN `items` ON `itemU_id` = `item_id`
+			INNER JOIN `orgs` ON `itemU_org` = `org_uri`";
+	
+		if( $loc ){
+			$sql_from .= " RIGHT OUTER JOIN `locations` ON item_location = loc_uri";	
+		}
+		
+		
+		if(0){
+			$sql_sel = "SELECT *, MATCH(`itemU_f_name` ,  `itemU_f_desc` ,  `itemU_f_technique`) AGAINST (?  IN BOOLEAN MODE) as score ";
+			$sql_where = " WHERE MATCH(`itemU_f_name` ,  `itemU_f_desc` ,  `itemU_f_technique`) AGAINST (? IN BOOLEAN MODE) ORDER BY `score` DESC ";
+			$sql_params = array(1=>$q,2=>$q);
+		}else{
+			$sql_where = " WHERE `itemU_f_name` LIKE ? OR `itemU_f_desc` LIKE ? OR `itemU_f_technique` LIKE ? ";
+			$sql_sel = "SELECT * ";
+			$sql_params = array(1=>"%{$q}%",2=>"%{$q}%",3=>"%{$q}%");
+		}
+		
+			
+	
+		
+		
+		
+		
+		$res = $eq->db->exec("{$sql_sel} {$sql_from} {$sql_where}", $sql_params);
+		
+		$i = 0;
+		
+		$results = array();
+		foreach($res as $line){
+			
+			$key = sprintf( "%10d", $i );
+			$dinfo = NULL;
+			
+			if( $loc ){
+				if(strlen($line['loc_uri']) )
+				{
+					$dist = round(sqrt( pow($line['loc_easting']-$e,2) + pow($line['loc_northing']-$n,2)));
+					$key = sprintf( "%10d", $dist ).$key;
+				
+					if( $units == "miles" ) { $dist *= 0.621371192; }
+					$dinfo = (round( $dist / 100 )/10)." ".$units;
+				}else{
+					$key = "9999999999".$key;
+					$dinfo = NULL;
+				}
+			}
+			
+			$results[$key] = array(
+				"item_code"=>$line['item_id'],
+				"item_title"=>$line['itemU_f_name'],
+				"dist"=>$dinfo,
+				"org_name"=>$line['org_name']
+			);
+			
+			$i++;
+		}
+		
+		if( $loc ){
+			ksort( $results );	
+		}
+		
+		return $results;
+		
+		/*
 		$lines = file( "../var/search.tsv" );
 		$terms = preg_split( '/\s+/', $q );
 		$results = array();
@@ -70,6 +144,8 @@ class search {
 		ksort( $results);
 
 		return $results; 
+		
+		*/
 	}
 
 
