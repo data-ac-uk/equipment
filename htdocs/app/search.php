@@ -56,13 +56,8 @@ class search {
 			$sql_sel = "SELECT * ";
 			$sql_params = array(1=>"%{$q}%",2=>"%{$q}%",3=>"%{$q}%");
 		}
-		
-			
+
 	
-		
-		
-		
-		
 		$res = $eq->db->exec("{$sql_sel} {$sql_from} {$sql_where}", $sql_params);
 		
 		$i = 0;
@@ -103,49 +98,6 @@ class search {
 		
 		return $results;
 		
-		/*
-		$lines = file( "../var/search.tsv" );
-		$terms = preg_split( '/\s+/', $q );
-		$results = array();
-		$titles = array();
-		foreach( $lines as $line )
-		{
-			#nb. This scans the line including the  md5 but is pretty 
-			# unlikely to produce false positives as a result
-			foreach( $terms as $term )
-			{
-				if( !preg_match( '/\b'.$term.'/i', $line ) ) { continue 2; }
-			}
-			$line = chop( $line );
-			@list( $words,$code,$title,$org,$e2,$n2) = preg_split( '/\t/', $line );
-		
-			$key = strtoupper($title).$code;
-			$dinfo = "";
-			if( @$e && ($n2 != 0 && $e2 != 0 ) )
-			{
-				$dist = round(sqrt( pow($e2-$e,2) + pow($n2-$n,2)));
-				$key = sprintf( "%10d", $dist ).$key;
-				
-				if( $units == "miles" ) { $dist *= 0.621371192; }
-				$dinfo = (round( $dist / 100 )/10)." ".$units;
-			}else{
-				$key = "9999999999".$key;
-				$dinfo = NULL;
-			}
-				
-			$results[$key] = array(
-				"item_code"=>$code,
-				"item_title"=>$title,
-				"dist"=>$dinfo,
-				"org_name"=>$org,
-			);
-		}
-
-		ksort( $results);
-
-		return $results; 
-		
-		*/
 	}
 
 
