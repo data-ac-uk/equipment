@@ -3,6 +3,8 @@
 
 # Downloads equipment from datasets
 
+ini_set('memory_limit','256M');
+
 if(in_array('--dryrun',$argv)){
 	$dryrun = true;
 }else{

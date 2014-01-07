@@ -78,3 +78,6 @@ $eq_config->rapper->path = 'rapper';
 $eq_config->gongs = array(1=>'bronze', 2=>'silver', 3=>'gold' );
 
 $eq_config->misc = (object) NULL;
+if(file_exists("{$eq_config->pwd}/etc/eq_config.local.php")){
+	include("{$eq_config->pwd}/etc/eq_config.local.php");
+}
