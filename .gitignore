@@ -1,9 +1,9 @@
-/lib
-/var
-/htdocs/data
-/htdocs/tmp/
-/etc/test-list.tsv
-/htdocs/ui/note.html
-/htdocs/opd/
+lib
+var
+htdocs/data
+htdocs/tmp/
+etc/test-list.tsv
+htdocs/ui/note.html
+htdocs/opd/tmp/
 etc/test-list.tsv.all
 _misc/.tld_set

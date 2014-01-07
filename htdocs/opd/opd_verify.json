@@ -1,0 +1,535 @@
+{
+  "core": { 
+    "terms": [
+      { 
+        "term": "skos:prefLabel",
+        "label": "Preferred Label",
+        "expect": "literal",
+        "recommended": true
+      },
+      { 
+        "term": "skos:hiddenLabel",
+        "label": "Hidden Label",
+        "expect": "literal"
+      },
+      { 
+        "term": "rdfs:label",
+        "label": "Label",
+        "expect": "literal"
+      },
+      {
+        "term": "rdf:type",
+        "label": "Type",
+        "values": {
+  "org:FormalOrganization": "Formal Organisation (charity, business etc.)",
+  "aiiso:Institution": "An Academic Institution",
+  "foaf:Organization": "An Organisation (general)"
+        },
+        "render": "uri_values",
+        "expect": "resource",
+        "recommended": true
+      },
+      {
+        "term": "foaf:homepage",
+        "label": "Homepage",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ],
+        "recommended": true
+      },
+      {
+        "term": "vcard:hasTelephone",
+        "label": "Phone (vcard)",
+        "render": "pretty_link",
+        "expect": "resource",
+        "expect_scheme": [ "tel" ]
+      },
+      {
+        "term": "foaf:phone",
+        "label": "Phone (foaf)",
+        "render": "pretty_link",
+        "expect": "resource",
+        "expect_scheme": [ "tel" ]
+      },
+      {
+        "term": "foaf:mbox",
+        "label": "Email",
+        "render": "pretty_link",
+        "expect": "resource",
+        "expect_scheme": [ "mailto" ],
+        "recommended": true
+      },
+      {
+        "term": "foaf:logo",
+        "label": "Logo",
+        "render": "img",
+        "recommended": true
+      },
+      {
+        "term": "oo:sparql",
+        "label": "SPARQL Endpoint",
+        "render": "link"
+      },
+      {
+        "term": "owl:sameAs",
+        "label": "is the same as",
+        "render": "uri"
+      }
+    ]
+    
+  },
+  "dataset": {
+    "terms": [
+      { 
+        "term": "oo:organization",
+        "label": "Organization URI",
+        "render": "uri",
+        "expect": "resource"
+      },
+      { 
+        "term": "oo:contact",
+        "label": "Contact",
+        "render": "pretty_link",
+        "expect": "resource",
+        "expect_scheme": [ "mailto","tel","http","https" ],
+        "recommended": true
+      },
+      { 
+        "term": "oo:corrections",
+        "label": "Corrections Contact",
+        "render": "pretty_link",
+        "expect": "resource",
+        "expect_scheme": [ "mailto","tel","http","https" ],
+        "recommended": true
+      },
+      { 
+        "term": "dcterms:license",
+        "label": "License",
+        "render": "uri_values",
+        "expect": "resource",
+        "values": { 
+"http://creativecommons.org/publicdomain/zero/1.0/": "CC0 - Public Domain Dedication",
+"http://opendatacommons.org/licenses/by/": "ODCA - Open Data Commons Attribution License",
+"http://www.nationalarchives.gov.uk/doc/open-government-licence/": "OGL - The (UK) Open Government License for Public Sector Information"
+        },
+        "recommended": true
+      },
+      { 
+        "term": "dcterms:conformsTo",
+        "label": "Conforms to",
+        "render": "uri_values",
+        "expect": "resource",
+        "values": {
+"http://equipment.data.ac.uk/uniquip": "Uniqup Spreadsheet Standard",
+"http://openorg.ecs.soton.ac.uk/wiki/Facilities_and_Equipment": "Open Org Research Equipment Pattern",
+"http://equipment.data.ac.uk/kitcat-items-json": "Kit-Catalogue JSON"
+        },
+        "recommended": true
+      }
+    ]
+  },
+  "linking-you": { 
+    "terms": [
+      {
+        "term": "lyou:events",
+        "label": "events page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:business",
+        "label": "business page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:depts",
+        "label": "departments page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:about",
+        "label": "about page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:about-leader",
+        "label": "leader page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:about-executive",
+        "label": "executive page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:about-strategy",
+        "label": "strategy page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:about-sites",
+        "label": "sites page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:search",
+        "label": "search page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:press",
+        "label": "press page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:press-facts",
+        "label": "press facts page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:news",
+        "label": "news page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:jobs",
+        "label": "jobs page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:legal",
+        "label": "legal page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:legal-policies",
+        "label": "policies page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:legal-data-protection",
+        "label": "data-protection statement page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:legal-environment",
+        "label": "environmental policy page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:legal-equality",
+        "label": "equality policy page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:legal-foi",
+        "label": "freedom-of-information policy page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:legal-ict",
+        "label": "ICT policy page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:legal-website",
+        "label": "website legal information page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:legal-regulations",
+        "label": "regulations page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:contact",
+        "label": "contact page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:contact-staff",
+        "label": "staff contact page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:ict-support",
+        "label": "ICT support page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:open-data",
+        "label": "open data page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:courses",
+        "label": "courses page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:undergraduate",
+        "label": "undergraduate admissions page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:undergraduate-courses",
+        "label": "undergraduate courses page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:undergraduate-courses-entry-requirements",
+        "label": "undergraduate courses entry requirements page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:undergraduate-prospectus",
+        "label": "undergraduate prospectus page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:postgraduate",
+        "label": "general postgraduate admissions page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:postgraduate-taught",
+        "label": "taught postgraduate admissions page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:postgraduate-taught-courses",
+        "label": "taught postgraduate courses page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:postgraduate-taught-courses-entry-requirements",
+        "label": "taught postgraduate entry requirements page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:postgraduate-taught-prospectus",
+        "label": "taught postgraduate prospectus page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:postgraduate-research",
+        "label": "research postgraduate admissions page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:postgraduate-research-courses",
+        "label": "research postgraduate courses (or programmes) page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:postgraduate-research-courses-entry-requirements",
+        "label": "research postgraduate entry requirements page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:postgraduate-research-prospectus",
+        "label": "research postgraduate prospectus page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:foundation",
+        "label": "foundation admissions page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:foundation-courses",
+        "label": "foundation courses page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:foundation-courses-entry-requirements",
+        "label": "foundation courses entry requirements page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:foundation-prospectus",
+        "label": "foundation prospectus page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:opendays",
+        "label": "open days page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:research",
+        "label": "research page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:legal-ethics",
+        "label": "ethics policy",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:conferences",
+        "label": "conferences page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:public-lectures",
+        "label": "public lectures page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:events-graduation",
+        "label": "graduation event page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:business-incubation",
+        "label": "business incubation page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:business-ktp",
+        "label": "business knowlege transfer partnerships page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:academic-depts",
+        "label": "academic departments page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:support-depts",
+        "label": "support departments page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:about-parents",
+        "label": "information for parents page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:international-students",
+        "label": "information for international students page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      },
+      {
+        "term": "lyou:conference-facilities",
+        "label": "conference facilities page",
+        "render": "link",
+        "expect": "resource",
+        "expect_scheme": [ "http", "https" ]
+      }
+    ]
+  }
+
+}

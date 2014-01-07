@@ -139,6 +139,9 @@ foreach( $config as &$config_item )
 
 	$postcode= $org->get( "http://data.ordnancesurvey.co.uk/ontology/postcode/postcode" );
 	$config_item["org_homepage"] = $org->getLiteral( "foaf:homepage" );
+	if(!strlen($config_item["org_homepage"]) && strlen($config_item["org_url"])){
+		$config_item["org_homepage"] = $config_item["org_url"];
+	}
 	$config_item["org_easting"] = "";
 	$config_item["org_northing"] = "";	
 	$config_item["org_lat"] = "";
@@ -381,6 +384,7 @@ function rdf_to_graph( &$c )
 
 	$graph = new Graphite();
 	$graph->ns( "oldcerif", "http://spi-fm.uca.es/neologism/cerif#" );
+	$graph->ns( "gr", "http://purl.org/goodrelations/v1#" );
 
 	print "Loading RDF: ".$c["dataset_url"]."\n";
 	print "Downloading via Rapper\n";
@@ -502,15 +506,12 @@ function pure_to_graph( &$c )
 		return false;
 	}
 
-	# fix to buggy XML
-	$lines = preg_split( "/\n/", $content );
-	$lines[1]= "<items>";
-	array_push( $lines, "</items>" );
-	$content = join( "\n", $lines );
 	$xml = simplexml_load_string( $content );
 
 	$graph = new Graphite();
 	$graph->ns( "org", "http://www.w3.org/ns/org#" );
+	$graph->ns( "gr", "http://purl.org/goodrelations/v1#" );
+	$graph->ns( "oldcerif", "http://spi-fm.uca.es/neologism/cerif#" );
 	foreach( $xml->equipment as $item )
 	{
 		$id = md5((string)$item->uid);
@@ -621,6 +622,8 @@ function kitcat_to_graph( &$c )
 	$items = json_decode( $content, true );
 
 	$graph = new Graphite();
+	$graph->ns( "gr", "http://purl.org/goodrelations/v1#" );
+	$graph->ns( "oldcerif", "http://spi-fm.uca.es/neologism/cerif#" );
 	foreach( $items as $item )
 	{
 		$their_uri = $item["id"];
@@ -843,6 +846,11 @@ function uniquip_to_graph( &$c, $items )
 			$graph->addCompressedTriple( $org_uri, "rdf:type", "http://vocab.deri.ie/rooms#" );
 			# we are *not* automatically assuming the building belongs to the uni, just in case
 		}
+		
+		if( @$item["Corrections"] != "" )
+		{
+			$graph->addCompressedTriple( $uri, "oo:corrections", strtolower($item["Corrections"]) );
+		}
 
 		# fields not yet handled:
 		#"Type",
@@ -1000,7 +1008,10 @@ function itemToUniquipRow($item)
 		$uniquip["Approximate Coordinates"] = $config_item["org_lat"]." ".$config_item["org_long"];
 	}
 #"Corrections"
-	if( $config_item["dataset_corrections"] )
+	if( $item->has( "oo:corrections" ) )
+	{
+		$uniquip["Corrections"] = $item->getString( "oo:corrections" );
+	}elseif( $config_item["dataset_corrections"] )
 	{
 		$uniquip["Corrections"] = $config_item["dataset_corrections"];
 	}
@@ -1176,7 +1187,11 @@ function processItemPage( $item )
 		}
 		$html []= "</p>";
 	}
-	if( $config_item["dataset_corrections"] )
+	if( $item->has( "oo:corrections" ) )
+	{
+		$html []=  "<div class='corrections'>Issues with this record should be reported to ".$item->get( "oo:corrections" )->prettyLink()."</div>";
+		
+	}elseif( $config_item["dataset_corrections"] )
 	{
 		# use the graphite URL link renderer
 		$g = new Graphite();
