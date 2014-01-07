@@ -1,6 +1,9 @@
 <?php
+
 if(!isset($f3))
 	$f3=require($eq_config->pwd.'/htdocs/lib/base.php');
+
+error_reporting(0);
 
 class dataacukEquipment 
 {
