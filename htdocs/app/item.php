@@ -1,10 +1,9 @@
 <?php
 class item {
 
-	function fragment() 
-	{
-                $f3=Base::instance();
-		
+	function fragment() {
+		$f3=Base::instance();
+
 		@list( $id, $suffix ) = preg_split( '/\./', $f3->get( "PARAMS.id" ), 2 );
 
 		if( !preg_match( '/^[a-f0-9]+$/',$id ) )

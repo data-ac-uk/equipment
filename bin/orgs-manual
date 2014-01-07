@@ -1,0 +1,141 @@
+#!/usr/bin/php
+<?php
+
+# Crawls found opds looinkg for organiations and datasets
+
+if(in_array('--dryrun',$argv)){
+	$dryrun = true;
+}else{
+	$dryrun = false;	
+}
+
+require_once( "../etc/eq_config.php" );
+
+
+require_once( "{$eq_config->pwd}/lib/arc2/ARC2.php" );
+require_once( "{$eq_config->pwd}/lib/Graphite/Graphite.php" );
+
+require_once( "{$eq_config->pwd}/dataacukEquipment.php" );
+
+
+$config = read_config("{$eq_config->pwd}/etc/test-list.tsv");
+
+
+$eq = new dataacukEquipment($eq_config);
+$eq->launch_db();
+$eq->db->dryrun = $dryrun;
+
+
+
+foreach($config as $org){
+	
+	echo $org['org_name'];
+	$orgin = array();
+	$orginraw = array();
+	$orgin['org_uri'] = "http://id.equipment.data.ac.uk/org/{$org['org_idscheme']}/{$org["org_id"]}";
+	$orgin['org_idscheme'] = $org['org_idscheme'];
+	$orgin['org_id'] = $org['org_id'];
+	$orgin['org_name'] = $org['org_name'];
+	$orgin['org_sort'] = $eq->misc_order_txt($org['org_name']);
+	$orgin['org_url'] = $org['org_url'];
+	$orgin['org_logo'] = $org['org_logo'];
+
+	//Check if exists through other means (same url);
+	
+	$res = $eq->db->fetch_one('orgs', array('org_url' => $orgin['org_url'], 'org_uri' => "!:".$orgin['org_uri']), array(), "`org_uri`");
+	if(isset($res['org_uri'])){
+		echo " - Found other org with same homepage so will disable this one\n";
+		
+
+		$eq->db->update('orgs', array("org_ena"=>0), array(), array('org_uri' => $orgin['org_uri']));
+		$eq->db->update('datasets',  array("data_ena"=>0), array(), array('data_org' => $orgin['org_uri']));
+		$eq->db->delete('items', array("item_org"=>$orgin['org_uri']));
+		$eq->db->delete('itemUniquips', array("itemU_org"=>$orgin['org_uri']));
+		$eq->db->delete('itemPages', array( "page_org"=>$orgin['org_uri']));
+		$eq->db->delete('itemRDF', array("rdf_org"=>$orgin['org_uri']));
+		
+		continue;
+	}
+	
+	if($orgin['org_idscheme'] == 'ukprn'){
+		$loc = $eq->location_extract("http://id.learning-provider.data.ac.uk/ukprn/{$orgin['org_id']}");
+		$orgin['org_location'] = $loc['loc_uri'];
+	}
+
+
+	$orginraw['org_lastseen'] = 'NOW()';
+	
+	$res = $eq->db->fetch_one('orgs', array('org_uri' => $orgin['org_uri']), array(), "`org_uri`");
+	if(isset($res['org_uri'])){
+		$eq->db->update('orgs', $orgin, $orginraw, array('org_uri' => $orgin['org_uri']));
+		echo " - Updated org";
+	}else{
+
+		$orgin['org_ena'] = 1; // Only on insert incase you want to disable from db
+		$orginraw['org_firstseen'] = 'NOW()';
+		$eq->db->insert('orgs', $orgin, $orginraw);
+		echo " - New org";
+	}
+
+	$din = array();
+	$dinraw = array();
+	
+	$dttype = explode("/",$org['dataset_type']);
+	
+	$din['data_uri'] = $org['dataset_url'];
+	$din['data_org'] = $orgin['org_uri'];
+	$din['data_conforms'] = $eq->config->conformsToMap[$dttype[0]];
+	$din['data_license'] = "";
+	$din['data_contact'] = $org['dataset_contact'];
+	$din['data_corrections'] = $org['dataset_corrections'];
+	$din['data_type'] = "";
+	$din['data_ena'] = 1;
+	$din['data_hash'] = md5($org['dataset_url']);
+	$din['data_src'] = "manual";
+	$dinraw['data_lastseen'] = 'NOW()';
+	
+	
+	$res = $eq->db->fetch_one('datasets', array('data_uri' => $din['data_uri']), array(), "`data_uri`");
+
+	if(isset($res['data_uri'])){
+		$eq->db->update('datasets',  $din, $dinraw, array('data_uri' => $din['data_uri']));
+	}else{
+		$dinraw['data_firstseen'] = 'NOW()';
+		$eq->db->insert('datasets', $din, $dinraw);
+	}
+
+	echo "\n";
+
+}
+
+
+
+
+function read_config( $file )
+{
+	$rows = file( $file );
+
+	$config = array();	
+	foreach( $rows as $row )
+	{
+		if( preg_match( "/^#/", $row ) ) { continue; } # skip commented lines
+
+		$cells = preg_split( "/\t/", chop( $row ) );	
+		if( sizeof( $cells ) != 8 ) { print "Bad Row in config:\n$row\n"; continue; }
+		$org_id = explode("/",$cells[0],2);
+		$config []=  array( 
+			"org_ukprn" => ($org_id[0]=='ukprn') ? $org_id[1] : NULL,
+			"org_idscheme" => $org_id[0],
+			"org_id" => $org_id[1],
+			"dataset_type" => $cells[1],	
+			"dataset_url" => $cells[2],	
+			"org_name" => $cells[3],	
+			"org_url" => $cells[4],	
+			"org_logo" => $cells[5],	
+			"dataset_corrections" => $cells[6],	
+			"dataset_contact" => $cells[7],	
+		);
+	}
+	
+	return $config;
+}
