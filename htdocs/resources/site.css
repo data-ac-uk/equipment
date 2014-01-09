@@ -116,11 +116,15 @@ table.status td img.gong {
 
 }
 
+table.status td.none{
+	border: none !important;
+}
+
 
 table.status .org_logo{
-	margin: -3px;
-	max-width: 80px;
-	max-height: 30px;
+	margin: -1px;
+	max-width: 90px;
+	max-height: 35px;
 }
 i {
 	font-style: italic;
