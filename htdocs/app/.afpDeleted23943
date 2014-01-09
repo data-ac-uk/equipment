@@ -28,7 +28,7 @@ class status {
 		$c []= "</tr>";
 		foreach( $status['orgs'] as $feed )
 		{
-			
+						
 			$c []= "<tr >";
 			$c []= "<td rowspan=\"".count($feed['org_datasets'])."\"><a href='".$feed["org_url"]."'><img src='".$feed["org_logo"]."' class=\"org_logo\"/></a></td>";
 			
@@ -39,13 +39,13 @@ class status {
 			
 		
 			
+			
 			foreach($feed['org_datasets'] as $set){
 				$c []= "<td><a href='".$set["data_uri"]."' title=\"Raw source downloaded from: {$set["data_uri"]}\">dataset</a></td>";
 				$c []= "<td>".array_search($set['data_conforms'],$eq->config->conformsToMap)."</td>";
 
 				$org_id = "{$feed["org_idscheme"]}/{$feed["org_id"]}/{$set['data_hash']}";
-				$c []= "<td><a href='/org/$org_id'>HTML</a>, ";
-				$c []= "<a href='/org/$org_id.json'>JSON</a>, ";
+				$c []= "<td><a href='/org/$org_id.json'>JSON</a>, ";
 				$c []= "<a href='/org/$org_id.csv'>CSV</a>, ";
 				$c []= "<a href='/org/$org_id.tsv'>TSV</a>, ";
 				$c []= "<a href='/org/$org_id.ttl'>RDF&nbsp;(TTL)</a></td>";
@@ -102,7 +102,7 @@ class status {
 				$c []= "</td>";
 				
 				
-				$c []= "<td> <a href=\"/compliance?dataset={$set['data_hash']}#summary\"><img src='/resources/images/gongs/equipment-data-{$set["crawl_gong"]}-30.png' class=\"gong\" title=\"".ucwords($set["crawl_gong"])."\"/> ".ucwords($set["crawl_gong"])."</a></td>";
+				$c []= "<td> <img src='/resources/images/gongs/equipment-data-{$set["crawl_gong"]}-30.png' class=\"gong\" title=\"".ucwords($set["crawl_gong"])."\"/> ".ucwords($set["crawl_gong"])."</td>";
 				$c []= "</tr>";
 			}	
 	

@@ -1,0 +1,109 @@
+#!/usr/bin/php
+<?php
+
+# This script uses the list of learning providers to auto discover any opds
+# This takes the list of files to download from a configuration file, which is
+# generated from the data at hub.data.ac.uk
+
+
+if(in_array('--dryrun',$argv)){
+	$dryrun = true;
+}else{
+	$dryrun = false;	
+}
+
+
+
+require_once( "../etc/eq_config.php" );
+
+
+require_once( "{$eq_config->pwd}/lib/arc2/ARC2.php" );
+require_once( "{$eq_config->pwd}/lib/Graphite/Graphite.php" );
+
+require_once( "{$eq_config->pwd}/lib/OPDLib/OrgProfileDocument.php" );
+
+
+
+require_once( "{$eq_config->pwd}/dataacukEquipment.php" );
+
+
+$eq = new dataacukEquipment($eq_config);
+$eq->launch_db();
+$eq->db->dryrun = $dryrun;
+
+$_SERVER['REQUEST_URI'] = NULL; //make arc behave;
+
+
+$lps = "{$eq_config->pwd}/var/learning-providers-plus.tsv";
+
+$homepages = $eq_config->opds->autodiscovers;
+//$homepages = array();
+$rows = file( $lps );
+
+$config = array();	
+foreach( $rows as $row )
+{
+	if( preg_match( "/^#/", $row ) ) { continue; } # skip commented lines
+	$cells = preg_split( "/\t/", chop( $row ) );	
+	if($cells[0]=='UKPRN') { continue; } #Header line
+	
+	
+	$homepages[] = $cells[9];
+}
+
+$map_opd = new DB\SQL\Mapper($eq->db,'autoOPDs');
+
+
+foreach($homepages as $url)
+{
+	try{ 
+		$opd = @OrgProfileDocument::discover( $url);
+	}
+	catch( OPD_Discover_Exception $e )
+	{
+		continue;
+	}
+	catch( OPD_Load_Exception $e )
+	{
+		continue;
+	}
+	catch( OPD_Parse_Exception $e )
+	{
+	    continue;
+	}
+	catch( Exception $e )
+	{
+		continue;
+	}
+	
+	echo "Found at $url\n";
+	
+	$ins = array();
+	$insf = array();
+	
+	$ins['opd_id'] = (string)$opd->org;
+	$ins['opd_url'] = (string)$opd->opd_url;
+	$ins['opd_ena'] = 1;
+	$insf['opd_lastseen'] = 'NOW()';
+	$ins['opd_type'] = (string)$opd->result['CONTENT_TYPE'];
+	$ins['opd_cache'] = (string)$opd->result['CONTENT'];
+	$ins['opd_src'] = 'autodiscovered';
+
+
+	$res = $eq->db->fetch_one('autoOPDs', array('opd_id' => $ins['opd_id']), array(), "`opd_id`");
+	if(isset($res['opd_id']))
+		$eq->db->update('autoOPDs', $ins, $insf, array('opd_id' => $ins['opd_id']));
+	else{
+		$insf['opd_firstseen'] = 'NOW()';
+		$eq->db->insert('autoOPDs', $ins, $insf);
+	}
+		
+		
+	
+	
+	
+	$opds[] = $opd->opd_url;
+
+}
+
+file_put_contents("{$eq_config->pwd}/var/autodiscovered-opds.json", json_encode($opds));

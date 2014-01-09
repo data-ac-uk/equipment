@@ -1,10 +1,13 @@
 <?php
 class item {
 
-	function fragment() 
-	{
-                $f3=Base::instance();
+	function fragment() {
+		$f3=Base::instance();
+
+		$eq = $f3->eq;
+		$eq->launch_db();
 		
+
 		@list( $id, $suffix ) = preg_split( '/\./', $f3->get( "PARAMS.id" ), 2 );
 
 		if( !preg_match( '/^[a-f0-9]+$/',$id ) )
@@ -15,11 +18,15 @@ class item {
 		
 		if( !isset($suffix) )
 		{
-			$data = json_decode( file_get_contents( $this->itemCachePath($id,"html") ), true );
-
-			print "<h2>".$data["title"]."</h2>";
-			print $data["content"];
-
+			$page = $eq->db->fetch_one('itemPages', array('page_id' => $id));
+			
+			if(!$page){
+				$f3->error(404);
+			}
+					
+			print "<h2>".$page["page_title"]."</h2>";
+			print $page["page_content"];
+		
 			return;
 		}
 
@@ -43,29 +50,36 @@ class item {
 			# for now...
 			$suffix = "html";
 		}
+		 
+		$eq = $f3->eq;
+		$eq->launch_db();
+		
 
 		if( $suffix == "html" )
 		{
+			$page = $eq->db->fetch_one('itemPages', array('page_id' => $id));
 			
-			$path = $this->itemCachePath($id,"html");
-			if(!file_exists( $path )) { $f3->error(404); }
-			
-			$data = json_decode( file_get_contents( $path ), true );
-	
-			$f3->set('html_title', $data["title"] );
+			if(!$page){
+				$f3->error(404);
+			}
+					
+			$f3->set('html_title', $page["page_title"] );
 			$f3->set('content','content.html');
-			$f3->set('html_content', $data["content"] );
+			$f3->set('html_content', $page["page_content"] );
 			print Template::instance()->render( "page-template.html" );
 			return;
 		}
 
 		if( $suffix == "ttl" )
 		{
-			$path = $this->itemCachePath($id,"ttl");
-			if(!file_exists( $path)) { $f3->error(404); }
-			$ttl = file_get_contents( $path );
+		
+			$page = $eq->db->fetch_one('itemRDF', array('rdf_id' => $id));
+			
+			if(!$page){
+				$f3->error(404);
+			}
 			header( "Content-type: text/turtle" );
-			print $ttl;
+			print $page['rdf_rdf'];
 			return;
 		}
 		

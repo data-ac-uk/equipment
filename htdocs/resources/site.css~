@@ -5,7 +5,7 @@
 }
 h1 { 
 	padding-right: 300px; 
-
+	font-size:150%;
 	margin-top:0px;
 	border-bottom:1px;
 	color: #333333;
@@ -116,15 +116,11 @@ table.status td img.gong {
 
 }
 
-table.status td.none{
-	border: none !important;
-}
-
 
 table.status .org_logo{
-	margin: -1px;
-	max-width: 90px;
-	max-height: 35px;
+	margin: -3px;
+	max-width: 80px;
+	max-height: 100%;
 }
 i {
 	font-style: italic;

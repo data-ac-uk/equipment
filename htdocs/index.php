@@ -2,6 +2,7 @@
 require_once( "../lib/arc2/ARC2.php" );
 require_once( "../lib/Graphite/Graphite.php" );
 
+
 date_default_timezone_set( "Europe/London" );
 try {
     $f3=require('lib/base.php');
@@ -15,6 +16,13 @@ try {
 if (function_exists('apache_get_modules') &&
 	!in_array('mod_rewrite',apache_get_modules()))
 	trigger_error('Apache rewrite_module is disabled');
+
+
+require_once( "../etc/eq_config.php" );
+require_once( "{$eq_config->pwd}/dataacukEquipment.php" );
+$eq = new dataacukEquipment($eq_config);
+
+$f3->eq = $eq;
 
 $f3->set('DEBUG',3);
 $f3->set('AUTOLOAD',"app/");
@@ -57,9 +65,10 @@ $f3->route('GET /poster',
 );
 $f3->route('GET /', 'home->page' );
 $f3->route('GET /status', 'status->page' );
+$f3->route('GET /compliance', 'compliance->page' );
 $f3->route('GET /search', 'search->fragment' );
 $f3->route('GET /data/search', 'search->data' );
-$f3->route('GET	/org/@type/@id', 'org->page' );
+$f3->route('GET	/org/@type/@id/@dataset', 'org->page' );
 $f3->route('GET	/item/@id', 'item->page' );
 $f3->route('GET /item/@id.fragment', 'item->fragment' );
 

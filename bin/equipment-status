@@ -1,0 +1,33 @@
+#!/usr/bin/php
+<?php
+
+# Downloads equipment from datasets
+
+if(in_array('--dryrun',$argv)){
+	$dryrun = true;
+}else{
+	$dryrun = false;	
+}
+
+require_once( "../etc/eq_config.php" );
+
+
+require_once( "{$eq_config->pwd}/lib/arc2/ARC2.php" );
+require_once( "{$eq_config->pwd}/lib/Graphite/Graphite.php" );
+
+require_once( "{$eq_config->pwd}/lib/OPDLib/OrgProfileDocument.php" );
+
+
+
+require_once( "{$eq_config->pwd}/dataacukEquipment.php" );
+
+
+$eq = new dataacukEquipment($eq_config);
+$eq->launch_db();
+$eq->db->dryrun = $dryrun;
+$stage = 0;
+
+$stage++;
+echo "Stage $stage: Saving status json\n";
+$eq->save_status();
+exit();
