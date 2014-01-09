@@ -44,7 +44,8 @@ class status {
 				$c []= "<td>".array_search($set['data_conforms'],$eq->config->conformsToMap)."</td>";
 
 				$org_id = "{$feed["org_idscheme"]}/{$feed["org_id"]}/{$set['data_hash']}";
-				$c []= "<td><a href='/org/$org_id.json'>JSON</a>, ";
+				$c []= "<td><a href='/org/$org_id'>HTML</a>, ";
+				$c []= "<a href='/org/$org_id.json'>JSON</a>, ";
 				$c []= "<a href='/org/$org_id.csv'>CSV</a>, ";
 				$c []= "<a href='/org/$org_id.tsv'>TSV</a>, ";
 				$c []= "<a href='/org/$org_id.ttl'>RDF&nbsp;(TTL)</a></td>";

@@ -4,13 +4,14 @@ table.info td { padding: 0.2em; border:solid 1px #000; }
 table.info th { padding: 0.2em 1em 0.2em 0.2em; border:solid 1px #000; font-weight: bold; text-align:right;}
 </style>
 
-<p>Homepage: <a href='{{ @metadata["org_url"] }}'>{{ @metadata["org_url"] }}</a></p>
-<p>Contact: <a href='{{ @metadata["dataset_contact"] }}'>{{ @metadata["dataset_contact"] }}</a></p>
-<p>Corrections: <a href='{{ @metadata["dataset_corrections"] }}'>{{ @metadata["dataset_corrections"] }}</a></p>
-<p>Dataset source: <a href='{{ @metadata["dataset_url"] }}'>{{ @metadata["dataset_url"] }}</a></p>
-<p>Dataset format: {{ @metadata["dataset_type"] }}</p>
-<p>Last import: {{ date( "r", @metadata["dataset_timestamp"]) }}</p>
-<p>Records count: {{ @metadata["items"] }}</p>
+<p>Homepage: <a href='{{ @metadata["org"]["org_url"] }}'>{{ @metadata["org"]["org_url"] }}</a></p>
+<p>Contact: <a href='{{ @metadata["data_contact"] }}'>{{ @metadata["data_contact"] }}</a></p>
+<p>Corrections: <a href='{{ @metadata["data_corrections"] }}'>{{ @metadata["data_corrections"] }}</a></p>
+<p>Dataset source: <a href='{{ @metadata["data_uri"] }}'>{{ @metadata["data_uri"] }}</a></p>
+<p>Dataset format: {{ @metadata["data_conforms"] }}</p>
+<p>Dataset license: {{ @metadata["data_license"] }}</p>
+<p>Last import: {{ date( "r", strtotime(@metadata["crawl"]["crawl_timestamp"])) }}</p>
+<p>Records count: {{ @metadata["crawl_icons"] }}</p>
 
 <F3:repeat group="{{ @records }}" value="{{ @record }}">
   <table class='info'>

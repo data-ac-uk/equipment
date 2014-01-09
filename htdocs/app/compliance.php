@@ -11,14 +11,18 @@ class compliance {
 //		$f3->set('compliance_page','compliance.html');
 
 		$c = array();
-		$c[] = file_get_contents( 'ui/compliance.html' );
 
 
 		$summary = array();
-		$summary['data'] = array("desc" => "Data is on the internet and in a acceptable format.", "gongs"=>array(1,1,1));
+		$summary['data'] = array("desc" => "Data is on the internet and in an acceptable format.", "gongs"=>array(1,1,1));
 		$summary['opd'] = array("desc" => "Description of dataset is provided by a remotely hosted OPD", "gongs"=>array(0,1,1));
 		$summary['opd-auto'] = array("desc" => "The OPD is discovered via autodiscovery.", "gongs"=>array(0,0,1));
-		$summary['licence'] = array("desc" => "The OPD/dataset has a recognised and supported open licence (eg CCO,ODCA or OGL)", "gongs"=>array(0,0,1));
+		$summary['licence'] = array("desc" => "The OPD/dataset has a recognised and supported open licence (eg CCO, ODCA or OGL)", "gongs"=>array(0,0,1));
+
+	
+		$f3->set('gt_gongs', array('bronze'=>'Bronze','silver'=>'Silver','gold'=>'Gold'));
+
+		$f3->set('gt_summary', $summary);
 
 		$hashash = false;
 		if(isset($_REQUEST['dataset'])){
@@ -34,68 +38,17 @@ class compliance {
 			}
 		}
 		
-		if($hashash){
-			$c []= "<h2><a name=\"summary\"></a>Summary for Dataset</h2>";
-			
-			$c []= "<p>The following table shows how the dataset (<a href=\"{$dataset['data_uri']}\">{$dataset['data_uri']}</a>) from the <a href=\"{$dataset['org']['org_url']}\">{$dataset['org']['org_name']}</a> has achieved its complience level of <strong>".ucwords($dataset['crawl_gong'])."</strong></p>";
-			
-		}else{
-			$c []= "<h2>Summary</h2>";
-		}
-		
-				
+		$f3->set('gt_hasdataset', $hashash);
+		$f3->set('gt_dataset', $dataset);
 		
 		
-		$c []= "<table class='status'>";
 		
-		$c []= "<tr>";
-		$c []= "<th></th>";
-
-		$c []= "<th width=\"20%\">Bronze</th>";
-		$c []= "<th width=\"20%\">Silver</th>";
-		$c []= "<th width=\"20%\">Gold</th>";
-		if($hashash)
-			$c []= "<th width=\"20%\">Dataset</th>";
 		
-		foreach($summary as $k=>$sum){
 		
-			$c []= "</tr>";
-			$c [] = "<td>{$sum['desc']}</td>";
+        $c [] = Template::instance()->render('summary_table.html');
 		
-			
-			for($i=0;$i<3;$i++){
-				if($sum['gongs'][$i]){
-					$c [] = "<td>&#10004;</td>";
-				}else{
-					$c [] = "<td></td>";
-				}
-			}
-			
-			
-			if($hashash){
-				if($dataset['crawl_gong_json'][$k]==3){
-					$c [] = "<td>&#10004;</td>";
-				}else{
-					$c [] = "<td></td>";
-				}
-			}
-			$c []= "<tr>";
 		
-		}
-		
-		$c []= "<tr>";
-		$c [] = "<td></td>";
-		
-		$c []= "<td> <img src='/resources/images/gongs/equipment-data-bronze-30.png' class=\"gong\" title=\"Bronze\"/> Bronze</td>";
-		$c []= "<td> <img src='/resources/images/gongs/equipment-data-silver-30.png' class=\"gong\" title=\"Silver\"/> Silver</td>";
-		$c []= "<td> <img src='/resources/images/gongs/equipment-data-gold-30.png' class=\"gong\" title=\"Gold\"/> Gold</td>";
-		if($hashash)
-			$c []= "<td> <img src='/resources/images/gongs/equipment-data-{$dataset["crawl_gong"]}-30.png' class=\"gong\" title=\"".ucwords($dataset["crawl_gong"])."\"/> ".ucwords($dataset["crawl_gong"])."</td>";
-				
-		$c []= "</tr>";
-		
-		$c []= "</table>";
-		
+		$c[] = file_get_contents( 'ui/compliance.html' );
 		
 
 		$f3->set('html_content',join("",$c));

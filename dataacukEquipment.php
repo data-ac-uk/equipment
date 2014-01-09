@@ -1,6 +1,9 @@
 <?php
+
 if(!isset($f3))
 	$f3=require($eq_config->pwd.'/htdocs/lib/base.php');
+
+error_reporting(0);
 
 class dataacukEquipment 
 {
@@ -140,14 +143,26 @@ class dataacukEquipment
 		return $this->db->fetch_one('orgs', array('org_uri' => $org_uri));
 	}
 	
-	function get_dataset($org_uri){
+	function get_dataset($org_uri, $key = 'data_uri', $include = array()){
 		$this->launch_db();
-		return $this->db->fetch_one('datasets', array('data_uri' => $org_uri));
+		$ret = $this->db->fetch_one('datasets', array($key => $org_uri));
+		if(in_array('org',$include)){
+			$ret['org'] = $this->get_org($ret['data_org']);
+		}
+		if(in_array('crawl',$include)){
+			$ret['crawl'] = $this->get_crawl($ret['data_crawl']);
+		}
+		return $ret;
 	}
 	
 	function get_location($loc_uri){
 		$this->launch_db();
 		return $this->db->fetch_one('locations', array('loc_uri' => $loc_uri));
+	}
+	
+	function get_crawl($crawl_id){
+		$this->launch_db();
+		return $this->db->fetch_one('crawls', array('crawl_id' => $crawl_id));
 	}
 	
 	
@@ -937,7 +952,7 @@ class dataacukEquipment
 		}
 
 		$metadata['items'] = $n;
-		fwrite($fp_json,",\"metadata\":".json_encode($metadata)."}");
+		fwrite($fp_json,"],\"metadata\":".json_encode($metadata)."}");
 
 		fclose($fp_csv);
 		fclose($fp_tsv);
