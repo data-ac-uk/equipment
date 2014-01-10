@@ -51,13 +51,13 @@ foreach( $rows as $row )
 	$homepages[] = $cells[9];
 }
 
-$map_opd = new DB\SQL\Mapper($eq->db,'autoOPDs');
+//$map_opd = new DB\SQL\Mapper($eq->db,'autoOPDs');
 
 
 foreach($homepages as $url)
 {
 	try{ 
-		$opd = @OrgProfileDocument::discover( $url);
+		$opd = @OrgProfileDocument::discover( $url );
 	}
 	catch( OPD_Discover_Exception $e )
 	{
@@ -77,33 +77,42 @@ foreach($homepages as $url)
 	}
 	
 	echo "Found at $url\n";
-	
-	$ins = array();
-	$insf = array();
-	
-	$ins['opd_id'] = (string)$opd->org;
-	$ins['opd_url'] = (string)$opd->opd_url;
-	$ins['opd_ena'] = 1;
-	$insf['opd_lastseen'] = 'NOW()';
-	$ins['opd_type'] = (string)$opd->result['CONTENT_TYPE'];
-	$ins['opd_cache'] = (string)$opd->result['CONTENT'];
-	$ins['opd_src'] = 'autodiscovered';
 
-
-	$res = $eq->db->fetch_one('autoOPDs', array('opd_id' => $ins['opd_id']), array(), "`opd_id`");
-	if(isset($res['opd_id']))
-		$eq->db->update('autoOPDs', $ins, $insf, array('opd_id' => $ins['opd_id']));
-	else{
-		$insf['opd_firstseen'] = 'NOW()';
-		$eq->db->insert('autoOPDs', $ins, $insf);
-	}
-		
-		
-	
-	
+	$eq->proc_opd($opd, 'autodiscovered');	
 	
 	$opds[] = $opd->opd_url;
 
 }
 
 file_put_contents("{$eq_config->pwd}/var/autodiscovered-opds.json", json_encode($opds));
+
+foreach( $eq->config->opds->direct as $direct) {
+	
+	try{ 
+		$opd = new OrgProfileDocument( $direct['path'], $direct['type'] );
+	}
+	catch( OPD_Discover_Exception $e )
+	{
+		continue;
+	}
+	catch( OPD_Load_Exception $e )
+	{
+		continue;
+	}
+	catch( OPD_Parse_Exception $e )
+	{
+	    continue;
+	}
+	catch( Exception $e )
+	{
+		continue;
+	}
+	
+	$opd->opd_url = $direct['path'];
+	
+	echo "Found at {$direct['path']}\n";
+	
+	$eq->proc_opd($opd, 'hosted');
+
+}
+

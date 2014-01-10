@@ -132,6 +132,33 @@ class dataacukEquipment
 
 	}
 	
+	
+	function proc_opd(&$opd, $src){
+		$ins = array();
+		$insf = array();
+	
+		$ins['opd_id'] = (string)$opd->org;
+		$ins['opd_url'] = (string)$opd->opd_url;
+		$ins['opd_ena'] = 1;
+		$insf['opd_lastseen'] = 'NOW()';
+		$ins['opd_type'] = (string)$opd->result['CONTENT_TYPE'];
+		$ins['opd_cache'] = (string)$opd->result['CONTENT'];
+		$ins['opd_src'] = $src;
+		
+
+		$res = $this->db->fetch_one('autoOPDs', array('opd_id' => $ins['opd_id']), array(), "`opd_id`");
+		if(isset($res['opd_id']))
+			$this->db->update('autoOPDs', $ins, $insf, array('opd_id' => $ins['opd_id']));
+		else{
+			$insf['opd_firstseen'] = 'NOW()';
+			$this->db->insert('autoOPDs', $ins, $insf);
+		}
+	
+	}
+	
+	
+	
+	
 	/**
 		Returns org 
 		@return array

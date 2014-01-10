@@ -37,7 +37,7 @@ foreach($config as $org){
 	$orgin['org_id'] = $org['org_id'];
 	$orgin['org_name'] = $org['org_name'];
 	$orgin['org_sort'] = $eq->misc_order_txt($org['org_name']);
-	$orgin['org_url'] = $org['org_url'];
+	$orgin['org_url'] = trim($org['org_url']);
 	$orgin['org_logo'] = $org['org_logo'];
 
 	//Check if exists through other means (same url);

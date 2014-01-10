@@ -111,7 +111,8 @@ foreach($opds as $opd){
 	}
 	
 	$loc = $eq->location_extract($orgin['org_uri'], $graph);
-	$orgin['org_location'] = $loc['loc_uri'];
+	$orgin['org_location'] = (string)$loc['loc_uri'];
+
 	$orgin['org_ena'] = 1;
 	
 	
@@ -120,12 +121,16 @@ foreach($opds as $opd){
 		continue;
 	}
 	
+	print_r(	$orgin );
+	
 	$res = $eq->db->fetch_one('orgs', array('org_uri' => $orgin['org_uri']), array(), "`org_uri`");
 	if(isset($res['org_uri'])){
 		$eq->db->update('orgs', $orgin, $orginraw, array('org_uri' => $orgin['org_uri']));
+		echo " UP";
 	}else{
 		$orginraw['org_firstseen'] = 'NOW()';
 		$eq->db->insert('orgs', $orgin, $orginraw);
+		echo " In";
 	}
 	
 
