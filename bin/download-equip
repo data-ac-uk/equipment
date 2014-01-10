@@ -97,7 +97,8 @@ foreach($datasets as $set){
 	
 	switch($type){
 		case "rdf":
-			echo "    RDF Dataset\n";
+		case "rdf-n8":
+			echo "    RDF Dataset ($type)\n";
 			$graph = $eq->parse_rdf($set, $cachepath, $notes);
 		break;
 		case "kitcat":
