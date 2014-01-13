@@ -15,6 +15,8 @@ $eq_config->opds = (object) NULL;
 $eq_config->opds->local = "{$eq_config->pwd}/etc/opds";
 $eq_config->opds->direct = array(
 	array("path"=>"http://id.leeds.ac.uk/","type"=>"url"),
+//	array("path"=>"http://www.ncl.ac.uk/nclrdf/newcastle.ttl","type"=>"url")
+	array("path"=>"{$eq_config->pwd}/etc/opds/newcastle.ttl","type"=>"local")
 );
 
 $eq_config->opds->autodiscovers = array(
@@ -35,7 +37,8 @@ $eq_config->conformsToMap = array(
 	"rdf" => "http://openorg.ecs.soton.ac.uk/wiki/Facilities_and_Equipment",
 	"uniquip"=>"http://equipment.data.ac.uk/uniquip",
 	"kitcat"=>"http://equipment.data.ac.uk/kitcat-items-json",
-	"rdf-n8"=>"http://equipment.n8research.org.uk/research-equipment.html"
+	"rdf-n8"=>"http://equipment.n8research.org.uk/research-equipment.html",
+	"pure"=>"http://equipment.data.ac.uk/pure"
 );
 
 $eq_config->licences = array(
