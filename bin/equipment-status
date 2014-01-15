@@ -31,3 +31,4 @@ $stage++;
 echo "Stage $stage: Saving status json\n";
 $eq->save_status();
 exit();
+
