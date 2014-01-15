@@ -257,6 +257,82 @@ class dataacukEquipment
 		
 	}
 	
+	
+	function parse_pure($set,$path, &$notes)
+	{
+		$xml = simplexml_load_string( file_get_contents( $path ) );
+
+		$graph = new eqGraphite();
+		$graph->ns( "org", "http://www.w3.org/ns/org#" );
+		$graph->ns( "gr", "http://purl.org/goodrelations/v1#" );
+		$graph->ns( "oldcerif", "http://spi-fm.uca.es/neologism/cerif#" );
+		foreach( $xml->equipment as $item )
+		{
+			$id = md5((string)$item->uid);
+			$uri = "http://id.equipment.data.ac.uk/item/$id";
+			$url = "http://equipment.data.ac.uk/item/$id.html";
+
+			$graph->addCompressedTriple( $uri, "rdf:type", "oo:Equipment" );
+
+			$graph->addCompressedTriple( "$uri", "http://id.equipment.data.ac.uk/ns/hasCode", $id, "literal" );
+			$graph->addCompressedTriple( "$uri", "http://id.equipment.data.ac.uk/ns/hasURI", "$uri", "literal" );
+			$graph->addCompressedTriple( "$uri", "http://id.equipment.data.ac.uk/ns/hasPage", "$url" );
+
+			$graph->addCompressedTriple( $uri, "rdfs:label", (string)$item->title, "literal" );
+			if($set['org']['org_idscheme']=='ukprn'){
+				$graph->addCompressedTriple( $uri, "oo:formalOrganization", "http://id.learning-provider.data.ac.uk/ukprn/{$set['org']['org_id']}" );
+			}
+			if( $item->description != "" )
+			{
+				# kitcat always makes HTML fragment descriptions	
+				$graph->addCompressedTriple( $uri, "dcterms:description", $item["description"], "http://purl.org/xtypes/Fragment-HTML" );
+			}
+
+
+			if( $item->owner != "" )
+			{
+				$org_id = "";
+				foreach( $item->owner->attributes() as $k=>$v )
+				{
+					if( $k == "shortName" ) { $org_id = $v; }
+				}
+				if( !isset( $org_id ) )
+				{ 
+					$org_id = md5( (string)$item->owner  ); 
+				}
+				$org_uri = "http://id.equipment.data.ac.uk/org/{$c['org_idscheme']}/{$c["org_id"]}/org/".rawurlencode($org_id);
+				$graph->addCompressedTriple( $uri, "oo:organizationPart", $org_uri );
+				$graph->addCompressedTriple( $org_uri, "rdfs:label", (string)$item->owner, "literal" );
+				$graph->addCompressedTriple( $org_uri, "rdf:type", "http://www.w3.org/ns/org#Organization" );
+				if($c["org_idscheme"]=='ukprn'){
+					$graph->addCompressedTriple( "http://id.learning-provider.data.ac.uk/ukprn/".$c["org_ukprn"], "org:hasSubOrganization", $org_uri );
+				}
+			}
+			
+			if( $item->phone != "" || $item->email != "" )
+			{	
+				$graph->addCompressedTriple( $uri, "oo:contact", "$uri#contact1" );
+				$graph->addCompressedTriple( $uri, "oo:primaryContact", "$uri#contact1" );
+				if( $item->email != "" )
+				{
+					$graph->addCompressedTriple( "$uri#contact1", "foaf:mbox", "mailto:".$item->email );
+				}
+				if( $item->phone != "" )
+				{
+					$graph->addPhone( "$uri#contact1", $item->phone );
+				}
+			}
+
+
+			if( $item->website != "" )
+			{	
+				$graph->addCompressedTriple( $uri, "foaf:page", $item->website );
+			}
+		}
+
+		return $graph;
+	}
+	
 	/**
 		Parses rdf file
 		@return bool

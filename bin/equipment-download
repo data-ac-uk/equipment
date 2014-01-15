@@ -101,6 +101,10 @@ foreach($datasets as $set){
 			echo "    RDF Dataset ($type)\n";
 			$graph = $eq->parse_rdf($set, $cachepath, $notes);
 		break;
+		case "pure":
+			echo "    Pure Dataset ($type)\n";
+			$graph = $eq->parse_pure($set, $cachepath, $notes);
+		break;
 		case "kitcat":
 			$graph = $eq->parse_kitcat($set, $cachepath, $notes);
 		break;

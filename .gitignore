@@ -7,3 +7,4 @@ htdocs/ui/note.html
 htdocs/opd/tmp/
 etc/test-list.tsv.all
 _misc/.tld_set
+etc/opds/*
