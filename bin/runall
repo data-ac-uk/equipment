@@ -21,14 +21,27 @@ if(!isset($stat['lastrun']))
 	$stat['lastrun'] = array();
 
 define('TIME_ONEDAY', 24 * 3600);
+define('TIME_ONEWEEK', 7 * 4 * 3600);
 
 chdir(__DIR__);
 
 $tasks = array(
-//	"unilist-download" => array(
-//		"cmd" => "php unilist-download",
-//		"every"=> 600,
-//	),
+	"unilist-download" => array(
+		"cmd" => "php unilist-download",
+		"every"=> TIME_ONEWEEK,
+	),
+	"opds-autodiscover" => array(
+		"cmd" => "php opds-autodiscover",
+		"every"=> TIME_ONEWEEK*2,
+	),
+	"opds-crawl" => array(
+		"cmd" => "php opds-crawl",
+		"every"=> TIME_ONEWEEK,
+	),
+	"orgs-manual" => array(
+		"cmd" => "php orgs-manual",
+		"every"=> TIME_ONEWEEK,
+	),
 	"equipment-download" => array(
 		"cmd" => "php equipment-download",
 		"every"=> TIME_ONEDAY,
@@ -44,7 +57,7 @@ $hlog = "";
 $log = "";
 $div = "=================================================";
 
-if(!in_array($cmd, array("auto", "all")) && !in_array($cmd, array(array_keys($tasks)))){
+if(!in_array($cmd, array("auto", "all")) && !in_array($cmd, array_keys($tasks))){
 	die("Usage:\n\trunall [-v] [auto | all | SCRIPTNAME]\n");
 }
 
@@ -66,6 +79,8 @@ if($cmd == "all"){
 		$todo[] = $tk;
 	}
 	
+}else{
+	$todo = array($cmd);
 }
 
 $hlog .= "Running Scripts Summary\n";
@@ -100,7 +115,7 @@ foreach($todo as $key){
 	$stat['lastrun'][$key] = $starttime;
 }
 
-$hlog .= "Finished: ".date("r\n"). " - ".time_since(time()-$starttime, true, 2,"","");
+$hlog .= "Finished: ".date("r"). " - ".time_since(time()-$starttime, true, 2,"","")."\n";
 $hlog .= "{$div}\n\n";
 
 echo $hlog;
@@ -121,6 +136,10 @@ if($cmd == "auto"){
 
 
 function time_since($since, $short = false, $num = 1, $space = " ", $join = ", ") {
+if($since < 1){
+	return floor($since * 1000)."ms";
+}	
+	
 $li = "";
 $chunks = array(
 array(60 * 60 * 24 * 365 , 'year', 'y'),

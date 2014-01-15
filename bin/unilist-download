@@ -1,19 +1,15 @@
 #!/usr/bin/php
 <?php
 
-# calculate base path
-$path = explode("/", __FILE__);
-array_pop( $path ); # lose filename
-array_pop( $path ); # lose bin
-$base_dir = join( "/", $path );
-
 # This script downloads the list of university name, easting, northing from
 # learning-providers.data.ac.uk
 
-require_once( "$base_dir/lib/arc2/ARC2.php" );
-require_once( "$base_dir/lib/Graphite/Graphite.php" );
+require_once( "../etc/eq_config.php" );
 
-$var_dir = "$base_dir/var";
+require_once( "{$eq_config->pwd}/lib/arc2/ARC2.php" );
+require_once( "{$eq_config->pwd}/lib/Graphite/Graphite.php" );
+
+$var_dir = "{$eq_config->pwd}/var";
 
 $rows = file( "http://learning-provider.data.ac.uk/data/learning-providers-plus.tsv" );
 if( sizeof( $rows ) < 100 ) 
@@ -21,6 +17,8 @@ if( sizeof( $rows ) < 100 )
 	print "Not enough rows, aborting.\n";
 	exit( 1 );
 }
+
+print "Downloaded ".( sizeof( $rows ) )." rows.\n";
 
 $file = "$var_dir/learning-providers-plus.tsv";
 $fh = fopen($file, 'w') or die("can't open file: $file" );

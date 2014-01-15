@@ -15,8 +15,7 @@ $eq_config->opds = (object) NULL;
 $eq_config->opds->local = "{$eq_config->pwd}/etc/opds";
 $eq_config->opds->direct = array(
 	array("path"=>"http://id.leeds.ac.uk/","type"=>"url"),
-//	array("path"=>"http://www.ncl.ac.uk/nclrdf/newcastle.ttl","type"=>"url")
-	array("path"=>"{$eq_config->pwd}/etc/opds/newcastle.ttl","type"=>"local")
+	array("path"=>"http://www.ncl.ac.uk/nclrdf/newcastle.ttl","type"=>"url")
 );
 
 $eq_config->opds->autodiscovers = array(
