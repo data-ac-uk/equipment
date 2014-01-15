@@ -87,3 +87,7 @@ $eq_config->misc = (object) NULL;
 if(file_exists("{$eq_config->pwd}/etc/eq_config.local.php")){
 	include("{$eq_config->pwd}/etc/eq_config.local.php");
 }
+
+
+$eq_config->crawler = (object) NULL;
+$eq_config->crawler->emailto = array("andrew@debian");
