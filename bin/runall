@@ -91,6 +91,10 @@ foreach($todo as $key){
 	$task = $tasks[$key];
 
 	$tasktime = microtime(true);
+
+	$cmdoutput = NULL;
+	$cmdstatus = NULL;
+
 	
 	exec ( "{$task['cmd']} 2>&1 ", $cmdoutput, $cmdstatus );
 	
