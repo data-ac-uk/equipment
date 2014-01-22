@@ -4,18 +4,31 @@
 	margin-bottom: 1em;
 }
 h1 { 
-	padding-right: 300px; 
-
 	margin-top:0px;
 	border-bottom:1px;
 	color: #333333;
 	font-weight: 400;
 }
 h2 {
-	margin-top: 1em;
+	margin-top: 0.3em;
+	margin-bottom: 0.2em;
+	padding:0px !important;
 }
 h3 {
-	margin-top: 1em;
+	margin-top: 0.3em;
+	margin-bottom: 0.2em;
+	padding:0px;
+}
+h4 {
+	margin-top: 0.2em;
+	margin-bottom: 0.15em;
+	padding:0px;
+}
+h5 {
+	margin-top: 0.3em;
+	margin-bottom: 0.15em;
+	padding:0px;
+	font-weight: bold;
 }
 #results {
 	margin-top: 8px;
@@ -144,4 +157,126 @@ br {
 
 .ui-widget-content h5{
 	padding:5px 0px 3px;
+}
+
+
+a.fileicon{
+	background: url('/resources/images/fileicons/blank.png') no-repeat left center;
+	font-weight: bold;
+	padding: 2px 2px 2px 18px;
+}
+
+a.fileicon.csv{
+	background-image: url('/resources/images/fileicons/csv.png');
+}
+a.fileicon.json{
+	background-image: url('/resources/images/fileicons/json.png');
+}
+a.fileicon.rdf{
+	background-image: url('/resources/images/fileicons/rdf.png');
+}
+
+/* Branding */
+
+.jumbo {
+	margin: 15px 0px; 
+	background: #417CA5;
+	color: white;
+	border-top: 3px solid #193965;
+	border-bottom: 3px solid #193965;
+	width: 100%;
+}
+
+.jumbo img {
+	max-width: 100%;
+}
+
+#searchbox{
+	position: relative;
+}
+.search-div{
+	border-radius: 10px;
+	border: 1px solid #193965;
+	padding: 8px;
+	position: relative;
+}
+
+.search-div .search-title{
+	font-weight: bold;
+	display: inline-block;
+	color:#193965;
+	font-size:140%;
+	padding: 4px;
+	margin: 0px 6px !important;
+}
+
+.search-div .search-input {
+	margin: 0px 3px 0px 0px;
+	display: inline-block;
+	padding: 4px;
+	border: 1px solid #eee;
+	font-size:130%;
+	width: 60%;
+	border-radius: 5px;
+}
+
+.search-div .search-button {
+	border: 2px solid #193965;
+	background: #193965;
+	color: white;
+	padding: 3px 6px;
+	font-weight: normal;
+	text-shadow: none;
+	font-size:130%;
+	margin:  0px;
+}
+
+.search-div .search-button:hover{
+	border: 2px solid #193965;
+	color: #193965;
+	background: white;
+}
+
+#results-container{
+	width: 90%;
+	margin:0px 3% 10px;
+	padding: 0px 10px 10px;
+	border: 1px solid #193965;
+	border-top:none;
+	border-radius: 0px 0px 10px 10px;
+	z-index: 100;
+	position: absolute;
+	background: white;
+
+
+}
+#results{
+	border: 1px solid #eee;
+}
+#results-container .eight.columns{
+	width: 45%;
+	
+}
+
+.sidebox{
+	border-radius: 5px;
+	border: 1px solid #193965;
+	padding: 5px;
+	margin-bottom:10px;
+}
+
+.sidebox h3{
+	margin-top: 0px;
+}
+.sidebox img{
+	
+	max-width: 100%;
+}
+
+
+.smallp{
+	margin-bottom: 0.3em;
+}
+footer {
+	padding: 10px 5px;
 }

@@ -4,9 +4,24 @@
 h1 { display: none; }
 </style>
 
-<div style='padding-bottom:1em'>
+<!--div class='jumbotron'>Hello</div-->
+
+<div style='padding-bottom:4px'>
 {{ @search | raw }}
 </div>
+
+</div>
+</div><!-- break out from container -->
+
+<div class='jumbo'>
+	<div class='container jumbrotron'>
+		<img src="/resources/images/banners/banner.jpg" />
+	</div>
+</div>
+
+<!-- back into container -->
+<div class='container'>	
+
 <div class='sixteen columns' >
 
 <div style='font-size:130%; margin-top: 0.5em; margin-bottom:0.5em'>
@@ -37,53 +52,73 @@ The project team can provide technical support and guidance regarding the requir
 </div>
 
 <div class='four columns'>
-<div style='text-align:center;margin-top:3em;'>
+	
+	<div class="sidebox">
+	<h3>Download the data</h3>
+	
+	<h5>Combined Data</h5>
+	<div class="smallp"><a href='data/uniquip.csv' class="fileicon csv">CSV*</a> - Comma-Separated values (Loads in Excel)</div>
+	<div class="smallp"><a href='data/uniquip.json' class="fileicon json">JSON*</a> - JSON (great for hacking)</div>
+	<div class="smallp"><a href='data/uniquip.ttl' class="fileicon rdf">RDF</a> - Full on RDF (in Turtle format)</div>
+
+	<h5>Ingest Status</h5>
+	<div class="smallp"><a href='data/status-v2.json' class="fileicon json">JSON (v2)</a> - JSON-encoded file describing the status of each ingested dataset. This is the data used to generate the <a href="/status">status page</a><br/>
+	<small><a href='data/status-v1.json'>JSON (v1)</a> - Depricated</small></div>
+	</div>
+	<div class="sidebox">
+	<h3>Funded by</h3>
+	<div><a href="http://www.epsrc.ac.uk/"><img src="/resources/images/epsrc.jpg" alt="EPSRC" style="width: 160px; max-width: 90%" /></a></div>
+	</div>
+	<!--
+	<table>
+
+
+	<tr>
+	 <td style='width:40px;'><a href='data/uniquip.csv'><img src='/resources/images/file.png' /></a></td>
+	 <td><strong><a href='data/uniquip.csv'>Combined Data</a></strong> 
+	- Comma-Separated values (Loads in Excel)
+	- Conforms to the <a href='/uniquip'>Uniquip standard</a>.
+	</td>
+	</tr>
+ 
+	<tr>
+	 <td style='width:40px;'><a href='data/uniquip.tsv'><img src='/resources/images/file.png' /></a></td>
+	 <td><strong><a href='data/uniquip.'>Combined Data</a></strong> 
+	- Tab-Separated values
+	- Conforms to the <a href='/uniquip'>Uniquip standard</a>.
+	</td>
+	</tr>
+
+	<tr>
+	 <td style='width:40px;'><a href='data/equipment.ttl'><img src='/resources/images/file.png' /></a></td>
+	 <td><strong><a href='data/equipment.ttl'>Combined Data</a></strong> 
+	- RDF Turtle format.
+	</td>
+	</tr>
+
+	<tr>
+	 <td style='width:40px;'><a href='data/status-v2.json'><img src='/resources/images/file.png' /></a></td>
+	 <td><strong><a href='data/status-v2.json'>Ingest Status (v2)</a></strong> - JSON-encoded file describing the status of each ingested dataset. This is the data used to generate the <a href="/status">status page</a>.
+		 <br/><small><a href='data/status-v1.json'>Ingest Status (v1)</a> - Depricated</small>
+	</td>
+	</tr>
+	</table>
+	
+	
+<!--div style='text-align:center;margin-top:3em;'>
 <a href='/poster'><img src='/resources/poster-enabling-mini.png' /></a>
 <div>Check out <a href='/poster'>our poster</a> to see how easy it is to get involved</div>
+</div-->
 </div>
-</div>
 
-<div class='sixteen columns'>
-<h2>Equipment data downloads</h2>
-
-<table>
-
-<tr>
- <td style='width:40px;'><a href='data/uniquip.csv'><img src='/resources/images/file.png' /></a></td>
- <td><strong><a href='data/uniquip.csv'>Combined Data</a></strong> 
-- Comma-Separated values (Loads in Excel)
-- Conforms to the <a href='/uniquip'>Uniquip standard</a>.
-</td>
-</tr>
- 
-<tr>
- <td style='width:40px;'><a href='data/uniquip.tsv'><img src='/resources/images/file.png' /></a></td>
- <td><strong><a href='data/uniquip.tsv'>Combined Data</a></strong> 
-- Tab-Separated values
-- Conforms to the <a href='/uniquip'>Uniquip standard</a>.
-</td>
-</tr>
-
-<tr>
- <td style='width:40px;'><a href='data/equipment.ttl'><img src='/resources/images/file.png' /></a></td>
- <td><strong><a href='data/equipment.ttl'>Combined Data</a></strong> 
-- RDF Turtle format.
-</td>
-</tr>
-
-<tr>
- <td style='width:40px;'><a href='data/status-v2.json'><img src='/resources/images/file.png' /></a></td>
- <td><strong><a href='data/status-v2.json'>Ingest Status (v2)</a></strong> - JSON-encoded file describing the status of each ingested dataset. This is the data used to generate the <a href="/status">status page</a>.
-	 <br/><small><a href='data/status-v1.json'>Ingest Status (v1)</a> - Depricated</small>
-</td>
-</tr>
-</table>
+<div class='twelve columns'>
 
 
 <h2>Open source</h2>
 
 <p>All the tools used to generate this site are open source and the software which builds the site is available for <a href="http://github.com/data-ac-uk/equipment">review and reuse</a>.</p>
+</div>
 
-<h2>Funding</h2>
-
-<div><a href="http://www.epsrc.ac.uk/"><img src="/resources/images/epsrc.jpg" alt="EPSRC" /></a></div>
+<div class='four columns'>
+	
+</div>
