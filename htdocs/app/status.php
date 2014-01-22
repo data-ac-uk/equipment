@@ -30,7 +30,7 @@ class status {
 		{
 			
 			$c []= "<tr >";
-			$c []= "<td rowspan=\"".count($feed['org_datasets'])."\"><a href='".$feed["org_url"]."'><img src='".$feed["org_logo"]."' class=\"org_logo\"/></a></td>";
+			$c []= "<td rowspan=\"".count($feed['org_datasets'])."\"><a href='".$feed["org_url"]."'><img src='/org/{$feed["org_idscheme"]}/{$feed["org_id"]}.logo?size=small' class=\"org_logo\"/></a></td>";
 			
 			$c []= "<td rowspan=\"".count($feed['org_datasets'])."\"><strong><a href='".$feed["org_url"]."'>{$feed["org_name"]}</a></strong> <br/> ";
 			$c []= "ID: ".$feed["org_idscheme"]."/".$feed["org_id"];
