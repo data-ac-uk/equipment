@@ -5,7 +5,7 @@ by Christopher Gutteridge, University of Southampton, 2013
 Dependencies
  assumes php is installed (at /usr/bin/php) 
  assumes rapper is installed (and is in the path)
- For Debian/Ubuntu `apt-get install libapache2-mod-php5 php5-cli raptor2-utils`
+ For Debian/Ubuntu `apt-get install libapache2-mod-php5 php5-cli raptor2-utils imagemagick`
 
 
 Quickstart:
@@ -18,6 +18,9 @@ Quickstart:
  mkdir htdocs/data
  mkdir htdocs/data/org
  mkdir htdocs/tmp
+ mkdir var/item
+ mkdir var/tmp
+ chmod -R a+rwX var/
  chmod o+w htdocs/tmp
  cd lib
  git clone https://github.com/cgutteridge/Graphite.git
@@ -26,7 +29,7 @@ Quickstart:
  git clone https://github.com/data-ac-uk/OPDLib.git
  git clone https://github.com/bluerhinos/phpLocation.git
  wget https://github.com/PHPOffice/PHPExcel/archive/PHPExcel_1.7.8.tar.gz 
- tar xzvf PHPExcel_1.7.8 
+ tar xzvf PHPExcel_1.7.8.tar.gz 
  ln -s PHPExcel-PHPExcel_1.7.8/ PHPExcel
 
 
