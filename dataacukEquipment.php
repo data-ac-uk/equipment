@@ -1196,7 +1196,7 @@ class dataacukEquipment
 		# create cache for displaying results
 		$html = array();
 		$html []= "<div class='images'>";
-		$html []= "<a class='uni-logo' title='".$set['org']["org_name"]."' href='".$set['org']["org_url"]."'><img style='max-width:200px' src='".$set['org']["org_logo"]."' /></a>";
+		$html []= "<a class='uni-logo' title='".$set['org']["org_name"]."' href='".$set['org']["org_url"]."'><img style='max-width:200px' src='org/{$set['org']["org_idscheme"]}/{$set['org']["org_id"]}.logo?size=medium' /></a>";
 		if( $item->has( "foaf:depiction" ) )
 		{
 			$html []= "<img style='max-width:200px' src='".$item->get( "foaf:depiction" )."' />";
@@ -1470,6 +1470,40 @@ class dataacukEquipment
 		$this->db->insert('locations', $location, $locationraw, 'REPLACE');	
 		
 		return $location;
+	}
+	
+	function uniquipFields()
+	{
+		return array( 
+	"Type",
+	"Name",
+	"Description",
+	"Related Facility ID",
+	"Technique",
+	"Location",
+	"Contact Name",
+	"Contact Telephone",
+	"Contact URL",
+	"Contact Email",
+	"Secondary Contact Name",
+	"Secondary Contact Telephone",
+	"Secondary Contact URL",
+	"Secondary Contact Email",
+	"ID",
+	"Photo",
+	"Department",
+	"Site Location",
+	"Building",
+	"Service Level",
+	"Web Address",
+
+	"Institution Name",
+	"Institution URL",
+	"Institution Logo URL",
+	"Datestamp",
+	"Approximate Coordinates",
+	"Corrections",
+	);
 	}
 }
 
