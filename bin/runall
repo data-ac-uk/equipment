@@ -71,7 +71,7 @@ if($cmd == "all"){
 		
 		if(isset($stat['lastrun'][$tk])){
 			$time = time() - ($task['every']);
-			if($time <= time()){
+			if($time <= $stat['lastrun'][$tk]){
 				continue;
 			}
 		}
