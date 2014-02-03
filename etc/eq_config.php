@@ -15,7 +15,8 @@ $eq_config->opds = (object) NULL;
 $eq_config->opds->local = "{$eq_config->pwd}/etc/opds";
 $eq_config->opds->direct = array(
 	array("path"=>"http://id.leeds.ac.uk/","type"=>"url"),
-	array("path"=>"http://www.ncl.ac.uk/nclrdf/newcastle.ttl","type"=>"url")
+	array("path"=>"http://www.ncl.ac.uk/nclrdf/newcastle.ttl","type"=>"url"),
+	array("path"=>"http://www.aber.ac.uk/en/media/departmental/ibers/iberskit/OPD.txt", "type"=>"url")
 );
 
 $eq_config->opds->autodiscovers = array(
@@ -28,7 +29,8 @@ $eq_config->id = (object) NULL;
 $eq_config->id->overides = array(
 	"http://id.myuni.ac.uk/"=>"other/X99",
 	"http://www.roslin.ed.ac.uk/#org"=>"other/X1",
-	"http://www.rothamsted.ac.uk/#org"=>"other/X3"
+	"http://www.rothamsted.ac.uk/#org"=>"other/X3",
+	"http://www.aber.ac.uk/en/ibers/#org"=>"other/X7"
 );
 
 
