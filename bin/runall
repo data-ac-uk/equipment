@@ -70,7 +70,7 @@ if($cmd == "all"){
 	foreach($tasks as $tk => $task){
 		
 		if(isset($stat['lastrun'][$tk])){
-			$time = time() - ($task['every']);
+			$time = (time() - ($task['every'])) + 3600; //Adds an hour so will run every day
 			if($time <= $stat['lastrun'][$tk]){
 				continue;
 			}
