@@ -96,10 +96,10 @@ foreach($opds as $opd){
 					$durl = (string)$g;
 					if(!isset($datas[$durl])) {
 						$datas[$durl] = array(
-							"conformsTo"=>$graph->resource( $g )->getString('dcterms:conformsTo'),
-							"license"=>$graph->resource( $g )->getString('dcterms:license'),
-							"contact"=>$graph->resource( $g )->getString('oo:contact'),
-							"corrections"=>$graph->resource( $g )->getString('oo:corrections'),
+							"conformsTo"=>(string)$graph->resource( $g )->getString('dcterms:conformsTo'),
+							"license"=>(string)$graph->resource( $g )->getString('dcterms:license'),
+							"contact"=>(string)$graph->resource( $g )->getString('oo:contact'),
+							"corrections"=>(string)$graph->resource( $g )->getString('oo:corrections'),
 							"type"=>array($gpsn)
 						);
 					}else{
@@ -139,8 +139,8 @@ foreach($opds as $opd){
 		$din['data_org'] = $orgin['org_uri'];
 		$din['data_conforms'] = $dv['conformsTo'];
 		$din['data_license'] = $dv['license'];
-		$din['data_contact'] = $dv['contact'];
 		$din['data_corrections'] = $dv['corrections'];
+		$din['data_contact'] = $dv['contact'];
 		$din['data_type'] = join(",",$dv['type']);
 		$din['data_ena'] = 1;
 		$din['data_hash'] = md5($dk);

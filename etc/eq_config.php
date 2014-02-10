@@ -22,7 +22,8 @@ $eq_config->opds->direct = array(
 $eq_config->opds->autodiscovers = array(
 	"http://data.ox.ac.uk/",
 	"http://www.roslin.ed.ac.uk/",
-	"http://www.rothamsted.ac.uk/"
+	"http://www.rothamsted.ac.uk/",
+	"http://www.babraham.ac.uk/"
 );
 
 $eq_config->id = (object) NULL;
@@ -30,7 +31,8 @@ $eq_config->id->overides = array(
 	"http://id.myuni.ac.uk/"=>"other/X99",
 	"http://www.roslin.ed.ac.uk/#org"=>"other/X1",
 	"http://www.rothamsted.ac.uk/#org"=>"other/X3",
-	"http://www.aber.ac.uk/en/ibers/#org"=>"other/X7"
+	"http://www.aber.ac.uk/en/ibers/#org"=>"other/X7",
+	"http://www.babraham.ac.uk/#org"=>"ukprn/10032038"
 );
 
 
