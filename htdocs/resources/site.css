@@ -185,10 +185,28 @@ a.fileicon.rdf{
 	border-top: 3px solid #193965;
 	border-bottom: 3px solid #193965;
 	width: 100%;
+	line-height:0px;
+}
+.jumbo a,
+.jumbo img {
+	max-width: 100% !important;
 }
 
-.jumbo img {
-	max-width: 100%;
+
+.cycle-pager { 
+    text-align: center !important; width: 100%; z-index: 500; position: absolute; bottom: 3px; overflow: hidden;
+}
+.cycle-pager span { 
+    font-family: arial; font-size: 50px; width: 16px; height: 16px; 
+    display: inline-block; color: #ddd; cursor: pointer; 
+
+	line-height:16px;
+}
+.cycle-pager span.cycle-pager-active { color: #193965;}
+.cycle-pager > * { cursor: pointer;}
+
+.ui-front{
+	z-index: 10000;
 }
 
 #searchbox{
@@ -237,6 +255,19 @@ a.fileicon.rdf{
 	background: white;
 }
 
+.search-div .ui-widget{
+	margin-top: 10px;
+	text-align: center;
+}
+.search-div .ui-autocomplete-input{
+	width: 80%;
+	max-width: 40%;
+	display: inline-block;
+	border: 1px solid #eee !important;
+	border-radius: 5px;
+	
+}
+
 #results-container{
 	width: 90%;
 	margin:0px 3% 10px;
@@ -244,7 +275,7 @@ a.fileicon.rdf{
 	border: 1px solid #193965;
 	border-top:none;
 	border-radius: 0px 0px 10px 10px;
-	z-index: 100;
+	z-index: 1000;
 	position: absolute;
 	background: white;
 
@@ -255,7 +286,7 @@ a.fileicon.rdf{
 }
 #results-container .eight.columns{
 	width: 45%;
-	
+
 }
 
 .sidebox{
@@ -279,4 +310,27 @@ a.fileicon.rdf{
 }
 footer {
 	padding: 10px 5px;
+}
+.datasets{
+	text-align: center;
+}
+.datasets li{
+	margin: 4px;
+	display: inline-block;
+}
+
+.datasets li img {
+	max-height: 40px;
+	max-width: 150px;
+}
+
+@media only screen and (max-width: 767px) {
+	#results-container .eight.columns,
+	#featured-result{
+		width: 100%;
+	}
+}
+
+.code{
+	overflow-x: scroll;
 }

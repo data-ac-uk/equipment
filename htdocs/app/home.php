@@ -5,6 +5,13 @@ class home {
 	{
                 $f3=Base::instance();
 
+
+
+		$status = json_decode( file_get_contents( 'data/status-v2.json' ), true );
+		
+
+		$f3->set('status', $status );
+		
 		$remote_addr = $_SERVER['REMOTE_ADDR'];
 		$hostname = gethostbyaddr($remote_addr);
 

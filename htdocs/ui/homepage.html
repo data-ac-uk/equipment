@@ -14,18 +14,32 @@ h1 { display: none; }
 </div><!-- break out from container -->
 
 <div class='jumbo'>
-	<div class='container jumbrotron'>
-		<img src="/resources/images/banners/banner.jpg" />
-	</div>
+       	<div class="container jumbrotron cycle-slideshow" 
+		    
+  		  	data-cycle-pause-on-hover="true"
+		    data-cycle-timeout="6000"
+		    data-cycle-slides="> a"
+		    >
+		    <div class="cycle-pager"></div>
+			<a>
+		        <img src="/resources/images/banners/share.jpg" >
+		    </a>
+		    <a href="http://jquery.malsup.com/cycle2/images/p2.jpg">
+		        <img src="/resources/images/banners/comment.jpg" >
+		    </a>
+		    <a href="/poster">
+		        <img src="/resources/images/banners/poster.jpg" alt="Using equipment.data couldn’t be easier, click here to follow our easy step-by-step guide.">
+		    </a>
+		</div>
 </div>
 
 <!-- back into container -->
-<div class='container'>	
+<div class='container'>        
 
 <div class='sixteen columns' >
 
 <div style='font-size:130%; margin-top: 0.5em; margin-bottom:0.5em'>
-This site allows users to search for research equipment and facilities that are available from UK HE institutions. It’s very simple to use! Enter the name, or part name, of the equipment or facility you are searching for, select from the drop down list then make contact.    	
+This site allows users to search for research equipment and facilities that are available from UK HE institutions. It’s very simple to use! Enter the name, or part name, of the equipment or facility you are searching for, select from the drop down list then make contact.            
 </div>
 
 </div>
@@ -35,7 +49,7 @@ This site allows users to search for research equipment and facilities that are 
 <h2>About this site</h2>
 
 <p>The development of equipment.data is funded by 
-<a href="http://www.epsrc.ac.uk">EPSRC</a>
+<a href="http://www.epsrc.ac.uk" title="EPSRC">EPSRC</a>
 in response to the need to improve visibility and utilisation of UK research equipment. This relatively simple technology enables searching across all published UK research equipment databases through one aggregation “portal”, allowing greater accessibility with the aim to improve efficiency and stimulate greater collaboration in the sector. The technology behind this development has been a partnership between a number of UK universities, primarily outcomes of the UNIQUIP Project. The development has the backing of 
 <a href='http://www.rcuk.ac.uk/Pages/Home.aspx'>RCUK</a> 
 as its preferred medium for national equipment data sharing offering a scalable solution, without the need for complex software systems.
@@ -52,73 +66,63 @@ The project team can provide technical support and guidance regarding the requir
 </div>
 
 <div class='four columns'>
-	
-	<div class="sidebox">
-	<h3>Download the data</h3>
-	
-	<h5>Combined Data</h5>
-	<div class="smallp"><a href='data/uniquip.csv' class="fileicon csv">CSV*</a> - Comma-Separated values (Loads in Excel)</div>
-	<div class="smallp"><a href='data/uniquip.json' class="fileicon json">JSON*</a> - JSON (great for hacking)</div>
-	<div class="smallp"><a href='data/uniquip.ttl' class="fileicon rdf">RDF</a> - Full on RDF (in Turtle format)</div>
-
-	<h5>Ingest Status</h5>
-	<div class="smallp"><a href='data/status-v2.json' class="fileicon json">JSON (v2)</a> - JSON-encoded file describing the status of each ingested dataset. This is the data used to generate the <a href="/status">status page</a><br/>
-	<small><a href='data/status-v1.json'>JSON (v1)</a> - Depricated</small></div>
-	</div>
-	<div class="sidebox">
-	<h3>Funded by</h3>
-	<div><a href="http://www.epsrc.ac.uk/"><img src="/resources/images/epsrc.jpg" alt="EPSRC" style="width: 160px; max-width: 90%" /></a></div>
-	</div>
-	<!--
-	<table>
-
-
-	<tr>
-	 <td style='width:40px;'><a href='data/uniquip.csv'><img src='/resources/images/file.png' /></a></td>
-	 <td><strong><a href='data/uniquip.csv'>Combined Data</a></strong> 
-	- Comma-Separated values (Loads in Excel)
-	- Conforms to the <a href='/uniquip'>Uniquip standard</a>.
-	</td>
-	</tr>
- 
-	<tr>
-	 <td style='width:40px;'><a href='data/uniquip.tsv'><img src='/resources/images/file.png' /></a></td>
-	 <td><strong><a href='data/uniquip.'>Combined Data</a></strong> 
-	- Tab-Separated values
-	- Conforms to the <a href='/uniquip'>Uniquip standard</a>.
-	</td>
-	</tr>
-
-	<tr>
-	 <td style='width:40px;'><a href='data/equipment.ttl'><img src='/resources/images/file.png' /></a></td>
-	 <td><strong><a href='data/equipment.ttl'>Combined Data</a></strong> 
-	- RDF Turtle format.
-	</td>
-	</tr>
-
-	<tr>
-	 <td style='width:40px;'><a href='data/status-v2.json'><img src='/resources/images/file.png' /></a></td>
-	 <td><strong><a href='data/status-v2.json'>Ingest Status (v2)</a></strong> - JSON-encoded file describing the status of each ingested dataset. This is the data used to generate the <a href="/status">status page</a>.
-		 <br/><small><a href='data/status-v1.json'>Ingest Status (v1)</a> - Depricated</small>
-	</td>
-	</tr>
-	</table>
-	
-	
-<!--div style='text-align:center;margin-top:3em;'>
-<a href='/poster'><img src='/resources/poster-enabling-mini.png' /></a>
-<div>Check out <a href='/poster'>our poster</a> to see how easy it is to get involved</div>
-</div-->
+        
+        <div class="sidebox">
+        <h3>Download the data</h3>
+        
+        <h5>Combined Data</h5>
+        <div class="smallp"><a href='data/uniquip.csv' class="fileicon csv">CSV*</a> - Comma-Separated values (Loads in Excel)</div>
+        <div class="smallp"><a href='data/uniquip.json' class="fileicon json">JSON*</a> - JSON (great for hacking)</div>
+        <div class="smallp"><a href='data/uniquip.ttl' class="fileicon rdf">RDF</a> - Full on RDF (in Turtle format)</div>
+		<div class="smallp">*Conforms to the <a href="/uniquip">Uniquip standard</a></div>
+        <h5>Ingest Status</h5>
+        <div class="smallp"><a href='data/status-v2.json' class="fileicon json">JSON (v2)</a> - JSON-encoded file describing the status of each ingested dataset. This is the data used to generate the <a href="/status">status page</a><br/>
+        <small><a href='data/status-v1.json'>JSON (v1)</a> - Depricated</small></div>
+        </div>
+        <div class="sidebox">
+        <h3>Funded by</h3>	
+        <div style="text-align: center;"><a href="http://www.epsrc.ac.uk/"><img src="/resources/images/epsrc.jpg" alt="EPSRC" style="width: 160px; max-width: 90%" /></a></div>
+        </div>
+        
 </div>
 
 <div class='twelve columns'>
 
+<h2>Dataset Providers</h2>
 
+<ul class='datasets'>
+	<F3:repeat group="{{ @status['orgs'] }}" value="{{ @org }}">
+		<li><a href='{{ @org["org_url"] }}' title='{{ @org["org_name"] }}'><img src='/org/{{ @org["org_idscheme"] }}/{{ @org["org_id"] }}.logo?size=small'></a></li>
+	</F3:repeat>
+</ul>
+
+<!--
 <h2>Open source</h2>
-
 <p>All the tools used to generate this site are open source and the software which builds the site is available for <a href="http://github.com/data-ac-uk/equipment">review and reuse</a>.</p>
+-->
 </div>
 
 <div class='four columns'>
-	
+    <div class="sidebox">
+    	<h3>Stats</h3>
+		<center>
+		<table style="min-width: 80%">
+			<tr>
+				<th>Organisations</th>
+				<td style="text-align: right;">{{ count( @status['orgs'] ) }}</td>
+			</tr>
+			<tr>
+				<th>Pieces of Equipment</th>
+				<td style="text-align: right;">{{ number_format(@status['totals']['items'],0) }}</td>
+			</tr>
+		</table>
+	</center>
+	</div>
 </div>
+
+
+
+<script type="text/javascript" src="/resources/jquery/jquery.cycle2.min.js"></script>
+<script type="text/javascript">
+	
+</script>
