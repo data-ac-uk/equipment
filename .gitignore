@@ -8,3 +8,4 @@ htdocs/opd/tmp/
 etc/test-list.tsv.all
 _misc/.tld_set
 etc/opds/*
+etc/eq_config.local.php
