@@ -40,6 +40,10 @@ $opd->ns("vcard","http://www.w3.org/2006/vcard/ns#");
 $opd->ns("ospost","http://data.ordnancesurvey.co.uk/ontology/postcode/");
 $opd->ns("spatialrelations","http://data.ordnancesurvey.co.uk/ontology/spatialrelations/");
 $opd->ns("xsd","http://www.w3.org/2001/XMLSchema#");
+$opd->ns("owl","http://www.w3.org/2002/07/owl#");
+$opd->ns("dcat","http://www.w3.org/ns/dcat#");
+$opd->ns("dcterms","http://purl.org/dc/terms/");
+$opd->ns("oo","http://purl.org/openorg/");
 
 $opd->addCompressedTriple( "profile.ttl", "a", "oo:OrganizationProfileDocument");
 $opd->addCompressedTriple( "profile.ttl", "http://xmlns.com/foaf/0.1/primaryTopic", $opduri);
@@ -53,8 +57,7 @@ $opd->addCompressedTriple( $opduri, "foaf:homepage", $org->get( "foaf:homepage")
 $opd->addCompressedTriple( $opduri, "foaf:mbox", "mailto:equiries@{$org_url_d}");
 $opd->addCompressedTriple( $opduri, "foaf:phone", "tel:+441234567890");
 
-
-
+$opd->addCompressedTriple( $opduri, "owl:sameAs","http://id.learning-provider.data.ac.uk/ukprn/{$argv[1]}");
 
 
 
@@ -75,6 +78,18 @@ $opd->addCompressedTriple( $opduri, "foaf:based_near", $postcode);
 foreach($graph->t['sp']["{$postcode}"] as $p=>$v){
 	$opd->addTriple( $postcode, $p, $v[0]);
 }
+
+$equrl = "http://equipment.{$org_url_d}/url.csv";
+$conforms = "http://equipment.data.ac.uk/uniquip.html";
+
+
+$opd->addCompressedTriple( $equrl, "a", "dcat:Download");
+$opd->addCompressedTriple( $equrl, "oo:organization", $opduri);
+$opd->addCompressedTriple( $equrl, "dcterms:subject", "http://purl.org/openorg/theme/equipment");
+$opd->addCompressedTriple( $equrl, "dcterms:conformsTo", "$conforms");
+$opd->addCompressedTriple( $equrl, "dcterms:license", "http://creativecommons.org/publicdomain/zero/1.0/");
+$opd->addCompressedTriple( $equrl, "oo:contact", "mailto:equpiment-data@{$org_url_d}");
+$opd->addCompressedTriple( $equrl, "oo:corrections", "mailto:equpiment-data@{$org_url_d}");
 
 
 
