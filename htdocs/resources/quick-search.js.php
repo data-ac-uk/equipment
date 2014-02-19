@@ -106,6 +106,7 @@ print "var availableTags = ".json_encode( array_keys( $data ) ).";";
             $('#sort-option').show();
             $('#results-container').show();
             $('#results').scrollTop(0);
+			tracking.currentSearchTerm = text;
             $.get('/search', 
                 {
                    'term': text, 
@@ -134,9 +135,13 @@ print "var availableTags = ".json_encode( array_keys( $data ) ).";";
 
 // this function is called from the code produced by ajax so is tricky
 // to not put in the main namespace
-function show_result( id )
+function show_result( id, title )
 {
+	tracking.currentItemId = id;
+	tracking.currentItemTitle= title;
+    
     $.get('item/'+id+".fragment", function(page) {
+ 
         $('#featured-result').scrollTop(0);
         $('#featured-result').html( page );
     }, 'html');

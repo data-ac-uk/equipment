@@ -48,6 +48,7 @@
       <ul class="links inline clearfix">
         <li class=""><a title="Uniquip" href="/uniquip">Uniquip</a></li>
         <li class=""><a title="FAQ" href="/faq">FAQ</a></li>
+        <li class=""><a title="Compliance" href="/compliance">Compliance</a></li>
         <li class=""><a title="Status" href="/status">Status</a></li>
         <li class=""><a title="Homepage" href="/">Homepage</a></li>
       </ul>
@@ -82,4 +83,16 @@ This site uses cookies for Google Analytics.
   })();
 
 </script>
+
+<!--start contactable -->
+<div id="contactable"><!-- contactable html placeholder --></div>
+<script type="text/javascript" src="http://network-bar.data.ac.uk/feedback/jquery.validate.pack.js"></script>
+<script type="text/javascript" src="http://network-bar.data.ac.uk/feedback/jquery.contactable.php"></script>
+<link rel="stylesheet" href="http://network-bar.data.ac.uk/feedback/contactable.css" type="text/css" />
+<script>
+	var tracking = {};
+	$(function(){$('#contactable').contactable({productKey: 'equipment.data', extra: tracking});});
+</script>
+<!--end contactable -->
+
 

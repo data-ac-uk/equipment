@@ -334,3 +334,11 @@ footer {
 .code{
 	overflow-x: scroll;
 }
+
+.feedback_enq{
+	width: 85%;
+	border: 1px solid #193965;
+	padding: 5px;
+	border-radius: 5px;
+	margin: 15px auto 4px;
+}

@@ -142,7 +142,7 @@ class search {
 		foreach( $results as $result )
 		{
 			$row = "
-	<a class='search-result' onclick='show_result(\"".$result["item_code"]."\"); 
+	<a class='search-result' onclick='show_result(\"".$result["item_code"]."\", ".json_encode($result["item_title"])."); 
 		return false;' href='/item/".$result["item_code"].".html'>
            <span class='result-title'>".$result["item_title"]."</span>
            <span class='result-info'>".$result["org_name"].(@$result["dist"]?" - ".$result["dist"]:"")."</span>

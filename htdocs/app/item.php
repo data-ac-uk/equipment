@@ -27,6 +27,8 @@ class item {
 			print "<h2>".$page["page_title"]."</h2>";
 			print $page["page_content"];
 		
+			print "<div class=\"feedback_enq\">If your search on our database results in an equipment or facilities collaboration we'd like to hear about it, all feedback on both successes and challenges will help us in enabling more partnerships. Click on the feedback tab.</div>";
+		
 			return;
 		}
 
@@ -62,6 +64,9 @@ class item {
 			if(!$page){
 				$f3->error(404);
 			}
+			
+			$page["page_content"] .= "<div class=\"feedback_enq\">If your search on our database results in an equipment or facilities collaboration we'd like to hear about it, all feedback on both successes and challenges will help us in enabling more partnerships. Click on the feedback tab.</div>";
+		
 					
 			$f3->set('html_title', $page["page_title"] );
 			$f3->set('content','content.html');
