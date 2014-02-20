@@ -35,8 +35,18 @@ class home {
 		if( @$_GET["q"] ) { $q = $_GET["q"]; }
 		$f3->set('q', $q );
 		$f3->set('defaultsort', $defaultsort );
-
-		$search = "<div id=\"searchbox\">";
+		$search =  <<<END
+	<script>
+		$(function() {
+			$( ".search-div .search-cancel" ).show();
+       		$('#qs-overlay').show();
+			 $( ".search-div .search-cancel" ).click(function() {
+				 location.href="/";
+			});
+		});
+	</script>
+END;
+		$search .= "<div id=\"searchbox\">";
 		$search .= Template::instance()->render( "search-form.html" );
 
 		if( $q != "" )

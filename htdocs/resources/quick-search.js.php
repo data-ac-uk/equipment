@@ -67,6 +67,16 @@ print "var availableTags = ".json_encode( array_keys( $data ) ).";";
         }
     });
 
+    $( ".search-div .search-cancel" ).click(function() {
+		$('#qs-input').val('');
+        $('#sort-option').hide();
+        $('#results-container').hide();
+            $('#qs-overlay').hide();
+        $('#helpstring').show();
+		$('.search-div .search-cancel').hide();
+        clear_results();
+    });
+
     $('#units-toggle').click(function() {
         if( $('#units').text() == 'km' )
         {
@@ -105,6 +115,8 @@ print "var availableTags = ".json_encode( array_keys( $data ) ).";";
             $('#helpstring').hide();
             $('#sort-option').show();
             $('#results-container').show();
+            $('#qs-overlay').show();
+			$('.search-div .search-cancel').show();
             $('#results').scrollTop(0);
 			tracking.currentSearchTerm = text;
             $.get('/search', 
@@ -119,8 +131,10 @@ print "var availableTags = ".json_encode( array_keys( $data ) ).";";
     
         if (text.length < 3) {
             $('#sort-option').hide();
+            $('#qs-overlay').hide();
             $('#results-container').hide();
             $('#helpstring').show();
+			$('.search-div .search-cancel').hide();
             clear_results();
         }
     }

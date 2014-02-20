@@ -30,6 +30,7 @@ class compliance {
 			foreach( $status['orgs'] as $feed ){
 				if(isset($feed['org_datasets'][$_REQUEST['dataset']])){
 					$dataset = $feed['org_datasets'][$_REQUEST['dataset']];
+					$org = $feed;
 					unset($feed['org_datasets']);
 					$dataset['org'] = $feed;
 					$hashash = true;
@@ -40,6 +41,7 @@ class compliance {
 		
 		$f3->set('gt_hasdataset', $hashash);
 		$f3->set('gt_dataset', $dataset);
+		$f3->set('gt_org', $org);
 		
 		
 		

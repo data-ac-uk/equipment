@@ -1124,9 +1124,14 @@ class dataacukEquipment
 			if(isset($org['org_location']['loc_updated']))
 				$org['org_location']['loc_updated'] = date('c',strtotime($org['org_location']['loc_updated']));
 			
+			
+			//OPDs
+			$org['org_opd'] = $this->db->fetch_one('autoOPDs', array('opd_id' => $org['org_uri'], 'opd_ena'=> 1), array());
+			unset($org['org_opd']['opd_cache']);
 						
 			//datasets
 			$org['org_datasets'] = array();
+				
 			$datasets = $this->db->fetch_many('`datasets` INNER JOIN `crawls` ON `data_crawl` = `crawl_id`', array('data_ena' => 1, 'data_org'=> $org['org_uri']), array());
 			if(!count($datasets)) continue;
 			

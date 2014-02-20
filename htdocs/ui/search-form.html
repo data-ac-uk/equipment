@@ -2,6 +2,7 @@
     <div class='search-div'>
       <div>
         <div class='search-title'>Search for equipment:</div>
+        <div class='search-cancel'>X</div>
         <input id='qs-input' class='search-input' autocomplete='off' name='q' type='search' value='{{ @q }}' placeholder='e.g. Microscope'  />
         <input id='search-button' class='search-button' type='submit' value='&#x279C;' title='Start Search'   />
           <!--div id='helpstring' style='display:none'>Enter 3 or more characters to begin search</div-->
@@ -13,6 +14,7 @@
         <span id='units-toggle' style='cursor:pointer' title='click to toggle'>Units: <span id='units' style='display:inline'>km</span></span>
       </div>
    </div>
+   <div id='qs-overlay'></div>
   </form>
 
   <!--  

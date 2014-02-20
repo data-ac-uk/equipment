@@ -53,6 +53,34 @@ h5 {
 #results .search-result:hover { 
 	background-color: #dddddd;
 }
+#qs-sort {
+	background-repeat: no-repeat;
+	background-position: 98% center;
+	padding:2px;
+}
+
+.search-div .search-cancel{
+	position: absolute;
+	right: 5px;
+	top: 5px;
+	font-weight: bold;
+	cursor:pointer;
+	display:none;
+}
+
+#qs-overlay{
+	background-color: rgba(100,100,100,0.8);
+	height:100%;
+	left:0;
+	margin:0;
+	padding:0;
+	position:fixed;
+	top:0;
+	width:100%;
+	z-index:997;
+	display:none;
+}
+
 /* on full width results */
 .sixteen .search-result {
 	text-align: right;
@@ -217,6 +245,8 @@ a.fileicon.rdf{
 	border: 1px solid #193965;
 	padding: 8px;
 	position: relative;
+	z-index: 1001000;
+	background:white;
 }
 
 .search-div .search-title{
@@ -341,4 +371,15 @@ footer {
 	padding: 5px;
 	border-radius: 5px;
 	margin: 15px auto 4px;
+}
+
+ol.faq{
+	margin: 0px 0px 20px 40px;
+}
+
+.twitter {
+	display:block;
+	float: right;
+	margin-top: 0px;
+	margin-right: 12px;
 }
