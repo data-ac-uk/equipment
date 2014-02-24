@@ -40,7 +40,14 @@ class status {
 		
 			
 			foreach($feed['org_datasets'] as $set){
-				$c []= "<td><a href='".$set["data_uri"]."' title=\"Raw source downloaded from: {$set["data_uri"]}\">dataset</a></td>";
+
+				$c []= "<td><a href='".$set["data_uri"]."' title=\"Raw source downloaded from: {$set["data_uri"]}\">dataset</a>";
+				if(isset($feed["org_opd"]['opd_url']) && !empty($feed["org_opd"]['opd_url'])){
+					$c []= "<br/>(<a href='".$feed["org_opd"]['opd_url']."' title=\"OPD used to locate the dataset\">OPD</a>)";
+				
+				}
+				$c []= "</td>";
+
 				$c []= "<td>".array_search($set['data_conforms'],$eq->config->conformsToMap)."</td>";
 
 				$org_id = "{$feed["org_idscheme"]}/{$feed["org_id"]}/{$set['data_hash']}";

@@ -1,0 +1,46 @@
+{
+  "includeunix": {
+    "question": "Can we include equipment or facilitiy data from University X?",
+	"answer": "<p>Yes. This site aggregates information from the websites of UK academic organisations. This way you can verify the source of the information yourself, or even build your own aggregator.</p>",
+	"oldkey": "h.630jozuuoosk"
+  },
+  "includeotheruni": {
+    "question": "Can we include information from some source other than a UK university?",
+	"answer": "<p>Not generally, but in some cases labs or other .ac.uk may be included. </P>\n<p>In future it may include information from other .ac.uk organisations or from organisations providing services to UK academia, but currently we limit the scope to keep the service manageable.</p>",
+	"oldkey": "h.m2r1nistwtc1"
+  },
+  "minrequirement": {
+    "question": "What is the minimum requirement for inclusion?",
+	"answer": "The simplest allowed contribution is for you to publish a spreadsheet on your .ac.uk website containing a single column, with \"Description\" as the heading and each row containing the description of an item of equipment. You then supply us with that URL, your organisation details, location and a default contact for all items of equipment.</p><p>Obviously we hope you'll provide more than that, but we have tried to make inclusion as painless as we can</p>"
+  },
+  "infoaccepted": {
+    "question": "Which types of information will you accept?",
+	"answer": "<p>Information on your equipment, facilities and services or capabilities. For our purposes:\n</p><p><strong>Facility</strong> - This is a very overloaded term so for our purposes this is something your organisation calls a facility. More semantic subclasses are available in RDF, for example to indicate it’s an RCUK costed facility.</p><p>\n<strong>Equipment</strong> - A physical thing which has a location. We make no rules about how much detail you can go into. A single record could describe a grouping of equipment as a single item, e.g. 3 Vacuum Chambers.</p><p>\n<strong>Capability</strong> - This is a ‘thing your organisation can do’. It may include multiple facilities and equipment, and staff expertise, to provide this capability. For our purposes ‘Capability’ = ‘Service’. </p>",
+	"oldkey": "h.ti2fr3mxfmmg"
+  },
+  "howtoinclude": {
+    "question": "How do we include our data on equipment.data.ac.uk?",
+	"answer": "<p><strong>Step 1.</strong> Place your data on the web in one of the accepted formats (see below). The most simple can be created in a spreadsheet. You could use a google-docs spreadsheet for this.\n</p>\n<p><strong>Step 2.</strong> Create (or update) an Organisation Profile Document which links to the equipment data and tells us what license you provide it under. This is just a short machine-readable text file which tells us things like what logo to use, and what format your data is in.\n</p>\n<p><strong>Step 3.</strong> (optional but recommended) Make your organisation profile document auto-discoverable from your university homepage. If you can’t do this, just drop us a line and we’ll add your profile by hand.\n</p>",
+	"oldkey": "h.rlmvs38kplpi"
+  },
+  "acceptedformats": {
+    "question": "What are the accepted formats?",
+	"answer": "<p>We expect to expand accepted formats in due course.</p>\n<h3><a name=\"h.6tfmlt5h2368\"></a>1. OpenOrg RDF document</h3>\n<p>The Open Org project describes a basic pattern for publishing facilities and equipment data.</p>\n<p>In the future it’s certain that other standards emerge, but it’s possible to use multiple patterns to describe the same entities.  A single RDF document could conform to multiple patterns. They are (generally) not mutually exclusive.</p>\n<p>See <a href=\"http://openorg.ecs.soton.ac.uk/wiki/FacilitiesAndEquipment\">http://openorg.ecs.soton.ac.uk/wiki/FacilitiesAndEquipment</a> for more information.</p>\n<p>Example of how to describe an OpenOrg style document listed in an organisation profile document.</p>\n<p>The RDF can be encoded as either RDF+XML or Turtle.</p>\n[[code=examples/rdf-download.ttl.fragment]]\n<h3>2. Uniquip spreadsheet</h3>\n<p>This simple spreadsheet format was designed to be very easy to produce and have a minimal amount of required information. </p>\n<p>It was created as a result of an exercise involving representatives from 30 UK Universities and aimed to produce the most basic format that would facilitate equipment sharing in the UK. In brief, each item of equipment (or facility) must have a description, a location and some kind of contact information. Everything else is optional. </p>\n<p>This spreadsheet can be formatted in Excel (.xls or .xlsx) or in CSV or Tab-Separated Values.</p>\n<p>See <A href=\"http://equipment.data.ac.uk/uniquip\">http://equipment.data.ac.uk/uniquip</A> to get the specification of what should go in each column.</p>\n<p>Assuming the URL of your spreadsheet is \"http://www.example.ac.uk/equipment.xls\" and your license is CC0 (allow unlimited use)</p>\n<p>You would describe it in the organisation profile document as follows:</p>\n[[code=examples/uniquip-download.ttl.fragment]]\n<h3>3. KitCatalogue JSON document</h3>\n<a href=\"http://kit-catalogue.lboro.ac.uk/\">http://kit-catalogue.lboro.ac.uk/</a>\n<p>KitCatalogue is being developed by Loughborough University, funded by the JISC. It’s free, open source software which collects information on an organisations equipment.</p>\n<p>It allows the option to publish some or all of your records as open data. Currently we use the JSON to import this information but in future KitCatalogue may include an RDF mode.</p>\n[[code=examples/kitcat-download.ttl.fragment]]\n<h3>Future formats</h3>\n<p>Undecided at present. XML and RDF encodings of CERIF are a possibility.</p>\n",
+	"oldkey": "h.ln3xf77s5fzf"
+  },
+  "license": {
+    "question": "What license should I use?",
+	"answer": "<p>Currently the licenses we accept are <a href=\"http://www.data.ac.uk/licenses\">described on the data.ac.uk website</a>. However, we will also harvest appropriate data without a specific license, if it is available on the web in machine readable form, unless asked not to by the data owner.</p>",
+	"oldkey": "h.extkd7o7pzn6"
+  },
+  "whatisanopd": {
+    "question": "What is an Organisation Profile Document (OPD)?",
+	"answer": "<p>To tell us where to find your equipment, facilities, capabilities data, and the license etc. you’ll need to create an organisation profile document. This is a simple RDF file which describes your organisation and open access documents.</p>\n<p>The examples we use in this page are all “Turtle” format but RDF+XML is OK too.</p>\n<p>You will require a ‘URI’ to refer to your organisation. You can either use your own, or use one from learning-provider.data.ac.uk. If you use your own, please include a owl: same as linking it to the learning-provider.data.ac.uk URI for your organisation. In our examples we use &lt;http://id.example.ac.uk/&gt; as the URI for your organisation. </p>\n<p><small><strong>sidebar:</strong> American spelling of ‘organization’? Yes, we use the American spelling in the data structures. Sorry if that annoys people, but we decided to keep the ‘z’ in all the semantics rather than have a muddle of UK and US spelling which is certain to create errors.</small></p>\n[[code=examples/profile.ttl]]\n<p>This isn’t everything that can go in a profile document, but it should be a summary of your organisation, not a complete data catalogue.</p>\n<p>We strongly recommend using a CC0 license (public domain dedication) for the organisational document. This makes it easy for 3rd parties to use it and combine many such documents without problems. It is very possible you won’t be willing to CC0 license your equipment data, but the profile document should not contain anything you don’t want widely and freely reused, so CC0 is appropriate for it.</p>\n",
+	"oldkey": "h.tj2qmbsns9ud"
+  },
+  "autodiscovery": {
+    "question": "How does autodiscovery work?",
+	"answer": "<p>We offer three ways to get data.ac.uk to discover your profile document.</p>\n<h3>Well-known</h3>\n<p>This method uses a specific URL from your university homepage to link to the profile document; if your homepage is http://www.example.ac.uk/ then http://www.example.ac.uk/.well-known/openorg should serve (or redirect to) your profile document.</p>\n<h3>&lt;link&gt; header</h3>\n<p>This method of auto discovery uses a header on your organisation homepage header:\n<div class=\"code\">&lt;link rel=&rdquo;openorg&rdquo; href=&rdquo;http://www.example.ac.uk/profile.ttl&quot;&rdquo; /&gt;</div>\nWhich links to the profile document.\n</p>\n<h3>Can’t do either of these methods?</h3>\n<p><strong>Don’t panic!</strong></p>\n<p>We understand that the team providing equipment and facilities data for your organisation won’t always be working hand-in-glove with the team that run the homepage and main website. If the above methods are impractical for you, drop our admin a line at <a href=\"mailto:andy@data.ac.uk\">andy@data.ac.uk</a> and they will manually register the URL of your profile document.</p>",
+	"oldkey": "h.fmyqv8tq56ce"
+  }
+}

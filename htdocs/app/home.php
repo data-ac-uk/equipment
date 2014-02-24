@@ -5,6 +5,13 @@ class home {
 	{
                 $f3=Base::instance();
 
+
+
+		$status = json_decode( file_get_contents( 'data/status-v2.json' ), true );
+		
+
+		$f3->set('status', $status );
+		
 		$remote_addr = $_SERVER['REMOTE_ADDR'];
 		$hostname = gethostbyaddr($remote_addr);
 
@@ -28,14 +35,26 @@ class home {
 		if( @$_GET["q"] ) { $q = $_GET["q"]; }
 		$f3->set('q', $q );
 		$f3->set('defaultsort', $defaultsort );
-		$search = Template::instance()->render( "search-form.html" );
+		$search =  <<<END
+	<script>
+		$(function() {
+			$( ".search-div .search-cancel" ).show();
+       		$('#qs-overlay').show();
+			 $( ".search-div .search-cancel" ).click(function() {
+				 location.href="/";
+			});
+		});
+	</script>
+END;
+		$search .= "<div id=\"searchbox\">";
+		$search .= Template::instance()->render( "search-form.html" );
 
 		if( $q != "" )
 		{
 			require_once( "app/search.php" );
 			$results = search::render( search::perform( $q ) );
 			$search .= "<div id='results-container'>";
-  			$search .= "  <div id='results' class='sixteen columns'>";
+  			$search .= "  <div id='results'>";
 			if( sizeof($results) == 0 )
 			{
 				$search .= "<p>No matches</p>";
@@ -53,10 +72,13 @@ class home {
 			$search .= "<div id='results-container' style='display:none'>";
   			$search .= "  <div id='results' class='eight columns'></div>";
   			$search .= "  <div id='featured-result' class='seven columns'></div>";
+			$search .= "  <div class='clear'> </div>";
 			$search .= "</div>";
 			# only do js on a javascript version of the UI
 			$search .= "<script src='/resources/quick-search.js.php' ></script>";
 		}
+		$search .= "</div>";
+		
 		$f3->set('search', $search );
 
 

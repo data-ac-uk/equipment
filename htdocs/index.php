@@ -37,7 +37,8 @@ if( file_exists( "ui/note.html" ) )
 $f3->set( "note", $note );
 
 
-$f3->route('GET /faq',
+$f3->route('GET /faq', 'faq->page' );
+/*$f3->route('GET /faq',
 	function() use($f3) {
                 $f3=Base::instance();
 
@@ -46,6 +47,8 @@ $f3->route('GET /faq',
 		print Template::instance()->render( "page-template.html" );
 	}
 );
+
+*/
 $f3->route('GET /uniquip',
 	function() use($f3) {
                 $f3=Base::instance();
