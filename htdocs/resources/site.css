@@ -382,4 +382,7 @@ ol.faq{
 	float: right;
 	margin-top: 0px;
 	margin-right: 12px;
+	color: #193965;
+	background: url('/resources/images/twitter.png') no-repeat left center !important;
+	padding: 5px 5px 5px 25px;
 }
