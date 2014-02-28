@@ -285,7 +285,7 @@ class dataacukEquipment
 			if( $item->description != "" )
 			{
 				# kitcat always makes HTML fragment descriptions	
-				$graph->addCompressedTriple( $uri, "dcterms:description", $item["description"], "http://purl.org/xtypes/Fragment-HTML" );
+				$graph->addCompressedTriple( $uri, "dcterms:description", (string)$item->description, "http://purl.org/xtypes/Fragment-HTML" );
 			}
 
 
@@ -308,6 +308,7 @@ class dataacukEquipment
 					$graph->addCompressedTriple( "http://id.learning-provider.data.ac.uk/ukprn/".$c["org_ukprn"], "org:hasSubOrganization", $org_uri );
 				}
 			}
+			
 			
 			if( $item->phone != "" || $item->email != "" )
 			{	
