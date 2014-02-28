@@ -371,6 +371,7 @@ footer {
 	padding: 5px;
 	border-radius: 5px;
 	margin: 15px auto 4px;
+	clear: both;
 }
 
 ol.faq{

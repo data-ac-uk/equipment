@@ -67,7 +67,8 @@ print "var availableTags = ".json_encode( array_keys( $data ) ).";";
         }
     });
 
-    $( ".search-div .search-cancel" ).click(function() {
+    $( ".search-div .search-cancel" ).click(function(event) {
+
 		$('#qs-input').val('');
         $('#sort-option').hide();
         $('#results-container').hide();
@@ -75,6 +76,8 @@ print "var availableTags = ".json_encode( array_keys( $data ) ).";";
         $('#helpstring').show();
 		$('.search-div .search-cancel').hide();
         clear_results();
+    	event.preventDefault();
+		return false;
     });
 
     $('#units-toggle').click(function() {
