@@ -118,7 +118,8 @@ foreach($datasets as $set){
 				}	
 			}
 			switch($linfo['content_type']){
-				case "application/vnd.ms-excel":
+				case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": #.xlsx
+				case "application/vnd.ms-excel": #xlsx
 					echo "       Starting uniquip/xls parse\n";
 					$graph = $eq->parse_uniquip_xls($set,$cachepath, $notes);
 				break;

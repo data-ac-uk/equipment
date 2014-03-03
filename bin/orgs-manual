@@ -59,7 +59,9 @@ foreach($config as $org){
 	
 	if($orgin['org_idscheme'] == 'ukprn'){
 		$loc = $eq->location_extract("http://id.learning-provider.data.ac.uk/ukprn/{$orgin['org_id']}");
-		$orgin['org_location'] = $loc['loc_uri'];
+		if($loc!==false){
+			$orgin['org_location'] = $loc['loc_uri'];
+		}
 	}
 
 

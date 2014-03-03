@@ -1434,6 +1434,9 @@ class dataacukEquipment
 		if(isset($uris['dbpedia.org'])){
 			 return $ret = $this->location_find_rdf($uris['dbpedia.org']['uri']);
 		}
+		
+		return false;
+
 	}
 
 	function location_find_rdf($loc){
