@@ -1,6 +1,8 @@
 #!/usr/bin/php
 <?php
 
+chdir(__DIR__);
+
 if(in_array('-v',$argv)){
 	$v = true;
 }else{
