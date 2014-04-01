@@ -143,7 +143,7 @@ END;
 		#$c []= "<pre>".htmlspecialchars( print_r($status ,true))."</pre>";
 
 
-		$c []="If your data is not listed here and you expect it to be, check out our <a href=\"/troubleshooting\" title=\"Troubleshooting\">Troubleshooting page</a>";
+		$c []="<p>If your data is not listed here and you expect it to be, check out our <a href=\"/troubleshooting\" title=\"Troubleshooting\">Troubleshooting page</a></p>";
 		
 		$c []= "<h3>Totals</h3>";
 		$c []= "This archive contains ".number_format($status['totals']['items'],0)." items from {$status['totals']['orgs']} organisations.";
