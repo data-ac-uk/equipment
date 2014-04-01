@@ -49,6 +49,18 @@ $f3->route('GET /faq', 'faq->page' );
 );
 
 */
+
+
+$f3->route('GET /troubleshooting',
+	function() use($f3) {
+                $f3=Base::instance();
+
+		$f3->set('html_title', "Troubleshooting" );
+		$f3->set('content','troubleshooting.html');
+		print Template::instance()->render( "page-template.html" );
+	}
+);
+
 $f3->route('GET /uniquip',
 	function() use($f3) {
                 $f3=Base::instance();
