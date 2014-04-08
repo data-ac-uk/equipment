@@ -51,7 +51,7 @@ class org {
 
 function markup( $text )
 {
-	$html = htmlspecialchars( $text );
+	$html = htmlspecialchars_decode($text);
 	$html = preg_replace("/[[:alpha:]]+:\/\/[^<>[:space:]]+[[:alnum:]\/]/","<a href=\"\\0\">\\0</a>", $html );
 	return $html;
 }
