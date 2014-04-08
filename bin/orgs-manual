@@ -18,13 +18,12 @@ require_once( "{$eq_config->pwd}/lib/Graphite/Graphite.php" );
 require_once( "{$eq_config->pwd}/dataacukEquipment.php" );
 
 
-$config = read_config("{$eq_config->pwd}/etc/test-list.tsv");
-
-
 $eq = new dataacukEquipment($eq_config);
 $eq->launch_db();
 $eq->db->dryrun = $dryrun;
 
+//$config = read_config("{$eq_config->pwd}/etc/test-list.tsv");
+$config = read_config_db();
 
 
 foreach($config as $org){
@@ -111,6 +110,25 @@ foreach($config as $org){
 }
 
 
+function read_config_db(){
+	global $eq;
+	
+	$res = $eq->db->fetch_many('orgsManual', array('org_enabled' => 1));
+	
+	foreach($res as $line){
+		$org_id = explode("/",$line['org_xid'],2);
+		
+		$line['org_ukprn'] = ($org_id[0]=='ukprn') ? $org_id[1] : NULL;
+		$line['org_idscheme'] = $org_id[0];
+		$line['org_id'] = $org_id[1];
+		unset($line['org_enabled']);
+		unset($line['org_comment']);
+		$config []=  $line;
+		
+	}
+	
+	return $config;
+}
 
 
 function read_config( $file )
