@@ -545,6 +545,11 @@ class dataacukEquipment
 		$graph = new eqGraphite();
 		$row = 0;
 		$thisset = array("ids"=>array());
+		
+		#Converts any mac csv into unix format
+                $exec = "mac2unix ".escapeshellarg($path);
+                `$exec`;
+
 		if (($handle = fopen($path, "r")) !== FALSE) {
 		    while (($data = fgetcsv($handle, 4096, ",")) !== FALSE) {
 		        if($row == 0){
