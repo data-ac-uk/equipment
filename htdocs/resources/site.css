@@ -387,3 +387,17 @@ ol.faq{
 	background: url('/resources/images/twitter.png') no-repeat left center !important;
 	padding: 5px 5px 5px 25px;
 }
+
+.posters{
+	width:100%;
+	text-align: center;
+}
+
+.posters td, .posters h3{
+
+	text-align: center;
+}
+
+.posters img{
+	max-width: 100%; width:400px;
+}
