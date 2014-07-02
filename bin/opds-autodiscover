@@ -48,7 +48,7 @@ foreach( $rows as $row )
 	if($cells[0]=='UKPRN') { continue; } #Header line
 	
 	
-	$homepages[] = $cells[9];
+	//$homepages[] = $cells[9];
 }
 
 //$map_opd = new DB\SQL\Mapper($eq->db,'autoOPDs');
@@ -88,6 +88,13 @@ foreach($homepages as $url)
 
 file_put_contents("{$eq_config->pwd}/var/autodiscovered-opds.json", json_encode($opds));
 
+$lopds = scandir($eq->config->opds->local);
+foreach($lopds as $lopd){
+	if($lopd{0}==".") continue;
+	$eq->config->opds->direct[] = array("path"=>$eq->config->opds->local."/".$lopd, "type"=>"local");
+}
+
+
 foreach( $eq->config->opds->direct as $direct) {
 	
 	try{ 
@@ -114,7 +121,7 @@ foreach( $eq->config->opds->direct as $direct) {
 	
 	echo "Found at {$direct['path']}\n";
 	
-	$eq->proc_opd($opd, 'hosted');
+	$eq->proc_opd($opd, ($direct['type']=='local') ? 'local' : 'hosted');
 
 }
 

@@ -34,8 +34,9 @@ foreach($opds as $opd){
 	$orginraw = array();
 	
 	echo "Loading OPD: {$opd['opd_url']}\n";
-	
-	if($opd['opd_type'] != 'text/turtle'){
+	if($opd['opd_src'] == 'local'){
+		$topd = @new OrgProfileDocument( $opd['opd_url'] , 'local');
+	}elseif($opd['opd_type'] != 'text/turtle'){
 		$topd = @new OrgProfileDocument( $opd['opd_url'] , 'url');
 	}else{
 		$topd = @new OrgProfileDocument( $opd['opd_cache'] , 'string');
