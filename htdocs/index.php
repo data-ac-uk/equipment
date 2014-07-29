@@ -86,6 +86,15 @@ $f3->route('GET /posters',
 		print Template::instance()->render( "page-template.html" );
 	}
 );
+
+$f3->route('GET /info',
+	function() use($f3) {
+		
+		$f3=Base::instance();
+		print Template::instance()->render( "useful_info.html" );
+	}
+);
+
 $f3->route('GET /', 'home->page' );
 $f3->route('GET /status', 'status->page' );
 $f3->route('GET /compliance', 'compliance->page' );

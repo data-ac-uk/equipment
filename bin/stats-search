@@ -1,0 +1,71 @@
+#!/usr/bin/php
+<?php
+
+# Crawls found opds looinkg for organiations and datasets
+
+if(in_array('--dryrun',$argv)){
+	$dryrun = true;
+}else{
+	$dryrun = false;	
+}
+
+require_once( "../etc/eq_config.php" );
+
+
+require_once( "{$eq_config->pwd}/lib/arc2/ARC2.php" );
+require_once( "{$eq_config->pwd}/lib/Graphite/Graphite.php" );
+
+require_once( "{$eq_config->pwd}/dataacukEquipment.php" );
+
+$regex = '/^(\S+) (\S+) (\S+) \[([^:]+):(\d+:\d+:\d+) ([^\]]+)\] \"(\S+) (.*?) (\S+)\" (\S+) (\S+) "([^"]*)" "([^"]*)"$/';
+
+$eq = new dataacukEquipment($eq_config);
+$eq->launch_db();
+$eq->db->dryrun = $dryrun;
+
+$mem = array();
+
+$logfile = "/Sites/access_log";
+$lastage = 0;
+$handle = @fopen($logfile, "r");
+if ($handle) {
+    while (($buffer = fgets($handle, 4096)) !== false) {
+		preg_match($regex ,$buffer, $matches);
+		if(!strpos($matches[8],"search?term=")){
+			continue;
+		}
+		
+		$time = $timestamp = DateTime::createFromFormat('!d/M/Y H:i:s O', "{$matches[4]} {$matches[5]} {$matches[6]}")->getTimestamp();
+		
+		parse_str(substr($matches[8], strpos($matches[8],"?")+1), $query);
+
+		if(isset($mem[$matches[1]])){
+			$mem[$matches[1]]['his'] .= ":".$query['term'];
+			$mem[$matches[1]]['term'] = $query['term'];
+			$mem[$matches[1]]['time'] = $time;
+		}else
+			$mem[$matches[1]] = array("term"=>$query['term'], "time"=>$time, "his"=>$query['term']);
+
+		$age = floor($time/60);
+		if($age != $lastage){
+			$ago = $time - 30;
+			foreach($mem as $ip=>$me){
+				if($me['time'] < $time){
+					echo "$ip:{$me['time']}:{$me['time']} - {$me['his']}\n";
+					unset($me[$ip]);
+				}
+			}
+		}
+
+    }
+    if (!feof($handle)) {
+        echo "Error: unexpected fgets() fail\n";
+    }
+    fclose($handle);
+}
+
+//print_r($mem);
+exit();
+
+
+?>
