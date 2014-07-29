@@ -14,8 +14,8 @@ class compliance {
 		
 		$status = json_decode( file_get_contents( 'data/status-v2.json' ), true );
 		foreach( $status['orgs'] as $feed ){
-			foreach($feed['org_datasets'] as $set){
-				$podium[$set['crawl_gong']][] = $feed;
+			foreach($feed['org_datasets'] as $hash=>$set){
+				$podium[$set['crawl_gong']][$hash] = $feed;
 			}
 		}
 		
@@ -28,8 +28,8 @@ class compliance {
 		
 		$cc = array("silver" => "", "gold" => "", "bronze" => "");
 		foreach($levels as $k=>$v){
-			foreach($podium[$k] as $feed){
-				$cc[$k] .= "<img src='/org/{$feed["org_idscheme"]}/{$feed["org_id"]}.logo?size=small' class=\"org_logo\" style=\"height: 35px; margin:3px;\"/>";
+			foreach($podium[$k] as $hash=>$feed){
+				$cc[$k] .= "<a href=\"/compliance?dataset={$hash}#summary\"><img src='/org/{$feed["org_idscheme"]}/{$feed["org_id"]}.logo?size=small' class=\"org_logo\" style=\"height: 35px; margin:3px;\"/>";
 			}
 		}
 		
@@ -37,7 +37,7 @@ class compliance {
 
 		$c[] = "<tr>";
 		foreach($levels as $k=>$v){
-			$c[] = "<td rowspan=\"{$v}\" valign=\"bottom\" height=\"".(($v+1)*75)."\" width=\"33%\" style=\"vertical-align: bottom; text-align: center;\">{$cc[$k]}</td>";
+			$c[] = "<td rowspan=\"{$v}\" valign=\"bottom\" height=\"".(($v+2)*75)."\" width=\"33%\" style=\"vertical-align: bottom; text-align: center;\">{$cc[$k]}</td>";
 		}	
 		$c[] = "</tr>";		
 
