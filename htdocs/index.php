@@ -71,6 +71,12 @@ $f3->route('GET /uniquip',
 	}
 );
 
+$f3->route('GET /opd',
+    function() use($f3) {
+        $f3->reroute('http://opd.data.ac.uk/checker');
+    }
+);
+
 $f3->route('GET /poster',
     function() use($f3) {
         $f3->reroute('/posters');
