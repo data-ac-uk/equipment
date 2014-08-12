@@ -49,7 +49,14 @@ $f3->route('GET /faq', 'faq->page' );
 );
 
 */
-
+$f3->route('GET /logos',
+	function() use($f3) {
+		$f3=Base::instance();
+		$f3->set('html_title', "Our Logos" );
+		$f3->set('content','logos.html');
+		print Template::instance()->render( "page-template.html" );
+	}
+);
 
 $f3->route('GET /troubleshooting',
 	function() use($f3) {
@@ -100,6 +107,8 @@ $f3->route('GET /info',
 		print Template::instance()->render( "useful_info.html" );
 	}
 );
+
+
 
 $f3->route('GET /', 'home->page' );
 $f3->route('GET /status', 'status->page' );
