@@ -232,7 +232,9 @@ a.fileicon.rdf{
 }
 .cycle-pager span.cycle-pager-active { color: #193965;}
 .cycle-pager > * { cursor: pointer;}
-
+.cycle-slideshow a{
+	display: none;
+}
 .ui-front{
 	z-index: 10000;
 }
