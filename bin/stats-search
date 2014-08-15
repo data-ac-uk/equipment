@@ -15,6 +15,7 @@ if(in_array('--gz',$argv)){
 	$gz = false;	
 }
 
+$insertcount = 0;
 
 require_once( "../etc/eq_config.php" );
 
@@ -114,6 +115,8 @@ if ($handle) {
 		fclose($handle);
 }
 
+echo "Added $insertcount terms\n";
+
 //print_r($mem);
 exit();
 
@@ -154,14 +157,18 @@ function proc_mem(&$mem, $ago){
 
 function register_search($term, $ip, $time){
 	
-	global $eq;
+	global $eq,$insertcount;
 	
 	$ins['search_key'] = date(DATE_ATOM, $time).":".$ip.":".md5($term);
 	$ins['search_ip'] = $ip;
 	$ins['search_date'] =  date("Y-m-d H:i:s", $time);
 	$ins['search_term'] = $term;
 	
-	$eq->db->insert('statsSearchTerms',$ins, array(),"REPLACE");
+	$res = $eq->db->fetch_one('statsSearchTerms', array('search_key' => $ins['search_key']), array(), "`search_key`");
+	if(!isset($res['search_key'])){	
+		$eq->db->insert('statsSearchTerms',$ins, array(),"REPLACE");
+		$insertcount ++;
+	}
  	
 	
 }
