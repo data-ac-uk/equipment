@@ -9,6 +9,13 @@ if(in_array('--dryrun',$argv)){
 	$dryrun = false;	
 }
 
+if(in_array('--gz',$argv)){
+	$gz = true;
+}else{
+	$gz = false;	
+}
+
+
 require_once( "../etc/eq_config.php" );
 
 
@@ -25,33 +32,92 @@ $eq->db->dryrun = $dryrun;
 
 $mem = array();
 
-$logfile = "/Sites/access_log";
+$logfile = end($argv);
 $lastage = 0;
-$handle = @fopen($logfile, "r");
+if($gz)
+	$handle = @gzopen($logfile, "r");
+else
+	$handle = @fopen($logfile, "r");
+
 if ($handle) {
-    while (($buffer = fgets($handle, 4096)) !== false) {
+    while (true) {
+		
+		if($gz)
+			$buffer = gzgets($handle, 4096);
+		else
+			$buffer = fgets($handle, 4096);
+			
+		if($buffer === false) break;
+			
 		preg_match($regex ,$buffer, $matches);
-		if(!strpos($matches[8],"search?term=")){
+		
+		$thisline = false;
+		
+		if(!strpos($matches[12],"equipment.data.ac.uk")){
+			continue;
+		}
+		
+		if(strpos($matches[8],"search?term=")){
+			$thisline = 'searchajax';
+		}
+		
+		if(strpos($matches[8],"/?q=")===0){
+			$thisline = 'search';
+		}
+		
+		if($thisline === false){
 			continue;
 		}
 		
 		$time = $timestamp = DateTime::createFromFormat('!d/M/Y H:i:s O', "{$matches[4]} {$matches[5]} {$matches[6]}")->getTimestamp();
 		
 		parse_str(substr($matches[8], strpos($matches[8],"?")+1), $query);
+		
+		if($thisline=='search'){
+			$query['term'] = $query['q'];
+		}
+		
+		if(strlen($query['term']) == 0){
+			continue;
+		}
+
 
 		if(isset($mem[$matches[1]])){
-			$mem[$matches[1]]['his'] .= ":".$query['term'];
+			$mem[$matches[1]]['his'][] = $query['term'];
 			$mem[$matches[1]]['term'] = $query['term'];
 			$mem[$matches[1]]['time'] = $time;
 		}else
-			$mem[$matches[1]] = array("term"=>$query['term'], "time"=>$time, "his"=>$query['term']);
+			$mem[$matches[1]] = array("term"=>$query['term'], "time"=>$time, "his"=>array($query['term']));
 
 		$age = floor($time/60);
 		if($age != $lastage){
 			$ago = $time - 30;
 			foreach($mem as $ip=>$me){
 				if($me['time'] < $time){
-					echo "$ip:{$me['time']}:{$me['time']} - {$me['his']}\n";
+					
+					sort($me['his']);
+					
+					$lastqr = $me['his'][0];
+					$lastqr_len = strlen($lastqr);
+					
+					foreach($me['his'] as $k=>$qr){
+						$qr_len = strlen($qr);
+					
+							if($k!=0 && substr($me['his'][$k-1],0,min(strlen($me['his'][$k-1]),$qr_len)) != substr($qr,0,min(strlen($me['his'][$k-1]),$qr_len)) ){
+								register_search($me['his'][$k-1], $ip, $me['time']);
+							}
+							
+							if(substr($me['his'][$k+1],0,min(strlen($me['his'][$k+1]))) != substr($qr,0,min(strlen($me['his'][$k+1]))) ){
+								register_search($qr, $ip, $me['time']);
+							}
+							
+											
+						$lastqr = $qr;
+						$lastqr_len = $qr_len;
+					}
+					
+					register_search($qr, $ip, $me['time']);
+				
 					unset($me[$ip]);
 				}
 			}
@@ -61,11 +127,29 @@ if ($handle) {
     if (!feof($handle)) {
         echo "Error: unexpected fgets() fail\n";
     }
-    fclose($handle);
+	
+	if($gz)
+		gzclose($handle);
+	else
+		fclose($handle);
 }
 
 //print_r($mem);
 exit();
+
+function register_search($term, $ip, $time){
+	
+	global $eq;
+	
+	$ins['search_key'] = date(DATE_ATOM, $time).":".$ip.":".md5($term);
+	$ins['search_ip'] = $ip;
+	$ins['search_date'] =  date("Y-m-d H:i:s", $time);
+	$ins['search_term'] = $term;
+	
+	$eq->db->insert('statsSearchTerms',$ins, array(),"REPLACE");
+ 	
+	
+}
 
 
 ?>
