@@ -92,38 +92,18 @@ if ($handle) {
 		$age = floor($time/60);
 		if($age != $lastage){
 			$ago = $time - 30;
-			foreach($mem as $ip=>$me){
-				if($me['time'] < $time){
-					
-					sort($me['his']);
-					
-					$lastqr = $me['his'][0];
-					$lastqr_len = strlen($lastqr);
-					
-					foreach($me['his'] as $k=>$qr){
-						$qr_len = strlen($qr);
-					
-							if($k!=0 && substr($me['his'][$k-1],0,min(strlen($me['his'][$k-1]),$qr_len)) != substr($qr,0,min(strlen($me['his'][$k-1]),$qr_len)) ){
-								register_search($me['his'][$k-1], $ip, $me['time']);
-							}
-							
-							if(substr($me['his'][$k+1],0,min(strlen($me['his'][$k+1]))) != substr($qr,0,min(strlen($me['his'][$k+1]))) ){
-								register_search($qr, $ip, $me['time']);
-							}
-							
-											
-						$lastqr = $qr;
-						$lastqr_len = $qr_len;
-					}
-					
-					register_search($qr, $ip, $me['time']);
-				
-					unset($me[$ip]);
-				}
-			}
+			
+			proc_mem($mem, $ago);
+			
+			$lastage = $age;
 		}
 
     }
+	
+	proc_mem($mem, time());
+	
+	
+	
     if (!feof($handle)) {
         echo "Error: unexpected fgets() fail\n";
     }
@@ -136,6 +116,41 @@ if ($handle) {
 
 //print_r($mem);
 exit();
+
+
+function proc_mem(&$mem, $ago){
+	
+	foreach($mem as $ip=>$me){
+		if($me['time'] < $ago){
+			
+			sort($me['his']);
+			
+			$lastqr = $me['his'][0];
+			$lastqr_len = strlen($lastqr);
+			
+			foreach($me['his'] as $k=>$qr){
+				$qr_len = strlen($qr);
+			
+					if($k!=0 && substr($me['his'][$k-1],0,min(strlen($me['his'][$k-1]),$qr_len)) != substr($qr,0,min(strlen($me['his'][$k-1]),$qr_len)) ){
+						register_search($me['his'][$k-1], $ip, $me['time']);
+					}
+					
+					if(substr($me['his'][$k+1],0,min(strlen($me['his'][$k+1]))) != substr($qr,0,min(strlen($me['his'][$k+1]))) ){
+						register_search($qr, $ip, $me['time']);
+					}
+					
+									
+				$lastqr = $qr;
+				$lastqr_len = $qr_len;
+			}
+			
+			register_search($qr, $ip, $me['time']);
+		
+			unset($mem[$ip]);
+		}
+	}
+	
+}
 
 function register_search($term, $ip, $time){
 	
