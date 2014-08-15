@@ -91,6 +91,8 @@ $eq_config->gongs = array(1=>'bronze', 2=>'silver', 3=>'gold' );
 $eq_config->crawler = (object) NULL;
 $eq_config->crawler->emailto = array("andrew@debian");
 
+$eq_config->stats = "/Sites/access_log";
+
 $eq_config->misc = (object) NULL;
 if(file_exists("{$eq_config->pwd}/etc/eq_config.local.php")){
 	include("{$eq_config->pwd}/etc/eq_config.local.php");

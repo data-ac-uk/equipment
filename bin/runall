@@ -52,6 +52,10 @@ $tasks = array(
 		"cmd" => "php equipment-status",
 		"every"=> TIME_ONEDAY,
 	),
+	"stats-search" => array(
+		"cmd" => "php stats-search {$eq_config->stats}",
+		"every"=> TIME_ONEDAY,
+	),
 );
 
 $starttime = time();
