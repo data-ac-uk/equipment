@@ -23,7 +23,7 @@ if(!isset($stat['lastrun']))
 	$stat['lastrun'] = array();
 
 define('TIME_ONEDAY', 24 * 3600);
-define('TIME_ONEWEEK', 7 * 4 * 3600);
+define('TIME_ONEWEEK', 7 * 24 * 3600);
 
 chdir(__DIR__);
 
@@ -34,7 +34,7 @@ $tasks = array(
 	),
 	"opds-autodiscover" => array(
 		"cmd" => "php opds-autodiscover",
-		"every"=> TIME_ONEWEEK*2,
+		"every"=> TIME_ONEWEEK,
 	),
 	"opds-crawl" => array(
 		"cmd" => "php opds-crawl",

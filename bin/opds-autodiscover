@@ -48,7 +48,7 @@ foreach( $rows as $row )
 	if($cells[0]=='UKPRN') { continue; } #Header line
 	
 	
-	//$homepages[] = $cells[9];
+	$homepages[] = $cells[9];
 }
 
 //$map_opd = new DB\SQL\Mapper($eq->db,'autoOPDs');

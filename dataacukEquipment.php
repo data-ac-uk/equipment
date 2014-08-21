@@ -1097,7 +1097,7 @@ class dataacukEquipment
 	
 		$rdf =  $ig->serialize( "Turtle" );
 		
-		$this->db->insert('itemRDF',array("rdf_id"=>$itemid, "rdf_org"=>$set['data_org'],"rdf_dataset"=>"rdf_id","rdf_rdf"=>$rdf ),array("rdf_updated"=>"NOW()"),"REPLACE");
+		$this->db->insert('itemRDF',array("rdf_id"=>$itemid, "rdf_org"=>$set['data_org'],"rdf_dataset"=>$set['data_uri'],"rdf_rdf"=>$rdf ),array("rdf_updated"=>"NOW()"),"REPLACE");
 	
 		$file = $this->misc_item_cachepath($itemid, "ttl");
 		file_put_contents( $file,$rdf ) or die("can't write file: $file" );
@@ -1275,7 +1275,7 @@ class dataacukEquipment
 		$itemid = $this->misc_item_cacheid( $item );
 	
 		
-		$this->db->insert('itemPages',array("page_id"=>$itemid, "page_org"=>$set['data_org'],"page_dataset"=>"data_id","page_title"=>(string)$item->label(),"page_content"=>&$data['content'] ),array("page_updated"=>"NOW()"),"REPLACE");
+		$this->db->insert('itemPages',array("page_id"=>$itemid, "page_org"=>$set['data_org'],"page_dataset"=>$set['data_uri'],"page_title"=>(string)$item->label(),"page_content"=>&$data['content'] ),array("page_updated"=>"NOW()"),"REPLACE");
 	
 	
 		$file = $this->misc_item_cachepath($itemid, "html");
