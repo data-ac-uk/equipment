@@ -110,7 +110,7 @@ foreach($datasets as $set){
 		break;
 		case "uniquip":
 			echo "    Uniquip Dataset\n";
-			$map = array("csv"=>"text/csv","xls"=>"application/vnd.ms-excel");
+			$map = array("csv"=>"text/csv","xls"=>"application/vnd.ms-excel","xls"=>"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 			if(!in_array($linfo['content_type'],$map)){
 				$ext =  pathinfo($linfo['url'], PATHINFO_EXTENSION);
 				if(isset($map[$ext])) {
