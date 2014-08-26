@@ -1,9 +1,10 @@
+<p>
+	For the equipment.data project to reach its goal of a fully sustainable system, we need a method of updating sources as efficiently as possible so we use gold, silver and bronze compliance ratings to indicate to what level each contributing institution’s data input is sustainable. Changes to data can be as small as an institution altering its logo, to moving its data source from one system to another, but they still need to be captured in an efficient way.  The ideal is that all institutions will be operating in the gold compliance rating so that no resource is required from either the contributing institution or the equipment.data project in updating information as it will be automatically picked up by the OPD, as outlined below: 
+</p>
+
 <h2><a name=\"summary\"></a>Summary {{ @gt_hasdataset ? "the dataset from ".@gt_org['org_name'] :'' }}</h2>
 <check if="{{ @gt_hasdataset }}"> 	
 	<p>The following table shows how the dataset (<a href=\"{{ @gt_dataset['data_uri'] }}\">{{ @gt_dataset['data_uri'] }}</a>) from the <a href=\"{{ @gt_org['org_url']}}\">{{@gt_org['org_name']}}</a> and has achieved its complience level of <strong> {{ @gt_gongs[@gt_dataset["crawl_gong"]] }}. </strong> {{ @gt_dataset["crawl_gong"]!='bronze' ? 'This data set was loaded from the organisation\'s <a href="'.@gt_org['org_opd']['opd_url'].'">OPD</a>' : '';}}</p>
-</check>
-<check if="{{ !@gt_hasdataset }}"> 	
-	<p>To aid us in reaching our goal of a fully sustainable system, we use gold, silver and bronze ratings to indicate to what level each contributing institution’s data input is sustainable. The details of each level are below, and we actively work with all participating partners to enable them to reach the highest standard possible.</p>
 </check>
 <table class='status'>
 	<tr>
