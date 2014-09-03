@@ -1,5 +1,5 @@
 <p>
-	For the equipment.data project to reach its goal of a fully sustainable system, we need a method of updating sources as efficiently as possible so we use gold, silver and bronze compliance ratings to indicate to what level each contributing institution’s data input is sustainable. Changes to data can be as small as an institution altering its logo, to moving its data source from one system to another, but they still need to be captured in an efficient way.  The ideal is that all institutions will be operating in the gold compliance rating so that no resource is required from either the contributing institution or the equipment.data project in updating information as it will be automatically picked up by the OPD, as outlined below: 
+	For the equipment.data project to reach its goal of a fully sustainable system, we need a method of updating sources as efficiently as possible so we use gold, silver and bronze compliance ratings to indicate to what level each contributing institution’s data input is sustainable. Changes to data can be as small as an institution altering its logo, to moving its data source from one system to another, but they still need to be captured in an efficient way.  The ideal is that all institutions will be operating in the gold compliance rating so that no resource is required from either the contributing institution or the equipment.data project in updating information as it will be automatically picked up by the <a href="http://opd.data.ac.uk" title="Organisation Profile Documents">Organisation Profile Document, OPD</a>, as outlined below: 
 </p>
 
 <h2><a name=\"summary\"></a>Summary {{ @gt_hasdataset ? "the dataset from ".@gt_org['org_name'] :'' }}</h2>
@@ -52,3 +52,30 @@
 	</tr>
 	
 </table>
+
+<br/>
+
+<h2><img src="/resources/images/gongs/equipment-data-bronze-60.png" style="float: right;"/>Bronze contributor: Public data in a conforming format</h2>
+
+<p>This is the minimum level for your data to be included in equipment.data.ac.uk. You must provide your equipment data in one of the accepted formats (Uniquip spreadsheet in Excel, or CSV, PURE XML, RDF Conforming to Openorg pattern, RDF Conforming to N8 pattern, JSON from Kitcat. You must have also provided contact information for corrections to the dataset and the name and homepage of the organisation this equipment is associated with.</p>
+
+<p>This puts some work on equipment.data staff and while we can cope in the short term, it is not practical for us to plan to keep 150-200 records up-to-date in the long term, hence we aim for most sites to provide this information in a way we can use automatically without emails.</p>
+
+
+<h2><img src="/resources/images/gongs/equipment-data-silver-60.png" style="float: right;"/>Silver contributor: Public metadata</h2>
+
+<p>
+	A better way for an institution to contribute all of its details is to provide a document that lists all of the required information using an OPD.
+	Having an OPD means that if the institution wants to change its dataset location all they would have to do is update their Profile Document and this will automatically update the equipment.data records. The only manual input required from the project is we need to add the location of a new institution’s OPD.
+	
+</p>
+
+<p>This provides you with a way to easily keep the metadata about your organisation and dataset correct without a human having to process every request.</p>
+
+<h2><img src="/resources/images/gongs/equipment-data-gold-60.png" style="float: right;"/>Gold contributor: Open, Trusted and Authoritative</h2>
+
+<p>To allow new institutions datasets to become auto discovered we use a way of discovering OPDs automatically. This is done by placing a link to the OPD somewhere on the institutions home page (it is not a visible link and is hidden in the header). Our system then checks every .ac.uk webpage looking for the link to the OPD and then ingesting any linked datasets. This allows new datasets to be added with no manual input from the project required and therefore making the future of equipment.data highly sustainable. (<a href="http://opd.data.ac.uk/docs/auto" title="Documentation: Autodiscovery">find out more</a>)
+</p>
+
+<p>The other requirement is that your OPD should provide a licence for the OPD itself, and a license for your equipment data (these may be different). Our preferered license is CC0 - which allows everybody to use and republish your data with confidence. However, ODCA (which requires you are credited any time anybody uses any part of the data) or OGL (designed for UK public sector) are both also acceptable. Other compatible licenses are NOT acceptible as we wish to minimise the number of liceses a user of the combined data needs to contend with.</p>
+

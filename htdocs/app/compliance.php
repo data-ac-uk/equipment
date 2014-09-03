@@ -98,10 +98,10 @@ class compliance {
 		
 		
 		
-        $c [] = Template::instance()->render('summary_table.html');
+        $c [] = Template::instance()->render('compliance_table.html');
 		
 		
-		$c[] = file_get_contents( 'ui/compliance.html' );
+	//	$c[] = file_get_contents( 'ui/compliance.html' );
 		
 
 		$f3->set('html_content',join("",$c));
