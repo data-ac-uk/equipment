@@ -22,10 +22,10 @@ h1 { display: none; }
 		    >
 		    <div class="cycle-pager"></div>
 			<a>
-		        <img src="/resources/images/banners/share.jpg" >
+		        <img src="/resources/images/banners/share.jpg" alt="It's good to share">
 		    </a>
 		    <a>
-		        <img src="/resources/images/banners/comment.jpg" >
+		        <img src="/resources/images/banners/comment.jpg" alt="We need you, what are your experience of equipment shareing">
 		    </a>
 		    <a href="/posters">
 		        <img src="/resources/images/banners/poster.jpg" alt="Using equipment.data couldn’t be easier, click here to follow our easy step-by-step guide.">
@@ -74,12 +74,12 @@ The project team can provide technical support and guidance regarding the requir
         <div class="sidebox">
         <h3>Download the data</h3>
         
-        <h5>Combined Data</h5>
+        <h4>Combined Data</h4>
         <div class="smallp"><a href='data/uniquip.csv' class="fileicon csv">CSV*</a> - Comma-Separated values (Loads in Excel)</div>
         <div class="smallp"><a href='data/uniquip.json' class="fileicon json">JSON*</a> - JSON (great for hacking)</div>
         <div class="smallp"><a href='data/equipment.ttl' class="fileicon rdf">RDF</a> - Full on RDF (in Turtle format)</div>
 		<div class="smallp">*Conforms to the <a href="/uniquip">Uniquip standard</a></div>
-        <h5>Ingest Status</h5>
+        <h4>Ingest Status</h4>
         <div class="smallp"><a href='data/status-v2.json' class="fileicon json">JSON (v2)</a> - JSON-encoded file describing the status of each ingested dataset. This is the data used to generate the <a href="/status">status page</a><br/>
         <small><a href='data/status-v1.json'>JSON (v1)</a> - Depricated</small></div>
         </div>
@@ -93,7 +93,7 @@ The project team can provide technical support and guidance regarding the requir
 
 <ul class='datasets'>
 	<F3:repeat group="{{ @status['orgs'] }}" value="{{ @org }}">
-		<li><a href='{{ @org["org_url"] }}' title='{{ @org["org_name"] }}'><img src='/org/{{ @org["org_idscheme"] }}/{{ @org["org_id"] }}.logo?size=small'></a></li>
+		<li><a href='{{ @org["org_url"] }}' title='{{ @org["org_name"] }}'><img src='/org/{{ @org["org_idscheme"] }}/{{ @org["org_id"] }}.logo?size=small' alt='{{ @org["org_name"] }} Logo'></a></li>
 	</F3:repeat>
 </ul>
 
@@ -107,7 +107,7 @@ The project team can provide technical support and guidance regarding the requir
 	
     <div class="sidebox">
     <h3>Funded by</h3>	
-    <div style="text-align: center;"><a href="http://www.epsrc.ac.uk/"><img src="/resources/images/epsrc.jpg" alt="EPSRC" style="width: 160px; max-width: 90%" /></a></div>
+    <div style="text-align: center;"><a href="http://www.epsrc.ac.uk/"><img src="/resources/images/epsrc.jpg" alt="EPSRC Logo" style="width: 160px; max-width: 90%" /></a></div>
     </div>
 	
     <div class="sidebox">
