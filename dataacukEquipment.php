@@ -229,7 +229,7 @@ class dataacukEquipment
 				
 			}
 			$fields = array();
-			echo $fields['error_text'] = join("\n",$crawlnotes);
+			$fields['error_text'] = join("\n",$crawlnotes);
 			$fields['datset_url'] = $set['data_uri'];
 			//substr($set['data_corrections'],7)
 			$this->messageFromTemplate("equipment-download-error", "andrew@bluerhinos.co.uk", $fields, 'alert', $set['data_uri']);
@@ -1620,7 +1620,7 @@ class dataacukEquipment
 		    "BCC: ". join(", ", $this->config->crawler->emailto) ."\r\n" .
 		    'X-Mailer: Equipment.Data (PHP/' . phpversion().")";
 
-		//mail($to, $subject, $body, $headers);	
+		mail($to, $subject, $body, $headers);	
 		
 		$this->launch_db();
 		$this->db->insert('messages', $msg, array('message_time'=>"NOW()"));	
