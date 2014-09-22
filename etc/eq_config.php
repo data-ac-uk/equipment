@@ -91,6 +91,9 @@ $eq_config->gongs = array(1=>'bronze', 2=>'silver', 3=>'gold' );
 $eq_config->crawler = (object) NULL;
 $eq_config->crawler->emailto = array("andrew@debian");
 
+$eq_config->messages = (object) NULL;
+$eq_config->messages->from = "admin@data.ac.uk";
+
 $eq_config->stats = "/Sites/access_log";
 
 $eq_config->misc = (object) NULL;

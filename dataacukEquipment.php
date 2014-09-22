@@ -217,6 +217,25 @@ class dataacukEquipment
 		$this->db->update('datasets',  array('data_crawl'=>$crawl_id), array(), array('data_uri' => $set['data_uri']));
 		$set['data_crawl'] = $crawl_id;
 		
+		
+		if($crawl['crawl_success'] == 'error' && strtolower(substr($set['data_corrections'],0,7))=="mailto:"){
+			$crawlnotes = array();
+			foreach($notes as $k=>$notes){
+				if(count($notes)==0) continue;
+				$crawlnotes[] = ucwords($k).":";
+				foreach($notes as $note){
+					$crawlnotes[] = "  * {$note}";
+				}
+				
+			}
+			$fields = array();
+			echo $fields['error_text'] = join("\n",$crawlnotes);
+			$fields['datset_url'] = $set['data_uri'];
+			//substr($set['data_corrections'],7)
+			$this->messageFromTemplate("equipment-download-error", "andrew@bluerhinos.co.uk", $fields, 'alert', $set['data_uri']);
+			
+		}
+		
 	}
 	
 	function parse_gong(&$set){
@@ -1519,6 +1538,96 @@ class dataacukEquipment
 	"Corrections",
 	);
 	}
+	
+	function messageFromTemplate($template, $to, &$feilds, $type, $link = ""){
+		
+		if(!file_exists("{$this->config->pwd}/etc/messages/{$template}.xml")) return false;
+		
+		$template = simplexml_load_file("{$this->config->pwd}/etc/messages/{$template}.xml");
+		
+		$this->messageFromTemplate_feilds = $feilds;
+		
+		$subject = $this->messageFromTemplateProcess((string)$template->subject);
+		$body = $this->messageFromTemplateProcess((string)$template->body);
+
+		if($type == 'alert'){
+			 $this->messageAlert($to, $subject, $body, $link);
+		}else{
+			$this->messageSend($to, $subject, $body, $type, $link);
+		}
+		
+	}
+
+
+    function messageFromTemplateProcess($text){
+       $reg = "/\{\{([0-9a-zA-Z\-\| \_]+)\}\}/";
+       return preg_replace_callback($reg, "self::messageFromTemplateReplace", $text);
+     }
+  
+     function messageFromTemplateReplace($matches){
+     	 if($matches[1] == 'signature'){
+			 return file_get_contents("{$this->config->pwd}/etc/messages/signature.txt");
+     	 }else{
+			 $rep = explode("|",$matches[1]);
+			 $count = count($rep);
+			 if(isset($this->messageFromTemplate_feilds[$rep[0]])){
+				 if($count == 1){
+					 return $this->messageFromTemplate_feilds[$rep[0]];
+				 }else{
+					 $ret = $this->messageFromTemplate_feilds[$rep[0]];
+					 for($i=1;$i<$count;$i++){
+						  if(!isset($ret[$rep[$i]])){
+							  return "";
+						  }
+					 	 $ret = $ret[$rep[$i]];
+					 }
+					 return $ret;
+				 }
+			 }
+				
+			 
+			 
+     	 }
+		 return "";
+     }  
+	
+
+	function messageAlert($to, $subject, $body, $link = ""){
+		
+		$this->launch_db();
+		$old = $this->db->fetch_one('messages', array('message_type' => 'alert', 'message_link'=>$link), array('`message_time`' => ">:DATE_SUB(NOW(),INTERVAL {$this->config->maxcahceage} SECOND)"));
+		if($old !== false)
+			return false; //Skip if message has been sent 2 weeks ago;
+		
+		
+		return $this->messageSend($to, $subject, $body, "alert", $link);
+		
+		
+	}
+	
+	
+	function messageSend($to, $subject, $body, $type = "single", $link = ""){
+		
+		$msg['message_to'] = $to;
+		$msg['message_subject'] = $subject;
+		$msg['message_body'] = $body;
+		$msg['message_type'] = $type;
+		$msg['message_link'] = $link;
+		$msg['message_sent'] = 1;
+		
+		$headers = "From: {$this->config->messages->from}\r\n" .
+		    "Reply-To: {$this->config->messages->from}\r\n" .
+		    "BCC: ". join(", ", $this->config->crawler->emailto) ."\r\n" .
+		    'X-Mailer: Equipment.Data (PHP/' . phpversion().")";
+
+		//mail($to, $subject, $body, $headers);	
+		
+		$this->launch_db();
+		$this->db->insert('messages', $msg, array('message_time'=>"NOW()"));	
+		
+	}
+	
+	
 }
 
 class eqGraphite extends graphite{
@@ -1603,6 +1712,7 @@ class eqGraphite extends graphite{
 		}
 	}
 	
+	
 }
 
 
@@ -1667,7 +1777,16 @@ class eqDB extends DB\SQL {
 			$i++;
 		}
 		foreach($paramsraw as $k=>$v){
-			$query[] = "`$k` = $v";
+			
+			if(substr($v,0,2)=="<:"){
+				$query[] = "$k < ".substr($v,2);
+			}elseif(substr($v,0,2)==">:"){
+				$query[] = "$k > ".substr($v,2);
+			}elseif(substr($v,0,2)=="!:"){
+				$query[] = "$k != ".substr($v,2);
+			}else{
+				$query[] = "$k = $v";
+			}
 		}
 		
 		if(count($query)==0){
@@ -1723,6 +1842,9 @@ class eqDB extends DB\SQL {
 		return $this->exec($sql, $infields);
 	}
 	
+
+	
+	
 	function delete($table, $params = array(), $paramsraw = array(), $limit = false){
 		$i = 1;
 		$query = array();
@@ -1765,6 +1887,8 @@ class eqDB extends DB\SQL {
 		
 		if($limit)
 			$sql .= " Limit ".$limit;
+
+		$this->lastsql = $sql;
 
 		return $this->exec($sql, $infields);
 	}
