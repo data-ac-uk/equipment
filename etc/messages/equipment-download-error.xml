@@ -4,6 +4,7 @@
 	<body>Dear Contributer
 		
 When we tried to download your dataset we encountered the following errors:
+
 {{error_text}}
 
 Dataset URL: {{datset_url}}
