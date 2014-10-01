@@ -17,7 +17,11 @@ $eq_config->opds->direct = array(
 	array("path"=>"http://id.leeds.ac.uk/","type"=>"url"),
 	array("path"=>"http://www.ncl.ac.uk/nclrdf/newcastle.ttl","type"=>"url"),
 	array("path"=>"http://www.aber.ac.uk/en/media/departmental/ibers/iberskit/OPD.txt", "type"=>"url"),
-	array("path"=>"https://www.ucl.ac.uk/platforms/ucl-opd/", "type"=>"url")
+	array("path"=>"https://www.ucl.ac.uk/platforms/ucl-opd/", "type"=>"url"),
+	array("path"=>"http://www.kcl.ac.uk/innovation/research/corefacilities/opd/equipmentOPD.txt", "type"=>"url"),
+	array("path"=>"/tmp/equipmentOPD.txt", "type"=>"local")
+		,
+			array("path"=>"/tmp/equipmentOPD.txt2", "type"=>"local")
 	
 );
 
@@ -76,7 +80,14 @@ $eq_config->uniqupmap = array(
 		"url"=>"Web Address"
 );
 
-
+$eq_config->uniqupextramap = array(
+	"org_name"=>"Institution Name",
+	"org_url"=>"Institution URL",
+	"org_logo"=>"Institution Logo URL",
+	"item_updated"=>"Datestamp",
+	"loc_text"=>"Approximate Coordinates",
+	"item_updated"=>"Corrections"
+);
 
 $eq_config->db = (object) NULL;
 $eq_config->db->connection = "mysql:host=localhost;port=3306;dbname=equipment";
