@@ -109,6 +109,9 @@ $f3->route('GET /info',
 );
 
 
+$f3->route('GET /api/search', 'api->search' );
+
+
 
 $f3->route('GET /', 'home->page' );
 $f3->route('GET /status', 'status->page' );
