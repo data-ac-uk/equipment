@@ -28,9 +28,14 @@ class status {
 		$c []= "</tr>";
 		foreach( $status['orgs'] as $feed )
 		{
-			
 			$c []= "<tr >";
-			$c []= "<td rowspan=\"".count($feed['org_datasets'])."\"><a href='".$feed["org_url"]."'><img src='/org/{$feed["org_idscheme"]}/{$feed["org_id"]}.logo?size=small' class=\"org_logo\"/></a></td>";
+			$c []= "<td rowspan=\"".count($feed['org_datasets'])."\"><a href='".$feed["org_url"]."'>";
+			if(strlen($feed["org_logo"])){
+				$c []= "<img src='/org/{$feed["org_idscheme"]}/{$feed["org_id"]}.logo?size=small' class=\"org_logo\"/>";
+			}else{
+				$c []= "<img src='/org/other/none.logo?size=small' class=\"org_logo\"/>";
+			}
+			$c []= "</a></td>";
 			
 			$c []= "<td rowspan=\"".count($feed['org_datasets'])."\"><strong><a href='".$feed["org_url"]."'>{$feed["org_name"]}</a></strong> <br/> ";
 			$c []= "ID: ".$feed["org_idscheme"]."/".$feed["org_id"];

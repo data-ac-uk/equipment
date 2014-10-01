@@ -13,9 +13,12 @@ class logo {
 		$idtype = preg_replace( '/[^-a-z0-9]/i','',$idtype );
 		$id = $f3->get( "PARAMS.id" );
 	
-	
-		$org = $eq->db->fetch_one('orgs', array('org_idscheme' => $idtype,'org_id'=>$id));
-			
+		if($id != 'none'){
+			$org = $eq->db->fetch_one('orgs', array('org_idscheme' => $idtype,'org_id'=>$id));
+		}else{
+			$org = array('org_logo'=>"{$eq->config->pwd}/htdocs/resources/images/institution.png");
+		}
+		
 		if(!isset($org['org_logo']) || !strlen($org['org_logo'])){
 			$f3->error(404);
 		}
@@ -27,6 +30,7 @@ class logo {
 		
 		if(!file_exists($pic_org) || filemtime($pic_org) < strtotime("-2 Weeks") ){
 			@`rm -f {$pic_sub}.*`;
+			
 			copy($org['org_logo'], $pic_org);
 		}
 		
@@ -52,7 +56,6 @@ class logo {
 		if(!isset($goimage)){
 			$f3->error(404);
 		}
-		
 		header('Content-Type: image/png');
 		readfile($goimage);
 		return $path;
