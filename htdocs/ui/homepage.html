@@ -93,7 +93,9 @@ The project team can provide technical support and guidance regarding the requir
 
 <ul class='datasets'>
 	<F3:repeat group="{{ @status['orgs'] }}" value="{{ @org }}">
-		<li><a href='{{ @org["org_url"] }}' title='{{ @org["org_name"] }}'><img src='/org/{{ @org["org_idscheme"] }}/{{ @org["org_id"] }}.logo?size=small' alt='{{ @org["org_name"] }} Logo'></a></li>
+		<check if="{{ strlen(@org['org_logo']) > 0 }}">
+		    <li><a href='{{ @org["org_url"] }}' title='{{ @org["org_name"] }}'><img src='/org/{{ @org["org_idscheme"] }}/{{ @org["org_id"] }}.logo?size=small' alt='{{ @org["org_name"] }} Logo'></a></li>
+		</check>
 	</F3:repeat>
 </ul>
 

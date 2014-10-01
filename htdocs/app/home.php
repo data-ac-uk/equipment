@@ -82,13 +82,6 @@ END;
 		$f3->set('search', $search );
 
 
-		$status = json_decode( file_get_contents( 'data/status.json' ), true );
-		$logos = array();
-		foreach( $status as $feed )
-		{
-			$logos []= "<a href='".$feed["org_url"]."'><img src='".$feed["org_logo"]."' /></a>";
-		}
-		$f3->set('logos', join( " ", $logos ) );
 		$f3->set('html_title', "UK University Facilities and Equipment Open Data" );
 		$f3->set('content','homepage.html');
 		print Template::instance()->render( "page-template.html" );
