@@ -44,6 +44,10 @@ $tasks = array(
 		"cmd" => "php orgs-manual",
 		"every"=> TIME_ONEWEEK,
 	),
+	"orgs-manual" => array(
+		"cmd" => "php orgs-manual",
+		"every"=> TIME_ONEDAY,
+	),
 	"equipment-download" => array(
 		"cmd" => "php equipment-download",
 		"every"=> TIME_ONEDAY,

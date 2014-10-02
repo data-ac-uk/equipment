@@ -1228,7 +1228,10 @@ class dataacukEquipment
 		# create cache for displaying results
 		$html = array();
 		$html []= "<div class='images'>";
-		$html []= "<a class='uni-logo' title='".$set['org']["org_name"]."' href='".$set['org']["org_url"]."'><img style='max-width:200px' src='/org/{$set['org']["org_idscheme"]}/{$set['org']["org_id"]}.logo?size=medium' /></a>";
+		if(isset($set['org']["org_logo"]) and strlen($set['org']["org_logo"])){
+			$html []= "<a class='uni-logo' title='".$set['org']["org_name"]."' href='".$set['org']["org_url"]."'><img style='max-width:200px' src='/org/{$set['org']["org_idscheme"]}/{$set['org']["org_id"]}.logo?size=medium' /></a>";
+		}
+		
 		if( $item->has( "foaf:depiction" ) )
 		{
 			$html []= "<img style='max-width:200px' src='".$item->get( "foaf:depiction" )."' />";
