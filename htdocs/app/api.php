@@ -14,7 +14,10 @@ class api {
 			$params['page_size'] = 10;
 		}
 		
-		
+		$sql_where = array();
+		$sql_params = array();
+		$sql_params_i = 1;
+				
 		$ret = array();
 	
 		
@@ -28,7 +31,38 @@ class api {
 			INNER JOIN `orgs` ON `itemU_org` = `org_uri`
 				LEFT OUTER JOIN `locations` ON item_location = loc_uri";	
 		
-		$sql_where = " WHERE (`itemU_f_name` LIKE ? OR `itemU_f_desc` LIKE ? OR `itemU_f_technique` LIKE ? )";
+		if(strlen($params['q'])){
+		
+			$sql_where[] = "(`itemU_f_name` LIKE ? OR `itemU_f_desc` LIKE ? OR `itemU_f_technique` LIKE ? )";
+				
+		
+			$sql_params[$sql_params_i++] = "%{$params['q']}%";
+			$sql_params[$sql_params_i++] = "%{$params['q']}%";
+			$sql_params[$sql_params_i++] = "%{$params['q']}%";
+	
+		}
+		
+		if(isset($_REQUEST['filter'])){
+			$filters = json_decode($_REQUEST['filter'],true);
+			foreach($filters as $fk=>$fv){
+				$paramfilters = array();
+				switch($fk){
+					case "consortia":
+						$sql_from .= "\nINNER JOIN `groupLinks` ON `link_org` = `org_uri`";
+						$sql_where[] = "`link_group` = ?";
+						$sql_params[$sql_params_i++] = "$fv";
+						$paramfilters['consortia'] = $fv;
+					break;
+					case "org":
+						$sql_where[] = "`org_uri` = ?";
+						$sql_params[$sql_params_i++] = "$fv";
+						$paramfilters['org'] = $fv;					
+					break;
+				}
+
+			}
+			$params['filters'] = $paramfilters;
+		}
 	
 		
 		if(isset($_REQUEST['geocode'])){
@@ -54,13 +88,10 @@ class api {
 			
 		}
 				
-		$sql_params = array(1=>"%{$params['q']}%",2=>"%{$params['q']}%",3=>"%{$params['q']}%");
-
 		
 		
-		$sql_limit = " LIMIT 3 ";
+		$sql_where = "WHERE ".join(" AND ",$sql_where);
 		$count = $eq->db->exec("SELECT count(`item_id`) as tcount $sql_sel  {$sql_from} {$sql_where}", $sql_params);
-		
 		
 		if(isset($_REQUEST['page'])){
 			if( (int)$_REQUEST['page'] >= ceil($count[0]['tcount']/$params['page_size'])){
@@ -111,17 +142,22 @@ class api {
 			foreach($eq->config->uniqupextramap as $k=>$v){
 				$ret_item[$v] = $item["{$k}"];
 			}
-			
-			$ret_item['_Distance'] = $item["distance"];
+			if(isset($params['geocode'])){
+				$ret_item['_Distance'] = $item["distance"];
+			}
 			
 			$ret['results'][] = $ret_item;
 		}
 		
 		
 		$ret['completed_in'] = microtime(true) - $starttime;
-	
-		header('content-type: application/json');
-		echo json_encode($ret);
+		if($_REQUEST['dev']){
+			header('content-type: text/plain');
+			print_r($ret);
+		}else{
+			header('content-type: application/json');
+			echo json_encode($ret);	
+		}
 				
 	}
 	

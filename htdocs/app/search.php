@@ -102,6 +102,13 @@ class search {
 		return $results;
 		
 	}
+	
+	function advanced() {
+		$f3=Base::instance();
+		$f3->set('html_title', "Advanced Search" );
+		$f3->set('content','search-advanced.html');
+		print Template::instance()->render( "page-template.html" );
+	}
 
 
 	static function data()
