@@ -575,9 +575,14 @@ class dataacukEquipment
 		    while (($data = fgetcsv($handle, 4096, ",")) !== FALSE) {
 		        if($row == 0){
 		        	$titles = $data;
+					$nooffeilds = count($titles);
 				}else{
 					$line = array_combine($titles,$data);
-					$this->parse_uniquip_line($set,$line, $row, $notes, $graph);
+					if(count($line)!=$nooffeilds){
+						$notes['warnings'][] = "Trouble parsing csv line {$row}\n";
+					}else{
+						$this->parse_uniquip_line($set,$line, $row, $notes, $graph);
+					}
 				}
 				$row++;
 		    }
@@ -597,8 +602,13 @@ class dataacukEquipment
 		$this->launch_db();
 		$org = $set['org'];
 		$item = array();
-		$item['item_id'] = md5(join("|",$line));
-	
+		
+		if(isset($line['ID']) and strlen($line['ID'])){
+			$item['item_id'] = md5($line['ID']);
+		}else{
+			$item['item_id'] = md5(join("|",$line));
+		}
+		
 		$uri = "{$this->config->uribase}item/{$item['item_id']}";
 		if( $graph->resource( $uri )->has( "rdfs:label" ) )
 		{
