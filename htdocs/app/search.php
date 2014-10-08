@@ -46,7 +46,7 @@ class search {
 			INNER JOIN `orgs` ON `itemU_org` = `org_uri`";
 	
 		if( $loc ){
-			$sql_from .= " RIGHT OUTER JOIN `locations` ON item_location = loc_uri";	
+			$sql_from .= " LEFT OUTER JOIN `locations` ON item_location = loc_uri";	
 		}
 		
 		
