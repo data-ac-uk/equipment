@@ -55,8 +55,10 @@
       </ul>
     </nav>
   <div><a href='/'><img src='/resources/images/eq-data-title.png' alt="Equipment.Data Logo"/></a></div>
-
-<a href="http://twitter.com/equipmentacuk" class="twitter">Follow us</a>
+	<div class='extralinks'>
+		<a href="http://www.data.ac.uk/get-in-touch/" class="getintouch" onclick="$('#contactable_inner').click(); return false;">Get in touch</a> | 
+		<a href="http://twitter.com/equipmentacuk" class="twitter">Follow us</a>
+	</div>
   <h1>{{ @html_title }}</h1>
 
   {{@note | raw}}
@@ -94,7 +96,7 @@ This site uses cookies for Google Analytics.
 <link rel="stylesheet" href="//network-bar.data.ac.uk/feedback/contactable.css?v=1" type="text/css" />
 <script>
 	var tracking = {};
-	$(function(){$('#contactable').contactable({productKey: 'equipment.data', extra: tracking});});
+	$(function(){$('#contactable').contactable({productKey: 'equipment.data', extra: tracking, 'title': 'Get in touch'});});
 </script>
 <!--end contactable -->
 

@@ -380,14 +380,25 @@ ol.faq{
 	margin: 0px 0px 20px 40px;
 }
 
-.twitter {
-	display:block;
+.extralinks{
 	float: right;
-	margin-top: 0px;
 	margin-right: 12px;
+}
+
+.twitter {
+	border: 0px;
+	margin-top: 0px;
 	color: #193965;
 	background: url('/resources/images/twitter.png') no-repeat left center !important;
 	padding: 5px 5px 5px 25px;
+}
+.getintouch {
+
+	border: 0px;
+	margin-top: 0px;
+	color: #193965;
+	background: url('/resources/images/contact.png') no-repeat left center !important;
+	padding: 5px 5px 5px 27px;
 }
 
 .posters{
