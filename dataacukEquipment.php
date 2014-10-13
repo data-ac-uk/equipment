@@ -337,9 +337,9 @@ class dataacukEquipment
 				$graph->addCompressedTriple( $uri, "oo:primaryContact", "$uri#contact1" );
 				if( $item->email != "" )
 				{
-					if(strcasecmp(substr($item->email,0,7),"mailto:")!=0){
-						$item->email = "mailto:".$item->email;
-					}
+//					if(strcasecmp(substr($item->email,0,7),"mailto:")!=0){
+//						$item->email = "mailto:".$item->email;
+						//}
 					$graph->addCompressedTriple( "$uri#contact1", "foaf:mbox", $item->email );
 				}
 				if( $item->phone != "" )
