@@ -337,7 +337,10 @@ class dataacukEquipment
 				$graph->addCompressedTriple( $uri, "oo:primaryContact", "$uri#contact1" );
 				if( $item->email != "" )
 				{
-					$graph->addCompressedTriple( "$uri#contact1", "foaf:mbox", "mailto:".$item->email );
+					if(strcasecmp(substr($item->email,0,7),"mailto:")!=0){
+						$item->email = "mailto:".$item->email;
+					}
+					$graph->addCompressedTriple( "$uri#contact1", "foaf:mbox", $item->email );
 				}
 				if( $item->phone != "" )
 				{
@@ -618,7 +621,7 @@ class dataacukEquipment
 		
 		$item['item_org'] = $set['data_org'];
 		$item['item_dataset'] = $set['data_uri'];
-			
+		
 		if(isset($line['Location']) && strlen($line['Location'])){
 			$luri = parse_url($line['Location']);
 			if(isset($luri['host']) && $luri['host']=="en.wikipedia.org"){
@@ -689,12 +692,15 @@ class dataacukEquipment
 				$graph->addCompressedTriple( "$uri#contact1", "foaf:page", $line["Contact URL"] );
 			}
 			if( @$line["Contact Telephone"] != "" )
-			{
+			{	
 				$graph->addPhone( "$uri#contact1", $line["Contact Telephone"] );
 			}
 			if( @$line["Contact Email"] != "" )
 			{
-				$graph->addCompressedTriple( "$uri#contact1", "foaf:mbox", "mailto:".$line["Contact Email"] );
+				if(strcasecmp(substr($line["Contact Email"],0,7),"mailto:")!=0){
+					$line["Contact Email"] = "mailto:".$line["Contact Email"];
+				}
+				$graph->addCompressedTriple( "$uri#contact1", "foaf:mbox", $line["Contact Email"]);
 			}
 		}
 
@@ -1442,13 +1448,23 @@ class dataacukEquipment
 	}
 	
 	function location_extract($uri, $graph = false){
-		if($graph===false){
-			$graph = new eqGraphite();
-			$graph->load( $uri);
+		
+		if($uri == "http://dbpedia.org/resource/United_Kingdom"){
+			return false;
 		}
 
-		$g=$graph->resource($uri);
-				$config_item = array();
+		if($graph===false){
+			$graph = new eqGraphite();
+			$graph->load( (string)$uri );
+		}
+
+		$g=$graph->resource((string)$uri);
+			$config_item = array();
+
+		if($g->has( "geo:lat" ) and $g->has( "geo:long" )){
+		
+			return $this->location_find($g);
+		}
 
 		if(($loc = $g->get( "foaf:based_near" ))!="[NULL]"){
 			return $this->location_find($loc);
@@ -1485,7 +1501,7 @@ class dataacukEquipment
 	}
 		
 	function location_find($loc){
-		
+		$loc->g->load((string)$loc);
 		$location = array("loc_uri"=>(string)$loc);
 		if( $loc->has( "geo:lat" ) )
 		{
@@ -1516,7 +1532,6 @@ class dataacukEquipment
 		
 		$this->launch_db();
 		$this->db->insert('locations', $location, $locationraw, 'REPLACE');	
-		
 		return $location;
 	}
 	
@@ -1711,7 +1726,10 @@ class eqGraphite extends graphite{
 		$phone_number = preg_replace( '/ /', '', $phone_number );
 
 		# remove (0) 
-		$phone_number = preg_replace( '/\(0\)/', '', $phone_number );
+		$phone_number = preg_replace( '/\(0\)/', '0', $phone_number );
+		
+		#remove no digits
+		$phone_number = preg_replace( '/[^0-9]/', '', $phone_number );
 
 		# replace leading 0 with +44 (UK code). 
 		$phone_number = preg_replace( '/^0/', '+44', $phone_number );

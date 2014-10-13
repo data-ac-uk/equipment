@@ -18,7 +18,8 @@ $eq_config->opds->direct = array(
 	array("path"=>"http://www.ncl.ac.uk/nclrdf/newcastle.ttl","type"=>"url"),
 	array("path"=>"http://www.aber.ac.uk/en/media/departmental/ibers/iberskit/OPD.txt", "type"=>"url"),
 	array("path"=>"https://www.ucl.ac.uk/platforms/ucl-opd/", "type"=>"url"),
-	array("path"=>"http://www.kcl.ac.uk/innovation/research/corefacilities/opd/equipmentOPD.txt", "type"=>"url")
+	array("path"=>"http://www.kcl.ac.uk/innovation/research/corefacilities/opd/equipmentOPD.txt", "type"=>"url"),
+	array("path"=>"http://eip.stfc.ac.uk/EquipData/opd_eip.ttl", "type"=>"url")
 );
 
 $eq_config->opds->autodiscovers = array(
@@ -34,6 +35,7 @@ $eq_config->id->overides = array(
 	"http://www.roslin.ed.ac.uk/#org"=>"other/X1",
 	"http://www.rothamsted.ac.uk/#org"=>"other/X3",
 	"http://www.aber.ac.uk/en/ibers/#org"=>"other/X7",
+	"http://www.eip.rl.ac.uk/#org"=>"other/X8",
 	"http://www.babraham.ac.uk/#org"=>"ukprn/10032038",
 	"http://id.lancaster.ac.uk/"=>"ukprn/10007768",
 	"http://id.sgul.ac.uk/"=>"ukprn/10007782"
