@@ -577,7 +577,15 @@ class dataacukEquipment
 		if (($handle = fopen($path, "r")) !== FALSE) {
 		    while (($data = fgetcsv($handle, 4096, ",")) !== FALSE) {
 		        if($row == 0){
-		        	$titles = $data;
+					$titles = array();
+					foreach($data as $k=>$dat){
+						if(strlen($dat)==0){
+							$dat = "f_".$k;
+						}
+						$titles[] = $dat;
+					}
+		        	
+
 					$nooffeilds = count($titles);
 				}else{
 					$line = array_combine($titles,$data);
