@@ -83,34 +83,33 @@ foreach($opds as $opd){
 		$orgin['org_logo'] = "";
 	}
 
-
 	
-
 	$orginraw['org_lastseen'] = 'NOW()';
 	
 	
 	$datas = array();
-	foreach(array('equipment'=>'http://purl.org/openorg/theme/equipment','facilities'=>'http://purl.org/openorg/theme/facilities') as $gpsn =>$gpsk){
-		if(isset($graph->t['op'][$gpsk]) && is_array($graph->t['op'][$gpsk])){
-			foreach($graph->t['op'][$gpsk] as $gp){
-				foreach($gp as $g){
-					$durl = (string)$g;
-					if(!isset($datas[$durl])) {
-						$datas[$durl] = array(
-							"conformsTo"=>(string)$graph->resource( $g )->getString('dcterms:conformsTo'),
-							"license"=>(string)$graph->resource( $g )->getString('dcterms:license'),
-							"contact"=>(string)$graph->resource( $g )->getString('oo:contact'),
-							"corrections"=>(string)$graph->resource( $g )->getString('oo:corrections'),
-							"type"=>array($gpsn)
-						);
-					}else{
-						$datas[$durl]['type'][] = $gpsn;
-					}
+ 
+	foreach(array('equipment'=>'http://purl.org/openorg/theme/Equipment','facilities'=>'http://purl.org/openorg/theme/Facilities') as $gpsn =>$gpsk){
+		foreach( $graph->resource( $primaryTopic )->all( "-oo:organization" ) as $org_thing )
+		foreach( $org_thing->all( "http://purl.org/dc/terms/subject" ) as $thing_subject )
+		{
+			if( strcasecmp($thing_subject, $gpsk) == 0 )
+			{
+				if(!isset($datas[(string)$org_thing])) {
+					$datas[(string)$org_thing] = array(
+						"conformsTo"=>(string)$org_thing->getString('dcterms:conformsTo'),
+						"license"=>(string)$org_thing->getString('dcterms:license'),
+						"contact"=>(string)$org_thing->getString('oo:contact'),
+						"corrections"=>(string)$org_thing->getString('oo:corrections'),
+						"type"=>array($gpsn)
+					);
+				}else{
+					$datas[(string)$org_thing]['type'][] = $gpsn;
 				}
 			}
-		}
+		}	
 	}
-	
+		
 	$loc = $eq->location_extract($orgin['org_uri'], $graph);
 	$orgin['org_location'] = (string)$loc['loc_uri'];
 
