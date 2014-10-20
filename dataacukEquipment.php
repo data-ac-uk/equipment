@@ -565,14 +565,16 @@ class dataacukEquipment
 		@param $set array
 		@param $path string
 	**/
+	
 	function parse_uniquip_csv($set,$path, &$notes){
 		$graph = new eqGraphite();
 		$row = 0;
 		$thisset = array("ids"=>array());
-		
 		#Converts any mac csv into unix format
-                $exec = "mac2unix ".escapeshellarg($path);
-                `$exec`;
+        $exec = "mac2unix -q ".escapeshellarg($path);
+      	`$exec`;
+		
+		$starttime = microtime(true);
 
 		if (($handle = fopen($path, "r")) !== FALSE) {
 		    while (($data = fgetcsv($handle, 4096, ",")) !== FALSE) {
@@ -600,6 +602,9 @@ class dataacukEquipment
 		    fclose($handle);
 		}
 		
+		$totaltime = microtime(true) - $starttime;
+		
+		echo "          ".number_format($totaltime / ($row-1),3). "s/line (".($row-1)." lines)\n";
 		if($row<2){
 			$notes['errors'][] = "No data in csv";
 		}
@@ -638,12 +643,13 @@ class dataacukEquipment
 				$item['item_location'] = $location['loc_uri'];
 			}
 		}
+		
 		if(!isset($item['item_location']) || !$item['item_location']){
 			$item['item_location'] = $org['org_location'];
 		}
 		
 		$this->db->insert('items',$item,array("item_updated"=>"NOW()"),"REPLACE");
-	
+		
 		$itemU = array("itemU_id"=>$item['item_id'], "itemU_org"=>$item['item_org'], "itemU_dataset"=>$item['item_dataset']);
 		
 		foreach($this->config->uniqupmap as $k=>$v){
@@ -655,7 +661,7 @@ class dataacukEquipment
 			$itemU['itemU_f_type'] = strtolower($itemU['itemU_f_type']);
 		
 		$this->db->insert('itemUniquips',$itemU,array("itemU_updated"=>"NOW()"),"REPLACE");
-	
+		
 		//Start Build graph.
 		$url = "http://{$this->config->host}/item/{$item['item_id']}.html";
 		$graph->addCompressedTriple( $uri, "rdf:type", "oo:Equipment" );
@@ -786,6 +792,7 @@ class dataacukEquipment
 		#"ID",
 		#"Site Location",
 		#"Service Level",
+		
 
 	}
 	
@@ -1457,9 +1464,14 @@ class dataacukEquipment
 	
 	function location_extract($uri, $graph = false){
 		
-		if($uri == "http://dbpedia.org/resource/United_Kingdom"){
+		if( strcasecmp(trim($uri),"http://dbpedia.org/resource/United_Kingdom") == 0){
 			return false;
 		}
+		
+		if(isset($this->cache->locations[(string)$uri])){
+			return $this->cache->locations[(string)$uri];
+		}
+		
 
 		if($graph===false){
 			$graph = new eqGraphite();
@@ -1468,34 +1480,37 @@ class dataacukEquipment
 
 		$g=$graph->resource((string)$uri);
 			$config_item = array();
-
+			
 		if($g->has( "geo:lat" ) and $g->has( "geo:long" )){
-		
-			return $this->location_find($g);
+			$this->cache->locations[(string)$uri] = $this->location_find($g);
+			return $this->cache->locations[(string)$uri];
 		}
-
 		if(($loc = $g->get( "foaf:based_near" ))!="[NULL]"){
-			return $this->location_find($loc);
+			$this->cache->locations[(string)$uri] = $this->location_find($loc);
+			return $this->cache->locations[(string)$uri];
 		}
 		if(($loc = $g->get( "http://data.ordnancesurvey.co.uk/ontology/postcode/postcode" ))!="[NULL]"){
-			return $this->location_find_rdf($loc);
+			$this->cache->locations[(string)$uri] = $this->location_find_rdf($loc);
+			return $this->cache->locations[(string)$uri];
 		}
 		$sameas = $graph->resource( $uri )->all( "http://www.w3.org/2002/07/owl#sameAs" );	
 		$uris = array();
 		foreach($sameas as $same){
-			$uri = parse_url($same);
-			$uri['uri'] = (string)$same;
-			$uris[$uri['host']] = $uri;
+			$uria = parse_url($same);
+			$uria['uri'] = (string)$same;
+			$uris[$uria['host']] = $uria;
 		}
 		if(isset($uris['id.learning-provider.data.ac.uk'])){
 			$gid = new eqGraphite();
 			$gid->load( $uris['id.learning-provider.data.ac.uk']['uri']);
 			if(($loc = $gid->resource($uris['id.learning-provider.data.ac.uk']['uri'])->get( "http://data.ordnancesurvey.co.uk/ontology/postcode/postcode" ))!="[NULL]"){
-				return $this->location_find_rdf($loc);
+				$this->cache->locations[(string)$uri] = $this->location_find_rdf($loc);
+				return $this->cache->locations[(string)$uri];
 			}
 		}
 		if(isset($uris['dbpedia.org'])){
-			 return $ret = $this->location_find_rdf($uris['dbpedia.org']['uri']);
+			 $this->cache->locations[(string)$uri] = $ret = $this->location_find_rdf($uris['dbpedia.org']['uri']);
+			 return $this->cache->locations[(string)$uri];
 		}
 		
 		return false;
@@ -1540,6 +1555,7 @@ class dataacukEquipment
 		
 		$this->launch_db();
 		$this->db->insert('locations', $location, $locationraw, 'REPLACE');	
+		
 		return $location;
 	}
 	
