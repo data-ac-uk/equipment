@@ -1,6 +1,52 @@
 <?php
 class reports {
 
+	function search() {
+		$f3=Base::instance();
+		$eq = $f3->eq;
+		
+		$f3->set('html_title', "Search Terms" );
+		$f3->set('content','content.html');
+		$c = array();
+		
+		$startdate = date("Y-m-d 00:00:00", strtotime("-1 month"));
+		$enddate = date("Y-m-d 23:59:59");
+		
+		$eq->launch_db();
+		$statuses = $eq->db->exec(
+		"SELECT COUNT( * ) AS  `Rows` ,  `search_term` 
+FROM  `statsSearchTerms`
+WHERE `search_date` >= ? AND `search_date` <=  ?
+GROUP BY  `search_term`
+ORDER BY  `Rows` DESC",
+		 array(1=>$startdate,2=>$enddate));	
+		
+		
+		$c[] = "<h2>From: {$startdate} to: $enddate</h2>";
+		
+		$c[] = "<table class='status'>";
+		
+		$c[] = "<tr>";
+			$c[] = "<th>Term</th>";
+			$c[] = "<th>No of Searches</th>";
+		$c[] = "</tr>";	
+		
+		foreach($statuses as $ser){
+		$c[] = "<tr>";
+			$c[] = "<td>{$ser['search_term']}</td>";
+			$c[] = "<td>{$ser['Rows']}</td>";
+		$c[] = "</tr>";	
+
+		}
+			
+		
+		
+		
+		$f3->set('html_content',join("",$c));
+		print Template::instance()->render( "page-template.html" );
+	
+	}
+
 	function crawlhistory() {
         
 		$f3=Base::instance();

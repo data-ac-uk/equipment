@@ -117,6 +117,7 @@ $f3->route('GET /api/search', 'api->search' );
 $f3->route('GET /', 'home->page' );
 $f3->route('GET /status', 'status->page' );
 $f3->route('GET /reports/crawlhistory', 'reports->crawlhistory');
+$f3->route('GET /reports/search', 'reports->search');
 $f3->route('GET /compliance/podium', 'compliance->podium' );
 $f3->route('GET /compliance', 'compliance->page' );
 $f3->route('GET /search/advanced', 'search->advanced' );
