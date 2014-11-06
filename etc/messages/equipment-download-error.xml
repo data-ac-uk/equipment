@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<message>
+	<subject>[Equipment.Data] There was a problem downloading your dataset</subject>
+	<body>Dear Contributer
+		
+When we tried to download your dataset we encountered the following errors:
+
+{{error_text}}
+
+Dataset URL: {{datset_url}}
+
+You can find out more on our status page here: http://equipment.data.ac.uk/status
+
+Regards,
+The Equipment.Data Team
+
+{{signature}}</body>
+</message>

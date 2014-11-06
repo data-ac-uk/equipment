@@ -1,0 +1,49 @@
+<p style="font-weight:bold">This page is for data providers, the aim of the information below is to help you diagnose and correct any problems with your contribution to the database.</p>
+
+<p>If the information you require isn’t detailed below, you can contact us using the details at the bottom of the page. </p>
+
+<div>
+	<strong>Please note</strong>
+<ul style="margin: 0px 0px 20px 20px">
+	<li>- We run our main data collection scripts every morning at 8am, so you if you make a change you may have to wait to see the change. </li>
+	<li>- The auto discovery script only runs every week so if you are waiting for your OPD to be detected you may have to wait a little longer.</li>
+</ul>
+</div>
+
+<h3>What to do if your dataset is not being displayed</h3>
+
+<p>You should check the <a href="/status">status page</a> for any errors/warnings that might explain why we can’t display your dataset. These may include - </p>
+
+
+<ul style="margin: 0px 0px 20px 20px">
+<li style="margin: 0px 0px 10px"><strong>HTTP CODE: 404 Not Found</strong><br/>
+This means the dataset file cannot be found on the server, it could mean that it has been renamed, moved or deleted.</li>
+<li style="margin: 0px 0px 10px"><strong>HTTP CODE: 401 Unauthorized or 403 Forbidden</strong><br/>
+This means that some authentication credentials or special access is required to see the data - at this time we don’t support URLs that require authentication so please change your settings to make it publically accessible. 
+</li>
+<li style="margin: 0px 0px 10px"><strong>Any other HTTP Code</strong><br/>
+Have a look at <a href="http://en.wikipedia.org/wiki/List_of_HTTP_status_codes" title="List of HTTP status codes - Wikipedia, the free encyclopedia">http://en.wikipedia.org/wiki/List_of_HTTP_status_codes</a> to explain why we can’t access the file.
+</li>
+<li><strong>Wrong mine type</strong><br/>
+Another common error is the wrong mine type, this tells our scripts what kind of file is being served. Please contact your IT department and ask them to correct the mine type to enable your data to be seen. 
+</li>
+</ul>
+
+<p>The <a href="/status">status page</a> is always up-to-date with any errors or warning messages, these will inform you of any small issues and may explain why you may not see the records you expect. This can be because of duplicated record ids, or missing fields. 
+</p>
+<h3>What to do if you’re having auto discovery issues</h3>
+
+<p>The go to page to diagnose any issues with auto discovery is our OPD testing page <a href="http://equipment.data.ac.uk/opd/" title="OPD checker">http://equipment.data.ac.uk/opd/</a></p>
+
+<p>You can initially place your OPD text in Option 3 box; this will test the content of your OPD. </p>
+
+<p>Once that works you can then upload it onto your webserver, Option 2 will then test it can be read by our crawling scripts.</p>
+
+<p>Then the final test is the auto discovery, once you have put your link on your homepage (or /.well-know/openorg link) Option 1 will then test the full process.
+</p>
+<p>Head to <a href="http://equipment.data.ac.uk/faq#whatisanopd" title="Frequently Asked Questions">http://equipment.data.ac.uk/faq#whatisanopd</a> for information about the OPD.
+</p>
+<h3>Contact us</h3>
+
+<p>If you’re still having issues, please contact us using the feedback tab on the homepage.
+</p>

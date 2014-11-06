@@ -16,15 +16,15 @@
 
 <!-- Mobile Specific Metas
   ================================================== -->
-<meta value="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <!-- CSS
   ================================================== -->
 <script src="/resources/jquery/jquery-1.9.1.js"></script>
 <script src="/resources/jquery/jquery-ui.js"></script>
-<link rel="stylesheet" href="http://network-bar.data.ac.uk/subsite.css" type="text/css">
-<link rel="stylesheet" href="/resources/jquery/jquery-ui.css" />
-<link rel="stylesheet" href="/resources/site.css">
+<link rel="stylesheet" href="//network-bar.data.ac.uk/subsite.css?v=1" type="text/css">
+<link rel="stylesheet" href="/resources/jquery/jquery-ui.css?v=1" />
+<link rel="stylesheet" href="/resources/site.css?v=1">
     
     <!--[if lt IE 9]>
     <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -35,6 +35,8 @@
     <link rel="apple-touch-icon" href="http://network-bar.data.ac.uk/images/apple-touch-icon.png">
     <link rel="apple-touch-icon" sizes="72x72" href="http://network-bar.data.ac.uk/images/apple-touch-icon-72x72.png">
     <link rel="apple-touch-icon" sizes="114x114" href="http://network-bar.data.ac.uk/images/apple-touch-icon-114x114.png">
+	
+	<script> var _prum = [['id', '53feea66abe53d1f1521cfd3'], ['mark', 'firstbyte', (new Date()).getTime()]]; (function() { var s = document.getElementsByTagName('script')[0], p = document.createElement('script'); p.async = 'async'; p.src = '//rum-static.pingdom.net/prum.min.js'; s.parentNode.insertBefore(p, s); })(); </script>
 </head>
 
 <body>
@@ -49,16 +51,19 @@
         <li class=""><a title="Uniquip" href="/uniquip">Uniquip</a></li>
         <li class=""><a title="FAQ" href="/faq">FAQ</a></li>
         <li class=""><a title="Status" href="/status">Status</a></li>
-        <li class=""><a title="Homepage" href="/">Homepage</a></li>
+        <li class=""><a title="Compliance" href="/compliance">Compliance</a></li>
       </ul>
     </nav>
-  <div><a href='/'><img src='/resources/images/eq-data-title.png' /></a></div>
+  <div><a href='/'><img src='/resources/images/eq-data-title.png' alt="Equipment.Data Logo"/></a></div>
+	<div class='extralinks'>
+		<a href="http://www.data.ac.uk/get-in-touch/" class="getintouch" onclick="$('#contactable_inner').click(); return false;">Get in touch</a> | 
+		<a href="http://twitter.com/equipmentacuk" class="twitter">Follow us</a>
+	</div>
   <h1>{{ @html_title }}</h1>
 
   {{@note | raw}}
-
   <F3:include href="{{@content}}"/>
-  </div>
+ </div>
 </div>
 
 <footer>
@@ -67,7 +72,7 @@ This site uses cookies for Google Analytics.
 
  </body>
 </html>
-<script type="text/javascript" src="//network-bar.data.ac.uk/network-bar.js"></script>
+<script type="text/javascript" src="//network-bar.data.ac.uk/network-bar.js?v=1"></script>
 
 <script type="text/javascript">
 
@@ -83,4 +88,16 @@ This site uses cookies for Google Analytics.
   })();
 
 </script>
+
+<!--start contactable -->
+<div id="contactable"><!-- contactable html placeholder --></div>
+<script type="text/javascript" src="//network-bar.data.ac.uk/feedback/jquery.validate.pack.js?v=1"></script>
+<script type="text/javascript" src="//network-bar.data.ac.uk/feedback/jquery.contactable.php?v=1"></script>
+<link rel="stylesheet" href="//network-bar.data.ac.uk/feedback/contactable.css?v=1" type="text/css" />
+<script>
+	var tracking = {};
+	$(function(){$('#contactable').contactable({productKey: 'equipment.data', extra: tracking, 'title': 'Get in touch'});});
+</script>
+<!--end contactable -->
+
 

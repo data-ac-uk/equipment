@@ -132,6 +132,33 @@ class dataacukEquipment
 
 	}
 	
+	
+	function proc_opd(&$opd, $src){
+		$ins = array();
+		$insf = array();
+	
+		$ins['opd_id'] = (string)$opd->org;
+		$ins['opd_url'] = (string)$opd->opd_url;
+		$ins['opd_ena'] = 1;
+		$insf['opd_lastseen'] = 'NOW()';
+		$ins['opd_type'] = (string)$opd->result['CONTENT_TYPE'];
+		$ins['opd_cache'] = (string)$opd->result['CONTENT'];
+		$ins['opd_src'] = $src;
+		
+
+		$res = $this->db->fetch_one('autoOPDs', array('opd_id' => $ins['opd_id']), array(), "`opd_id`");
+		if(isset($res['opd_id']))
+			$this->db->update('autoOPDs', $ins, $insf, array('opd_id' => $ins['opd_id']));
+		else{
+			$insf['opd_firstseen'] = 'NOW()';
+			$this->db->insert('autoOPDs', $ins, $insf);
+		}
+	
+	}
+	
+	
+	
+	
 	/**
 		Returns org 
 		@return array
@@ -190,6 +217,27 @@ class dataacukEquipment
 		$this->db->update('datasets',  array('data_crawl'=>$crawl_id), array(), array('data_uri' => $set['data_uri']));
 		$set['data_crawl'] = $crawl_id;
 		
+		
+		if($crawl['crawl_success'] == 'error' && strtolower(substr($set['data_corrections'],0,7))=="mailto:"){
+			$rest = $this->db->fetch_many('crawls', array('crawl_dataset'=>$set['data_uri'], "sort:"=>"d:crawl_timestamp"), array(), "`crawl_success`", "1,1");
+			if(isset($ret[0]['crawl_success']) and $ret[0]['crawl_success']=='errror'){
+				$crawlnotes = array();
+				foreach($notes as $k=>$notes){
+					if(count($notes)==0) continue;
+					$crawlnotes[] = ucwords($k).":";
+					foreach($notes as $note){
+						$crawlnotes[] = "  * {$note}";
+					}
+				
+				}
+				$fields = array();
+				$fields['error_text'] = join("\n",$crawlnotes);
+				$fields['datset_url'] = $set['data_uri'];
+				//substr($set['data_corrections'],7)
+				$this->messageFromTemplate("equipment-download-error", "andrew@bluerhinos.co.uk", $fields, 'alert', $set['data_uri']);
+				}
+		}
+		
 	}
 	
 	function parse_gong(&$set){
@@ -228,6 +276,86 @@ class dataacukEquipment
 		
 		return $gongs;
 		
+	}
+	
+	
+	function parse_pure($set,$path, &$notes)
+	{
+		$xml = simplexml_load_string( file_get_contents( $path ) );
+
+		$graph = new eqGraphite();
+		$graph->ns( "org", "http://www.w3.org/ns/org#" );
+		$graph->ns( "gr", "http://purl.org/goodrelations/v1#" );
+		$graph->ns( "oldcerif", "http://spi-fm.uca.es/neologism/cerif#" );
+		foreach( $xml->equipment as $item )
+		{
+			$id = md5((string)$item->uid);
+			$uri = "http://id.equipment.data.ac.uk/item/$id";
+			$url = "http://equipment.data.ac.uk/item/$id.html";
+
+			$graph->addCompressedTriple( $uri, "rdf:type", "oo:Equipment" );
+
+			$graph->addCompressedTriple( "$uri", "http://id.equipment.data.ac.uk/ns/hasCode", $id, "literal" );
+			$graph->addCompressedTriple( "$uri", "http://id.equipment.data.ac.uk/ns/hasURI", "$uri", "literal" );
+			$graph->addCompressedTriple( "$uri", "http://id.equipment.data.ac.uk/ns/hasPage", "$url" );
+
+			$graph->addCompressedTriple( $uri, "rdfs:label", (string)$item->title, "literal" );
+			if($set['org']['org_idscheme']=='ukprn'){
+				$graph->addCompressedTriple( $uri, "oo:formalOrganization", "http://id.learning-provider.data.ac.uk/ukprn/{$set['org']['org_id']}" );
+			}
+			if( $item->description != "" )
+			{
+				# kitcat always makes HTML fragment descriptions	
+				$graph->addCompressedTriple( $uri, "dcterms:description", (string)$item->description, "http://purl.org/xtypes/Fragment-HTML" );
+			}
+
+
+			if( $item->owner != "" )
+			{
+				$org_id = "";
+				foreach( $item->owner->attributes() as $k=>$v )
+				{
+					if( $k == "shortName" ) { $org_id = $v; }
+				}
+				if( !isset( $org_id ) )
+				{ 
+					$org_id = md5( (string)$item->owner  ); 
+				}
+				$org_uri = "http://id.equipment.data.ac.uk/org/{$c['org_idscheme']}/{$c["org_id"]}/org/".rawurlencode($org_id);
+				$graph->addCompressedTriple( $uri, "oo:organizationPart", $org_uri );
+				$graph->addCompressedTriple( $org_uri, "rdfs:label", (string)$item->owner, "literal" );
+				$graph->addCompressedTriple( $org_uri, "rdf:type", "http://www.w3.org/ns/org#Organization" );
+				if($c["org_idscheme"]=='ukprn'){
+					$graph->addCompressedTriple( "http://id.learning-provider.data.ac.uk/ukprn/".$c["org_ukprn"], "org:hasSubOrganization", $org_uri );
+				}
+			}
+			
+			
+			if( $item->phone != "" || $item->email != "" )
+			{	
+				$graph->addCompressedTriple( $uri, "oo:contact", "$uri#contact1" );
+				$graph->addCompressedTriple( $uri, "oo:primaryContact", "$uri#contact1" );
+				if( $item->email != "" )
+				{
+					if(strcasecmp(substr($item->email,0,7),"mailto:")!=0){
+						$item->email = "mailto:".$item->email;
+					}
+					$graph->addCompressedTriple( "$uri#contact1", "foaf:mbox", (string)$item->email );
+				}
+				if( $item->phone != "" )
+				{
+					$graph->addPhone( "$uri#contact1", $item->phone );
+				}
+			}
+
+
+			if( $item->website != "" )
+			{	
+				$graph->addCompressedTriple( $uri, "foaf:page", $item->website );
+			}
+		}
+
+		return $graph;
 	}
 	
 	/**
@@ -437,23 +565,46 @@ class dataacukEquipment
 		@param $set array
 		@param $path string
 	**/
+	
 	function parse_uniquip_csv($set,$path, &$notes){
 		$graph = new eqGraphite();
 		$row = 0;
 		$thisset = array("ids"=>array());
+		#Converts any mac csv into unix format
+        $exec = "mac2unix -q ".escapeshellarg($path);
+      	`$exec`;
+		
+		$starttime = microtime(true);
+
 		if (($handle = fopen($path, "r")) !== FALSE) {
 		    while (($data = fgetcsv($handle, 4096, ",")) !== FALSE) {
 		        if($row == 0){
-		        	$titles = $data;
+					$titles = array();
+					foreach($data as $k=>$dat){
+						if(strlen($dat)==0){
+							$dat = "f_".$k;
+						}
+						$titles[] = $dat;
+					}
+		        	
+
+					$nooffeilds = count($titles);
 				}else{
 					$line = array_combine($titles,$data);
-					$this->parse_uniquip_line($set,$line, $row, $notes, $graph);
+					if(count($line)!=$nooffeilds){
+						$notes['warnings'][] = "Trouble parsing csv line {$row}\n";
+					}else{
+						$this->parse_uniquip_line($set,$line, $row, $notes, $graph);
+					}
 				}
 				$row++;
 		    }
 		    fclose($handle);
 		}
 		
+		$totaltime = microtime(true) - $starttime;
+		
+		echo "          ".number_format($totaltime / ($row-1),3). "s/line (".($row-1)." lines)\n";
 		if($row<2){
 			$notes['errors'][] = "No data in csv";
 		}
@@ -467,8 +618,13 @@ class dataacukEquipment
 		$this->launch_db();
 		$org = $set['org'];
 		$item = array();
-		$item['item_id'] = md5(join("|",$line));
-	
+		
+		if(isset($line['ID']) and strlen($line['ID'])){
+			$item['item_id'] = md5($line['ID']);
+		}else{
+			$item['item_id'] = md5(join("|",$line));
+		}
+		
 		$uri = "{$this->config->uribase}item/{$item['item_id']}";
 		if( $graph->resource( $uri )->has( "rdfs:label" ) )
 		{
@@ -478,7 +634,7 @@ class dataacukEquipment
 		
 		$item['item_org'] = $set['data_org'];
 		$item['item_dataset'] = $set['data_uri'];
-			
+		
 		if(isset($line['Location']) && strlen($line['Location'])){
 			$luri = parse_url($line['Location']);
 			if(isset($luri['host']) && $luri['host']=="en.wikipedia.org"){
@@ -487,12 +643,13 @@ class dataacukEquipment
 				$item['item_location'] = $location['loc_uri'];
 			}
 		}
+		
 		if(!isset($item['item_location']) || !$item['item_location']){
 			$item['item_location'] = $org['org_location'];
 		}
 		
 		$this->db->insert('items',$item,array("item_updated"=>"NOW()"),"REPLACE");
-	
+		
 		$itemU = array("itemU_id"=>$item['item_id'], "itemU_org"=>$item['item_org'], "itemU_dataset"=>$item['item_dataset']);
 		
 		foreach($this->config->uniqupmap as $k=>$v){
@@ -504,7 +661,7 @@ class dataacukEquipment
 			$itemU['itemU_f_type'] = strtolower($itemU['itemU_f_type']);
 		
 		$this->db->insert('itemUniquips',$itemU,array("itemU_updated"=>"NOW()"),"REPLACE");
-	
+		
 		//Start Build graph.
 		$url = "http://{$this->config->host}/item/{$item['item_id']}.html";
 		$graph->addCompressedTriple( $uri, "rdf:type", "oo:Equipment" );
@@ -549,12 +706,15 @@ class dataacukEquipment
 				$graph->addCompressedTriple( "$uri#contact1", "foaf:page", $line["Contact URL"] );
 			}
 			if( @$line["Contact Telephone"] != "" )
-			{
+			{	
 				$graph->addPhone( "$uri#contact1", $line["Contact Telephone"] );
 			}
 			if( @$line["Contact Email"] != "" )
 			{
-				$graph->addCompressedTriple( "$uri#contact1", "foaf:mbox", "mailto:".$line["Contact Email"] );
+				if(strcasecmp(substr($line["Contact Email"],0,7),"mailto:")!=0){
+					$line["Contact Email"] = "mailto:".$line["Contact Email"];
+				}
+				$graph->addCompressedTriple( "$uri#contact1", "foaf:mbox", $line["Contact Email"]);
 			}
 		}
 
@@ -632,6 +792,7 @@ class dataacukEquipment
 		#"ID",
 		#"Site Location",
 		#"Service Level",
+		
 
 	}
 	
@@ -988,7 +1149,7 @@ class dataacukEquipment
 	
 		$rdf =  $ig->serialize( "Turtle" );
 		
-		$this->db->insert('itemRDF',array("rdf_id"=>$itemid, "rdf_org"=>$set['data_org'],"rdf_dataset"=>"rdf_id","rdf_rdf"=>$rdf ),array("rdf_updated"=>"NOW()"),"REPLACE");
+		$this->db->insert('itemRDF',array("rdf_id"=>$itemid, "rdf_org"=>$set['data_org'],"rdf_dataset"=>$set['data_uri'],"rdf_rdf"=>$rdf ),array("rdf_updated"=>"NOW()"),"REPLACE");
 	
 		$file = $this->misc_item_cachepath($itemid, "ttl");
 		file_put_contents( $file,$rdf ) or die("can't write file: $file" );
@@ -1021,9 +1182,14 @@ class dataacukEquipment
 			if(isset($org['org_location']['loc_updated']))
 				$org['org_location']['loc_updated'] = date('c',strtotime($org['org_location']['loc_updated']));
 			
+			
+			//OPDs
+			$org['org_opd'] = $this->db->fetch_one('autoOPDs', array('opd_id' => $org['org_uri'], 'opd_ena'=> 1), array());
+			unset($org['org_opd']['opd_cache']);
 						
 			//datasets
 			$org['org_datasets'] = array();
+				
 			$datasets = $this->db->fetch_many('`datasets` INNER JOIN `crawls` ON `data_crawl` = `crawl_id`', array('data_ena' => 1, 'data_org'=> $org['org_uri']), array());
 			if(!count($datasets)) continue;
 			
@@ -1093,7 +1259,10 @@ class dataacukEquipment
 		# create cache for displaying results
 		$html = array();
 		$html []= "<div class='images'>";
-		$html []= "<a class='uni-logo' title='".$set['org']["org_name"]."' href='".$set['org']["org_url"]."'><img style='max-width:200px' src='".$set['org']["org_logo"]."' /></a>";
+		if(isset($set['org']["org_logo"]) and strlen($set['org']["org_logo"])){
+			$html []= "<a class='uni-logo' title='".$set['org']["org_name"]."' href='".$set['org']["org_url"]."'><img style='max-width:200px' src='/org/{$set['org']["org_idscheme"]}/{$set['org']["org_id"]}.logo?size=medium' /></a>";
+		}
+		
 		if( $item->has( "foaf:depiction" ) )
 		{
 			$html []= "<img style='max-width:200px' src='".$item->get( "foaf:depiction" )."' />";
@@ -1161,7 +1330,7 @@ class dataacukEquipment
 		$itemid = $this->misc_item_cacheid( $item );
 	
 		
-		$this->db->insert('itemPages',array("page_id"=>$itemid, "page_org"=>$set['data_org'],"page_dataset"=>"data_id","page_title"=>(string)$item->label(),"page_content"=>&$data['content'] ),array("page_updated"=>"NOW()"),"REPLACE");
+		$this->db->insert('itemPages',array("page_id"=>$itemid, "page_org"=>$set['data_org'],"page_dataset"=>$set['data_uri'],"page_title"=>(string)$item->label(),"page_content"=>&$data['content'] ),array("page_updated"=>"NOW()"),"REPLACE");
 	
 	
 		$file = $this->misc_item_cachepath($itemid, "html");
@@ -1294,37 +1463,58 @@ class dataacukEquipment
 	}
 	
 	function location_extract($uri, $graph = false){
+		
+		if( strcasecmp(trim($uri),"http://dbpedia.org/resource/United_Kingdom") == 0){
+			return false;
+		}
+		
+		if(isset($this->cache->locations[(string)$uri])){
+			return $this->cache->locations[(string)$uri];
+		}
+		
+
 		if($graph===false){
 			$graph = new eqGraphite();
-			$graph->load( $uri);
+			$graph->load( (string)$uri );
 		}
 
-		$g=$graph->resource($uri);
-				$config_item = array();
-
+		$g=$graph->resource((string)$uri);
+			$config_item = array();
+			
+		if($g->has( "geo:lat" ) and $g->has( "geo:long" )){
+			$this->cache->locations[(string)$uri] = $this->location_find($g);
+			return $this->cache->locations[(string)$uri];
+		}
 		if(($loc = $g->get( "foaf:based_near" ))!="[NULL]"){
-			return $this->location_find($loc);
+			$this->cache->locations[(string)$uri] = $this->location_find($loc);
+			return $this->cache->locations[(string)$uri];
 		}
 		if(($loc = $g->get( "http://data.ordnancesurvey.co.uk/ontology/postcode/postcode" ))!="[NULL]"){
-			return $this->location_find_rdf($loc);
+			$this->cache->locations[(string)$uri] = $this->location_find_rdf($loc);
+			return $this->cache->locations[(string)$uri];
 		}
 		$sameas = $graph->resource( $uri )->all( "http://www.w3.org/2002/07/owl#sameAs" );	
 		$uris = array();
 		foreach($sameas as $same){
-			$uri = parse_url($same);
-			$uri['uri'] = (string)$same;
-			$uris[$uri['host']] = $uri;
+			$uria = parse_url($same);
+			$uria['uri'] = (string)$same;
+			$uris[$uria['host']] = $uria;
 		}
 		if(isset($uris['id.learning-provider.data.ac.uk'])){
 			$gid = new eqGraphite();
 			$gid->load( $uris['id.learning-provider.data.ac.uk']['uri']);
 			if(($loc = $gid->resource($uris['id.learning-provider.data.ac.uk']['uri'])->get( "http://data.ordnancesurvey.co.uk/ontology/postcode/postcode" ))!="[NULL]"){
-				return $this->location_find_rdf($loc);
+				$this->cache->locations[(string)$uri] = $this->location_find_rdf($loc);
+				return $this->cache->locations[(string)$uri];
 			}
 		}
 		if(isset($uris['dbpedia.org'])){
-			 return $ret = $this->location_find_rdf($uris['dbpedia.org']['uri']);
+			 $this->cache->locations[(string)$uri] = $ret = $this->location_find_rdf($uris['dbpedia.org']['uri']);
+			 return $this->cache->locations[(string)$uri];
 		}
+		
+		return false;
+
 	}
 
 	function location_find_rdf($loc){
@@ -1334,7 +1524,7 @@ class dataacukEquipment
 	}
 		
 	function location_find($loc){
-		
+		$loc->g->load((string)$loc);
 		$location = array("loc_uri"=>(string)$loc);
 		if( $loc->has( "geo:lat" ) )
 		{
@@ -1368,6 +1558,130 @@ class dataacukEquipment
 		
 		return $location;
 	}
+	
+	function uniquipFields()
+	{
+		return array( 
+	"Type",
+	"Name",
+	"Description",
+	"Related Facility ID",
+	"Technique",
+	"Location",
+	"Contact Name",
+	"Contact Telephone",
+	"Contact URL",
+	"Contact Email",
+	"Secondary Contact Name",
+	"Secondary Contact Telephone",
+	"Secondary Contact URL",
+	"Secondary Contact Email",
+	"ID",
+	"Photo",
+	"Department",
+	"Site Location",
+	"Building",
+	"Service Level",
+	"Web Address",
+
+	"Institution Name",
+	"Institution URL",
+	"Institution Logo URL",
+	"Datestamp",
+	"Approximate Coordinates",
+	"Corrections",
+	);
+	}
+	
+	function messageFromTemplate($template, $to, &$feilds, $type, $link = ""){
+		
+		if(!file_exists("{$this->config->pwd}/etc/messages/{$template}.xml")) return false;
+		
+		$template = simplexml_load_file("{$this->config->pwd}/etc/messages/{$template}.xml");
+		
+		$this->messageFromTemplate_feilds = $feilds;
+		
+		$subject = $this->messageFromTemplateProcess((string)$template->subject);
+		$body = $this->messageFromTemplateProcess((string)$template->body);
+
+		if($type == 'alert'){
+			 $this->messageAlert($to, $subject, $body, $link);
+		}else{
+			$this->messageSend($to, $subject, $body, $type, $link);
+		}
+		
+	}
+
+
+    function messageFromTemplateProcess($text){
+       $reg = "/\{\{([0-9a-zA-Z\-\| \_]+)\}\}/";
+       return preg_replace_callback($reg, "self::messageFromTemplateReplace", $text);
+     }
+  
+     function messageFromTemplateReplace($matches){
+     	 if($matches[1] == 'signature'){
+			 return file_get_contents("{$this->config->pwd}/etc/messages/signature.txt");
+     	 }else{
+			 $rep = explode("|",$matches[1]);
+			 $count = count($rep);
+			 if(isset($this->messageFromTemplate_feilds[$rep[0]])){
+				 if($count == 1){
+					 return $this->messageFromTemplate_feilds[$rep[0]];
+				 }else{
+					 $ret = $this->messageFromTemplate_feilds[$rep[0]];
+					 for($i=1;$i<$count;$i++){
+						  if(!isset($ret[$rep[$i]])){
+							  return "";
+						  }
+					 	 $ret = $ret[$rep[$i]];
+					 }
+					 return $ret;
+				 }
+			 }
+				
+			 
+			 
+     	 }
+		 return "";
+     }  
+	
+
+	function messageAlert($to, $subject, $body, $link = ""){
+		
+		$this->launch_db();
+		$old = $this->db->fetch_one('messages', array('message_type' => 'alert', 'message_link'=>$link), array('`message_time`' => ">:DATE_SUB(NOW(),INTERVAL {$this->config->maxcahceage} SECOND)"));
+		if($old !== false)
+			return false; //Skip if message has been sent 2 weeks ago;
+		
+		
+		return $this->messageSend($to, $subject, $body, "alert", $link);
+		
+		
+	}
+	
+	
+	function messageSend($to, $subject, $body, $type = "single", $link = ""){
+		
+		$msg['message_to'] = $to;
+		$msg['message_subject'] = $subject;
+		$msg['message_body'] = $body;
+		$msg['message_type'] = $type;
+		$msg['message_link'] = $link;
+		$msg['message_sent'] = 1;
+		
+		$headers = "From: {$this->config->messages->from}\r\n" .
+		    "Reply-To: {$this->config->messages->from}\r\n" .
+		    "BCC: ". join(", ", $this->config->crawler->emailto) ."\r\n" .
+		    'X-Mailer: Equipment.Data (PHP/' . phpversion().")";
+
+		mail($to, $subject, $body, $headers);	
+		
+		$this->launch_db();
+		$this->db->insert('messages', $msg, array('message_time'=>"NOW()"));	
+		
+	}
+	
+	
 }
 
 class eqGraphite extends graphite{
@@ -1436,7 +1750,10 @@ class eqGraphite extends graphite{
 		$phone_number = preg_replace( '/ /', '', $phone_number );
 
 		# remove (0) 
-		$phone_number = preg_replace( '/\(0\)/', '', $phone_number );
+		$phone_number = preg_replace( '/\(0\)/', '0', $phone_number );
+		
+		#remove no digits
+		$phone_number = preg_replace( '/[^0-9]/', '', $phone_number );
 
 		# replace leading 0 with +44 (UK code). 
 		$phone_number = preg_replace( '/^0/', '+44', $phone_number );
@@ -1451,6 +1768,7 @@ class eqGraphite extends graphite{
 			$this->addCompressedTriple( $uri, "foaf:phone", "tel:".$phone_number );
 		}
 	}
+	
 	
 }
 
@@ -1516,7 +1834,16 @@ class eqDB extends DB\SQL {
 			$i++;
 		}
 		foreach($paramsraw as $k=>$v){
-			$query[] = "`$k` = $v";
+			
+			if(substr($v,0,2)=="<:"){
+				$query[] = "$k < ".substr($v,2);
+			}elseif(substr($v,0,2)==">:"){
+				$query[] = "$k > ".substr($v,2);
+			}elseif(substr($v,0,2)=="!:"){
+				$query[] = "$k != ".substr($v,2);
+			}else{
+				$query[] = "$k = $v";
+			}
 		}
 		
 		if(count($query)==0){
@@ -1572,6 +1899,9 @@ class eqDB extends DB\SQL {
 		return $this->exec($sql, $infields);
 	}
 	
+
+	
+	
 	function delete($table, $params = array(), $paramsraw = array(), $limit = false){
 		$i = 1;
 		$query = array();
@@ -1614,6 +1944,8 @@ class eqDB extends DB\SQL {
 		
 		if($limit)
 			$sql .= " Limit ".$limit;
+
+		$this->lastsql = $sql;
 
 		return $this->exec($sql, $infields);
 	}

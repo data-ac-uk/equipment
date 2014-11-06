@@ -1,0 +1,177 @@
+#!/usr/bin/php
+<?php
+
+# Crawls found opds looinkg for organiations and datasets
+
+if(in_array('--dryrun',$argv)){
+	$dryrun = true;
+}else{
+	$dryrun = false;	
+}
+
+if(in_array('--gz',$argv)){
+	$gz = true;
+}else{
+	$gz = false;	
+}
+
+$insertcount = 0;
+
+require_once( "../etc/eq_config.php" );
+
+
+require_once( "{$eq_config->pwd}/lib/arc2/ARC2.php" );
+require_once( "{$eq_config->pwd}/lib/Graphite/Graphite.php" );
+
+require_once( "{$eq_config->pwd}/dataacukEquipment.php" );
+
+$regex = '/^(\S+) (\S+) (\S+) \[([^:]+):(\d+:\d+:\d+) ([^\]]+)\] \"(\S+) (.*?) (\S+)\" (\S+) (\S+) "([^"]*)" "([^"]*)"$/';
+
+$eq = new dataacukEquipment($eq_config);
+$eq->launch_db();
+$eq->db->dryrun = $dryrun;
+
+$mem = array();
+
+$logfile = end($argv);
+$lastage = 0;
+if($gz)
+	$handle = @gzopen($logfile, "r");
+else
+	$handle = @fopen($logfile, "r");
+
+if ($handle) {
+    while (true) {
+		
+		if($gz)
+			$buffer = gzgets($handle, 4096);
+		else
+			$buffer = fgets($handle, 4096);
+			
+		if($buffer === false) break;
+			
+		preg_match($regex ,$buffer, $matches);
+		
+		$thisline = false;
+		
+		if(!strpos($matches[12],"equipment.data.ac.uk")){
+			continue;
+		}
+		
+		if(strpos($matches[8],"search?term=")){
+			$thisline = 'searchajax';
+		}
+		
+		if(strpos($matches[8],"/?q=")===0){
+			$thisline = 'search';
+		}
+		
+		if($thisline === false){
+			continue;
+		}
+		
+		$time = $timestamp = DateTime::createFromFormat('!d/M/Y H:i:s O', "{$matches[4]} {$matches[5]} {$matches[6]}")->getTimestamp();
+		
+		parse_str(substr($matches[8], strpos($matches[8],"?")+1), $query);
+		
+		if($thisline=='search'){
+			$query['term'] = $query['q'];
+		}
+		
+		if(strlen($query['term']) == 0){
+			continue;
+		}
+
+
+		if(isset($mem[$matches[1]])){
+			$mem[$matches[1]]['his'][] = $query['term'];
+			$mem[$matches[1]]['term'] = $query['term'];
+			$mem[$matches[1]]['time'] = $time;
+		}else
+			$mem[$matches[1]] = array("term"=>$query['term'], "time"=>$time, "his"=>array($query['term']));
+
+		$age = floor($time/60);
+		if($age != $lastage){
+			$ago = $time - 30;
+			
+			proc_mem($mem, $ago);
+			
+			$lastage = $age;
+		}
+
+    }
+	
+	proc_mem($mem, time());
+	
+	
+	
+    if (!feof($handle)) {
+        echo "Error: unexpected fgets() fail\n";
+    }
+	
+	if($gz)
+		gzclose($handle);
+	else
+		fclose($handle);
+}
+
+echo "Added $insertcount terms\n";
+
+//print_r($mem);
+exit();
+
+
+function proc_mem(&$mem, $ago){
+	
+	foreach($mem as $ip=>$me){
+		if($me['time'] < $ago){
+			
+			sort($me['his']);
+			
+			$lastqr = $me['his'][0];
+			$lastqr_len = strlen($lastqr);
+			
+			foreach($me['his'] as $k=>$qr){
+				$qr_len = strlen($qr);
+			
+					if($k!=0 && substr($me['his'][$k-1],0,min(strlen($me['his'][$k-1]),$qr_len)) != substr($qr,0,min(strlen($me['his'][$k-1]),$qr_len)) ){
+						register_search($me['his'][$k-1], $ip, $me['time']);
+					}
+					
+					if(substr($me['his'][$k+1],0,min(strlen($me['his'][$k+1]))) != substr($qr,0,min(strlen($me['his'][$k+1]))) ){
+						register_search($qr, $ip, $me['time']);
+					}
+					
+									
+				$lastqr = $qr;
+				$lastqr_len = $qr_len;
+			}
+			
+			register_search($qr, $ip, $me['time']);
+		
+			unset($mem[$ip]);
+		}
+	}
+	
+}
+
+function register_search($term, $ip, $time){
+	
+	global $eq,$insertcount;
+	
+	$ins['search_key'] = date(DATE_ATOM, $time).":".$ip.":".md5($term);
+	$ins['search_ip'] = $ip;
+	$ins['search_date'] =  date("Y-m-d H:i:s", $time);
+	$ins['search_term'] = $term;
+	
+	$res = $eq->db->fetch_one('statsSearchTerms', array('search_key' => $ins['search_key']), array(), "`search_key`");
+	if(!isset($res['search_key'])){	
+		$eq->db->insert('statsSearchTerms',$ins, array(),"REPLACE");
+		$insertcount ++;
+	}
+ 	
+	
+}
+
+
+?>

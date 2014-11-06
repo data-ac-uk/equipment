@@ -30,4 +30,17 @@ $stage = 0;
 $stage++;
 echo "Stage $stage: Saving status json\n";
 $eq->save_status();
+
+
+
+$stage++;
+echo "Stage $stage: Saving uniquip json\n";
+$fields = $eq->uniquipFields();
+$file = $eq->config->pwd."/var/uniquip-fields.json";
+$fh = fopen($file, 'w') or die("can't open file: $file" );
+fwrite( $fh, json_encode( $fields ) );
+fclose( $fh );
+
+
 exit();
+

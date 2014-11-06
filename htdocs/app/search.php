@@ -2,15 +2,18 @@
 class search {
 
 	function fragment() {
-                $f3=Base::instance();
+        $f3=Base::instance();
 		global $_GET;
+		
+	
 		$results = search::render( search::perform( $_GET["term"] ) );
 		if( sizeof($results) == 0 )
 		{
 			print "<p style='margin-top:1em'>No matches.</p><p>Tip: If you are  trying out the system, 'laser' or 'microscope' return plenty of results.</p>";
 			return;
 		}
-		print "<div>".count($results)." matches.</div>";		
+		print "<div>".count($results)." matches.</div>";
+
 		print join( "", $results );
 	}
 
@@ -43,7 +46,7 @@ class search {
 			INNER JOIN `orgs` ON `itemU_org` = `org_uri`";
 	
 		if( $loc ){
-			$sql_from .= " RIGHT OUTER JOIN `locations` ON item_location = loc_uri";	
+			$sql_from .= " LEFT OUTER JOIN `locations` ON item_location = loc_uri";	
 		}
 		
 		
@@ -99,6 +102,13 @@ class search {
 		return $results;
 		
 	}
+	
+	function advanced() {
+		$f3=Base::instance();
+		$f3->set('html_title', "Advanced Search" );
+		$f3->set('content','search-advanced.html');
+		print Template::instance()->render( "page-template.html" );
+	}
 
 
 	static function data()
@@ -142,7 +152,7 @@ class search {
 		foreach( $results as $result )
 		{
 			$row = "
-	<a class='search-result' onclick='show_result(\"".$result["item_code"]."\"); 
+	<a class='search-result' onclick='show_result(\"".$result["item_code"]."\", ".json_encode($result["item_title"])."); 
 		return false;' href='/item/".$result["item_code"].".html'>
            <span class='result-title'>".$result["item_title"]."</span>
            <span class='result-info'>".$result["org_name"].(@$result["dist"]?" - ".$result["dist"]:"")."</span>

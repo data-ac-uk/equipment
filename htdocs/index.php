@@ -1,4 +1,5 @@
 <?php
+
 require_once( "../lib/arc2/ARC2.php" );
 require_once( "../lib/Graphite/Graphite.php" );
 
@@ -24,6 +25,7 @@ $eq = new dataacukEquipment($eq_config);
 
 $f3->eq = $eq;
 
+	
 $f3->set('DEBUG',3);
 $f3->set('AUTOLOAD',"app/");
 $f3->set('UI','ui/');
@@ -36,7 +38,8 @@ if( file_exists( "ui/note.html" ) )
 $f3->set( "note", $note );
 
 
-$f3->route('GET /faq',
+$f3->route('GET /faq', 'faq->page' );
+/*$f3->route('GET /faq',
 	function() use($f3) {
                 $f3=Base::instance();
 
@@ -45,6 +48,27 @@ $f3->route('GET /faq',
 		print Template::instance()->render( "page-template.html" );
 	}
 );
+
+*/
+$f3->route('GET /logos',
+	function() use($f3) {
+		$f3=Base::instance();
+		$f3->set('html_title', "Our Logos" );
+		$f3->set('content','logos.html');
+		print Template::instance()->render( "page-template.html" );
+	}
+);
+
+$f3->route('GET /troubleshooting',
+	function() use($f3) {
+                $f3=Base::instance();
+
+		$f3->set('html_title', "Troubleshooting" );
+		$f3->set('content','troubleshooting.html');
+		print Template::instance()->render( "page-template.html" );
+	}
+);
+
 $f3->route('GET /uniquip',
 	function() use($f3) {
                 $f3=Base::instance();
@@ -54,21 +78,53 @@ $f3->route('GET /uniquip',
 		print Template::instance()->render( "page-template.html" );
 	}
 );
+
+$f3->route('GET /opd',
+    function() use($f3) {
+        $f3->reroute('http://opd.data.ac.uk/checker');
+    }
+);
+
 $f3->route('GET /poster',
+    function() use($f3) {
+        $f3->reroute('/posters');
+    }
+);
+
+$f3->route('GET /posters',
 	function() use($f3) {
                 $f3=Base::instance();
 
-		$f3->set('html_title', "Poster" );
+		$f3->set('html_title', "Posters" );
 		$f3->set('content','poster.html');
 		print Template::instance()->render( "page-template.html" );
 	}
 );
+
+$f3->route('GET /info',
+	function() use($f3) {
+		
+		$f3=Base::instance();
+		print Template::instance()->render( "useful_info.html" );
+	}
+);
+
+
+$f3->route('GET /api/search', 'api->search' );
+
+
+
 $f3->route('GET /', 'home->page' );
 $f3->route('GET /status', 'status->page' );
+$f3->route('GET /reports/crawlhistory', 'reports->crawlhistory');
+$f3->route('GET /reports/search', 'reports->search');
+$f3->route('GET /compliance/podium', 'compliance->podium' );
 $f3->route('GET /compliance', 'compliance->page' );
+$f3->route('GET /search/advanced', 'search->advanced' );
 $f3->route('GET /search', 'search->fragment' );
 $f3->route('GET /data/search', 'search->data' );
 $f3->route('GET	/org/@type/@id/@dataset', 'org->page' );
+$f3->route('GET	/org/@type/@id.logo', 'logo->getLogo' );
 $f3->route('GET	/item/@id', 'item->page' );
 $f3->route('GET /item/@id.fragment', 'item->fragment' );
 

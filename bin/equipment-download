@@ -1,0 +1,198 @@
+#!/usr/bin/php
+<?php
+
+# Downloads equipment from datasets
+
+ini_set('memory_limit','256M');
+
+if(in_array('--dryrun',$argv)){
+	$dryrun = true;
+}else{
+	$dryrun = false;	
+}
+
+
+require_once( "../etc/eq_config.php" );
+
+
+require_once( "{$eq_config->pwd}/lib/arc2/ARC2.php" );
+require_once( "{$eq_config->pwd}/lib/Graphite/Graphite.php" );
+
+require_once( "{$eq_config->pwd}/lib/OPDLib/OrgProfileDocument.php" );
+
+
+
+require_once( "{$eq_config->pwd}/dataacukEquipment.php" );
+
+
+$eq = new dataacukEquipment($eq_config);
+$eq->launch_db();
+$eq->db->dryrun = $dryrun;
+$stage = 0;
+
+
+
+$stage++;
+echo "Stage $stage: Creating empty mega nt file\n";
+$eq->config->misc->megant = "{$eq->config->cachepath}/mega.nt";
+file_put_contents($eq->config->misc->megant,"");
+
+$stage++;
+echo "Stage $stage: Downloading datasets\n";
+
+$datasets = $eq->db->fetch_many('datasets', array('data_ena' => 1), array());
+
+foreach($datasets as $set){
+	
+	$set['org'] = $eq->get_org($set['data_org']);
+	$notes = array("errors"=>array(),"warnings"=>array(),"msgs"=>array());
+	
+	$graph = null;
+	
+	echo "  Starting {$set['data_uri']}\n";
+	$type = array_search($set['data_conforms'],$eq->config->conformsToMap);
+	
+	if(!strlen($type)){
+		echo "   Error: Unknown dataset type (Conforms to: {$set['data_conforms']})\n";
+		$notes['errors'][] = "Unknown dataset type (Conforms to: {$set['data_conforms']})";
+		continue;
+	}
+	
+	$cachepath = "{$eq->config->cachepath}/{$set['data_hash']}";
+	
+	$linfo = $eq->misc_curl_getinfo($set['data_uri']);
+	if($linfo['http_code']!=200){
+		echo "   Error: Can't load dataset (HTTP CODE: {$linfo['http_code']})\n";
+		$notes['errors'][] = "Error: Can't load dataset (HTTP CODE: {$linfo['http_code']}), will try cached version.";
+		if(file_exists("{$cachepath}/{$set['data_hash']}.info")){
+			$linfo = unserialize(file_put_contents("{$cachepath}/{$set['data_hash']}.info"));	
+		}	
+	}else{
+		file_put_contents("{$cachepath}.info", serialize($linfo));
+	}
+	
+	$cachepath .= "-".basename($linfo['url']);
+
+	if(!file_exists($cachepath) || filemtime($cachepath) < (time()-3600)) //Debug protection
+		$eq->misc_curl_getfile($set['data_uri'], $cachepath);
+	
+	
+	if(!file_exists($cachepath)){
+		echo "   Error: Can't read cached version, may never of downloaded a dataset.\n";
+		$notes['errors'][] = "Error: Can't read cached version, may never of downloaded a dataset.";
+		$eq->parse_finish($set, $notes);
+		continue;
+	}
+	
+	if(filemtime($cachepath) < (time()-$eq->config->maxcahceage)){
+		echo "   Error: Cached file too old so skipping\n";
+		$notes['errors'][] = "Error: Cached file too old so skipping";
+		$eq->parse_finish($set, $notes);
+		continue;
+	}
+	
+	$start = $eq->db->exec('SELECT NOW() as time;');
+	
+	
+	
+	switch($type){
+		case "rdf":
+		case "rdf-n8":
+			echo "    RDF Dataset ($type)\n";
+			$graph = $eq->parse_rdf($set, $cachepath, $notes);
+		break;
+		case "pure":
+			echo "    Pure Dataset ($type)\n";
+			$graph = $eq->parse_pure($set, $cachepath, $notes);
+		break;
+		case "kitcat":
+			$graph = $eq->parse_kitcat($set, $cachepath, $notes);
+		break;
+		case "uniquip":
+			echo "    Uniquip Dataset\n";
+			$map = array("csv"=>"text/csv","xls"=>"application/vnd.ms-excel","xlsx"=>"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+			if(!in_array($linfo['content_type'],$map)){
+				$ext =  pathinfo($linfo['url'], PATHINFO_EXTENSION);
+				if(isset($map[$ext])) {
+					$linfo['content_type'] = $map[$ext];
+				}	
+			}
+			switch($linfo['content_type']){
+				case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": #.xlsx
+				case "application/vnd.ms-excel": #xlsx
+					echo "       Starting uniquip/xls parse\n";
+					$graph = $eq->parse_uniquip_xls($set,$cachepath, $notes);
+				break;
+				case "text/csv":
+					echo "       Starting uniquip/csv parse\n";
+					$graph = $eq->parse_uniquip_csv($set,$cachepath, $notes);
+				break;
+				default:
+					echo "       Error: Unknown uniquip type (content_type: {$linfo['content_type']})\n";
+					$notes['errors'][] = "Unknown uniquip type (content_type: {$linfo['content_type']})";
+				break;
+			}
+		break;
+		default:
+			echo "   Error: Unknown dataset type (Conforms to: {$set['data_conforms']})\n";
+			$notes['errors'][] = "Unknown dataset type (Conforms to: {$set['data_conforms']})";
+		break;
+	}
+	
+	
+	echo "    Done parse\n";
+	
+	if( $graph == null || count( $graph->toArcTriples() ) == 0 ) {
+		echo "   Error: Could not parse dataset\n";
+		$notes['errors'][] = "Error: Could not parse dataset";
+		$eq->parse_finish($set, $notes);
+		continue;
+	}
+	
+
+	echo "    Saving Graph\n";
+	$eq->save_graph_dataset($set, $graph, $notes);
+	$eq->parse_graph($set, $graph, $notes, $type);
+
+	$eq->save_uniquip('set',$set);	
+
+	echo "    Deleting old recoders\n";
+	$eq->db->delete('items', array("item_dataset"=>$set['data_uri'], "item_updated"=>"<:{$start[0]['time']}"));
+	$eq->db->delete('itemUniquips', array("itemU_dataset"=>$set['data_uri'], "itemU_updated"=>"<:{$start[0]['time']}"));
+	$eq->db->delete('itemPages', array("page_dataset"=>$set['data_uri'], "page_updated"=>"<:{$start[0]['time']}"));
+	$eq->db->delete('itemRDF', array("rdf_dataset"=>$set['data_uri'], "rdf_updated"=>"<:{$start[0]['time']}"));
+
+
+	$eq->parse_finish($set, $notes);
+	
+	
+	echo "    Finished {$set['data_uri']}\n";
+	
+}
+
+
+
+$stage++;
+echo "Stage $stage: Creating ALL datasets\n";
+echo "\t Uniquips\n";
+$eq->save_uniquip('all');
+echo "\t RDF\n";
+
+$eq->save_rdf('all');
+
+
+$stage++;
+echo "Stage $stage: Saving status json\n";
+$eq->save_status();
+
+
+$stage++;
+echo "Stage $stage: Saving uniquip json\n";
+$fields = $eq->uniquipFields();
+$file = $eq->config->pwd."/var/uniquip-fields.json";
+$fh = fopen($file, 'w') or die("can't open file: $file" );
+fwrite( $fh, json_encode( $fields ) );
+fclose( $fh );
+
+
+exit();

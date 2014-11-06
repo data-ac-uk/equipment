@@ -28,9 +28,14 @@ class status {
 		$c []= "</tr>";
 		foreach( $status['orgs'] as $feed )
 		{
-			
 			$c []= "<tr >";
-			$c []= "<td rowspan=\"".count($feed['org_datasets'])."\"><a href='".$feed["org_url"]."'><img src='".$feed["org_logo"]."' class=\"org_logo\"/></a></td>";
+			$c []= "<td rowspan=\"".count($feed['org_datasets'])."\"><a href='".$feed["org_url"]."'>";
+			if(strlen($feed["org_logo"])){
+				$c []= "<img src='/org/{$feed["org_idscheme"]}/{$feed["org_id"]}.logo?size=small' class=\"org_logo\"/>";
+			}else{
+				$c []= "<img src='/org/other/none.logo?size=small' class=\"org_logo\"/>";
+			}
+			$c []= "</a></td>";
 			
 			$c []= "<td rowspan=\"".count($feed['org_datasets'])."\"><strong><a href='".$feed["org_url"]."'>{$feed["org_name"]}</a></strong> <br/> ";
 			$c []= "ID: ".$feed["org_idscheme"]."/".$feed["org_id"];
@@ -40,7 +45,14 @@ class status {
 		
 			
 			foreach($feed['org_datasets'] as $set){
-				$c []= "<td><a href='".$set["data_uri"]."' title=\"Raw source downloaded from: {$set["data_uri"]}\">dataset</a></td>";
+
+				$c []= "<td><a href='".$set["data_uri"]."' title=\"Raw source downloaded from: {$set["data_uri"]}\">dataset</a>";
+				if(isset($feed["org_opd"]['opd_url']) && !empty($feed["org_opd"]['opd_url'])){
+					$c []= "<br/>(<a href='".$feed["org_opd"]['opd_url']."' title=\"OPD used to locate the dataset\">OPD</a>)";
+				
+				}
+				$c []= "</td>";
+
 				$c []= "<td>".array_search($set['data_conforms'],$eq->config->conformsToMap)."</td>";
 
 				$org_id = "{$feed["org_idscheme"]}/{$feed["org_id"]}/{$set['data_hash']}";
@@ -136,6 +148,8 @@ END;
 		#$c []= "<pre>".htmlspecialchars( print_r($status ,true))."</pre>";
 
 
+		$c []="<p>If your data is not listed here and you expect it to be, check out our <a href=\"/troubleshooting\" title=\"Troubleshooting\">Troubleshooting page</a></p>";
+		
 		$c []= "<h3>Totals</h3>";
 		$c []= "This archive contains ".number_format($status['totals']['items'],0)." items from {$status['totals']['orgs']} organisations.";
 

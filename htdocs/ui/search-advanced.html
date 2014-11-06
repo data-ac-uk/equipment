@@ -1,0 +1,64 @@
+<div class="container">
+  <div class="sixteen columns advsearch">
+	  
+	  <noscript>
+		  <center>
+		  	JavaScript is needed for the advanced search feature to work.
+		  </center>
+	  </noscript>
+	 
+    <div class='search-div'>
+      <div>
+		<label style='float: none; display:inline-block; width: auto;' for='qs-input' class='search-title'>Search for equipment:</label>
+        <div class='search-cancel'>X</div>
+		
+        <input id='qs-input' class='search-input' autocomplete='off' name='q' type='search' value='' placeholder='e.g. Microscope'  />
+        <input id='search-button' class='search-button' type='submit' value='&#x279C;' title='Start Search'   />
+ 
+      </div>
+  </div>
+	 	 
+  </div>
+   
+  </div>
+ <div class="container"> 
+  
+   <div class="three columns advsearch">
+   		<h2>Refine Results</h2>
+        <div class="sidebox">
+        	<h3>Our Newsletter</h3>
+		</div>
+   </div>
+   
+</div>
+
+<script>
+$( document ).ready(function() {	
+	$('#qs-input').on("keypress", function(e) {
+	        if (e.keyCode == 13) {
+				preformAdvSearch();
+	            return false; // prevent the button click from happening
+	        }
+	});
+	
+	$('#search-button').on("click", function(e) {
+	   		preformAdvSearch();
+	        return false; // prevent the button click from happening
+	});
+	
+	
+});
+
+
+function preformAdvSearch(){
+	 var query = $('#qs-input').val();
+	 
+	 var request = {};
+	 request.q = query;
+	 
+	 console.log(request);
+	 
+	 
+}
+
+</script>

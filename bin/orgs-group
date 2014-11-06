@@ -1,0 +1,63 @@
+#!/usr/bin/php
+<?php
+
+require_once( "../etc/eq_config.php" );
+
+require_once( "{$eq_config->pwd}/lib/arc2/ARC2.php" );
+require_once( "{$eq_config->pwd}/lib/Graphite/Graphite.php" );
+
+$uri = "http://learning-provider.data.ac.uk/data/groups.ttl";
+
+
+require_once( "{$eq_config->pwd}/dataacukEquipment.php" );
+
+$eq = new dataacukEquipment($eq_config);
+$eq->launch_db();
+$eq->db->dryrun = $dryrun;
+
+$graph = new Graphite();
+$graph->load( $uri );
+$groups = $graph->ns( "lprov", "http://id.learning-provider.data.ac.uk/terms#" );
+
+$groups = $graph->allOfType(  "lprov:InstitutionalGroup" );
+
+foreach($groups as $group){
+	
+	$dbgroup = array(
+		"group_id"=>$group->toString(),
+		"group_type"=>"consortia",
+		"group_name"=>(string)$group->label(),
+		"group_sname"=>createShortName((string)$group->label()),
+	);
+	
+	$eq->db->insert('groups', $dbgroup, array(), 'REPLACE');
+	
+	$members = $group->all( 'foaf:member' );
+	
+	foreach($members as $member){
+		
+		$id = basename($member);
+		
+		$res = $eq->db->fetch_one('orgs', array('org_idscheme' => 'ukprn', 'org_id' => $id), array(), "`org_uri`");
+		if($res!==false){
+			$eq->db->insert('groupLinks', array('link_group'=>(string)$dbgroup['group_id'], 'link_org'=>$res['org_uri']), array(), 'REPLACE');
+		}
+	
+		
+	}
+	
+}
+
+
+function createShortName($name){
+	
+	$replace = array(
+		'/\([\w]*\)/'=>'',
+		'/^\s+/'=>"",
+		'/\s+$/'=>"",
+		'/\s+/'=>"_"
+	);
+	
+	return preg_replace(array_keys($replace),array_values($replace),$name);
+	
+}

@@ -1,0 +1,192 @@
+#!/usr/bin/php
+<?php
+
+chdir(__DIR__);
+
+if(in_array('-v',$argv)){
+	$v = true;
+}else{
+	$v = false;	
+}
+
+$cmd = end($argv);
+
+require_once( "../etc/eq_config.php" );
+
+
+$status = "{$eq_config->pwd}/var/crawl-status.json";
+if(file_exists($status)){
+	$stat = json_decode(file_get_contents($status),true);
+}
+
+if(!isset($stat['lastrun']))
+	$stat['lastrun'] = array();
+
+define('TIME_ONEDAY', 24 * 3600);
+define('TIME_ONEWEEK', 7 * 24 * 3600);
+
+chdir(__DIR__);
+
+$tasks = array(
+	"unilist-download" => array(
+		"cmd" => "php unilist-download",
+		"every"=> TIME_ONEWEEK,
+	),
+	"opds-autodiscover" => array(
+		"cmd" => "php opds-autodiscover",
+		"every"=> TIME_ONEWEEK,
+	),
+	"opds-crawl" => array(
+		"cmd" => "php opds-crawl",
+		"every"=> TIME_ONEWEEK,
+	),
+	"orgs-manual" => array(
+		"cmd" => "php orgs-manual",
+		"every"=> TIME_ONEWEEK,
+	),
+	"orgs-manual" => array(
+		"cmd" => "php orgs-manual",
+		"every"=> TIME_ONEDAY,
+	),
+	"equipment-download" => array(
+		"cmd" => "php equipment-download",
+		"every"=> TIME_ONEDAY,
+	),
+	"equipment-status" => array(
+		"cmd" => "php equipment-status",
+		"every"=> TIME_ONEDAY,
+	),
+	"stats-search" => array(
+		"cmd" => "php stats-search {$eq_config->stats}",
+		"every"=> TIME_ONEDAY,
+	),
+);
+
+$starttime = time();
+$hlog = "";
+$log = "";
+$div = "=================================================";
+
+if(!in_array($cmd, array("auto", "all")) && !in_array($cmd, array_keys($tasks))){
+	die("Usage:\n\trunall [-v] [auto | all | SCRIPTNAME]\n");
+}
+
+
+
+if($cmd == "all"){
+	$todo = array_keys($tasks);
+}elseif($cmd == "auto"){
+	$todo = array();
+	foreach($tasks as $tk => $task){
+		
+		if(isset($stat['lastrun'][$tk])){
+			$time = (time() - ($task['every'])) + 3600; //Adds an hour so will run every day
+			if($time <= $stat['lastrun'][$tk]){
+				continue;
+			}
+		}
+		
+		$todo[] = $tk;
+	}
+	
+}else{
+	$todo = array($cmd);
+}
+
+$hlog .= "Running Scripts Summary\n";
+$hlog .= "{$div}\n";
+$hlog .= "Started: ".date("r\n");
+
+foreach($todo as $key){
+	$task = $tasks[$key];
+
+	$tasktime = microtime(true);
+
+	$cmdoutput = NULL;
+	$cmdstatus = NULL;
+
+	
+	exec ( "{$task['cmd']} 2>&1 ", $cmdoutput, $cmdstatus );
+	
+	$time = microtime(true) - $tasktime;
+	$run = "$key - ".($cmdstatus==0? "OK" : "ERROR({$cmdstatus})"). " - ".time_since($time, true, 2,"","")."\n";
+	
+	$hlog .= " ".$run;
+	
+	$log .= "{$div}\n";
+	$log .= "Running: {$run}";
+	$log .= "Started: ".date("r\n");
+	$log .= "{$div}\n";
+	
+	
+	$log .= join("\n", $cmdoutput)."\n";
+	
+	$log .= "{$div}\n";
+
+	$log .= "Finished: ".date("r\n");
+	$log .= "\n\n";
+	
+	$stat['lastrun'][$key] = $starttime;
+}
+
+$hlog .= "Finished: ".date("r"). " - ".time_since(time()-$starttime, true, 2,"","")."\n";
+$hlog .= "{$div}\n\n";
+
+echo $hlog;
+
+echo $log;
+
+if($cmd == "auto"){
+	
+	$message = str_replace("\n", "\r\n", $hlog.$log);
+	// Send
+	mail( join(", ", $eq_config->crawler->emailto), 'equipment.data Crawler: '.date("r"), $message);
+	
+	file_put_contents($status, json_encode($stat));
+}
+
+
+
+
+
+function time_since($since, $short = false, $num = 1, $space = " ", $join = ", ") {
+if($since < 1){
+	return floor($since * 1000)."ms";
+}	
+	
+$li = "";
+$chunks = array(
+array(60 * 60 * 24 * 365 , 'year', 'y'),
+array(60 * 60 * 24 * 30 , 'month', 'm'),
+array(60 * 60 * 24 * 7, 'week', 'w'),
+array(60 * 60 * 24 , 'day', 'd'),
+array(60 * 60 , 'hour', 'h'),
+array(60 , 'minute', 'm'),
+array(1 , 'second', 's')
+);
+$parts = array();
+$theone = 0;
+for ($i = 0, $j = count($chunks); $i < $j; $i++) {
+if ($i) {
+$count = floor(($since % $chunks[$i-1][0]) / $chunks[$i][0]);
+//$count = floor((($since / $chunks[$i-1][0]) - floor($since / $chunks[$i-1][0])) / $chunks[$i][0]);
+} else {
+$count = floor(($since) / $chunks[$i][0]);
+}
+if (!$count) {
+continue;
+}
+$parts[$i] = $count;
+if (count($parts) == $num) {
+$li = $i;
+break;
+}
+}
+ 
+$key = ($short) ? 2 : 1;
+$print = "";
+foreach ($parts as $i => $count) {
+$print .= $count . $space . $chunks[$i][$key] . (($count == 1 && !$short) ? 's' : '') . (($i != $li) ? $join : '');
+}
+return $print;
+}
