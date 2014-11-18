@@ -158,7 +158,7 @@ function show_result( id, title )
 	tracking.currentItemTitle= title;
     
     $.get('item/'+id+".fragment", function(page) {
- 
+  	    _gaq.push(['_trackPageview', '/item/'+id]);
         $('#featured-result').scrollTop(0);
         $('#featured-result').html( page );
     }, 'html');

@@ -23,7 +23,6 @@ $eq_config->opds->direct = array(
 );
 
 $eq_config->opds->autodiscovers = array(
-	"http://data.ox.ac.uk/",
 	"http://www.roslin.ed.ac.uk/",
 	"http://www.rothamsted.ac.uk/",
 	"http://www.babraham.ac.uk/"
