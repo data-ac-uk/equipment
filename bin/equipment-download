@@ -61,6 +61,7 @@ foreach($datasets as $set){
 	$cachepath = "{$eq->config->cachepath}/{$set['data_hash']}";
 	
 	$linfo = $eq->misc_curl_getinfo($set['data_uri']);
+	
 	if($linfo['http_code']!=200){
 		echo "   Error: Can't load dataset (HTTP CODE: {$linfo['http_code']})\n";
 		$notes['errors'][] = "Error: Can't load dataset (HTTP CODE: {$linfo['http_code']}), will try cached version.";
@@ -71,11 +72,14 @@ foreach($datasets as $set){
 		file_put_contents("{$cachepath}.info", serialize($linfo));
 	}
 	
-	$cachepath .= "-".basename($linfo['url']);
+	$cachepath .= "-".basename(parse_url($linfo['url'],PHP_URL_PATH));
 
-	if(!file_exists($cachepath) || filemtime($cachepath) < (time()-3600)) //Debug protection
+	if(!file_exists($cachepath) || filemtime($cachepath) < (time()-3600)){ //Debug protection
+		echo "Downloading File:\n";
 		$eq->misc_curl_getfile($set['data_uri'], $cachepath);
-	
+	}
+
+	echo "$cachepath\n";
 	
 	if(!file_exists($cachepath)){
 		echo "   Error: Can't read cached version, may never of downloaded a dataset.\n";
@@ -92,7 +96,6 @@ foreach($datasets as $set){
 	}
 	
 	$start = $eq->db->exec('SELECT NOW() as time;');
-	
 	
 	
 	switch($type){

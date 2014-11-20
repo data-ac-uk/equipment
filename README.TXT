@@ -20,6 +20,7 @@ Quickstart:
  mkdir htdocs/tmp
  mkdir var/item
  mkdir var/tmp
+ mkdir var/tmp/graphite
  chmod -R a+rwX var/
  chmod o+w htdocs/tmp
  cd lib
