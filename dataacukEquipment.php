@@ -220,7 +220,8 @@ class dataacukEquipment
 		
 		if($crawl['crawl_success'] == 'error' && strtolower(substr($set['data_corrections'],0,7))=="mailto:"){
 			$rest = $this->db->fetch_many('crawls', array('crawl_dataset'=>$set['data_uri'], "sort:"=>"d:crawl_timestamp"), array(), "`crawl_success`", "1,1");
-			if(isset($ret[0]['crawl_success']) and $ret[0]['crawl_success']=='errror'){
+			if(isset($rest[0]['crawl_success']) and $rest[0]['crawl_success']=='error'){
+				echo "Sending Message - \n";
 				$crawlnotes = array();
 				foreach($notes as $k=>$notes){
 					if(count($notes)==0) continue;
@@ -233,7 +234,6 @@ class dataacukEquipment
 				$fields = array();
 				$fields['error_text'] = join("\n",$crawlnotes);
 				$fields['datset_url'] = $set['data_uri'];
-				//substr($set['data_corrections'],7)
 				$this->messageFromTemplate("equipment-download-error", "andrew@bluerhinos.co.uk", $fields, 'alert', $set['data_uri']);
 				}
 		}
