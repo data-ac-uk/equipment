@@ -372,7 +372,7 @@ class dataacukEquipment
 		$tmpfile_err = "{$this->config->cachepath}/{$set['data_hash']}.err";
 		$tmpfile_nt = "{$this->config->cachepath}/{$set['data_hash']}.nt";
 		
-		exec( "{$this->config->rapper->path} -g ".escapeshellarg($set['data_uri'])." -q > $tmpfile_nt 2> $tmpfile_err" );
+		exec( "{$this->config->rapper->path} -g ".escapeshellarg($path)." -q > $tmpfile_nt 2> $tmpfile_err" );
 		
 		$errors = file_get_contents( $tmpfile_err );
 		unlink( $tmpfile_err );
