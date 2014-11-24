@@ -23,6 +23,32 @@ class dataacukEquipment
 	}
 
 
+	function dataset_disable($set, $notes){
+	
+			$this->db->update('datasets',  array("data_ena"=>0), array(), array('data_uri' => $set['data_uri']));
+			$this->db->delete('items', array("item_dataset"=>$set['data_uri']));
+			$this->db->delete('itemUniquips', array("itemU_dataset"=>$set['data_uri']));
+			$this->db->delete('itemPages', array( "page_dataset"=>$set['data_uri']));
+			$this->db->delete('itemRDF', array("rdf_dataset"=>$set['data_uri']));
+			
+			
+			$crawlnotes = array();
+			foreach($notes as $k=>$notes){
+				if(count($notes)==0) continue;
+				$crawlnotes[] = ucwords($k).":";
+				foreach($notes as $note){
+					$crawlnotes[] = "  * {$note}";
+				}
+
+			}
+			$crawlnotes = join("\n",$crawlnotes);
+			foreach($eq_config->crawler->emailto as $to){
+				$this->messageSend($to, "ALERT [equipment.data] - disabled dataset", "The system has disabled the dataset: {$set['data_uri']}\n\n");
+			}	
+	}
+
+
+
 	//Loads the config of source from new settings including autodiscovery
 	function read_config()
 	{
@@ -234,7 +260,8 @@ class dataacukEquipment
 				$fields = array();
 				$fields['error_text'] = join("\n",$crawlnotes);
 				$fields['datset_url'] = $set['data_uri'];
-				$this->messageFromTemplate("equipment-download-error", "andrew@bluerhinos.co.uk", $fields, 'alert', $set['data_uri']);
+				$email_to = ($this->config->messages->user_force!==false) ? $this->config->messages->user_force :  "andrew@bluerhinos.co.uk";
+				$this->messageFromTemplate("equipment-download-error", $email_to, $fields, 'alert', $set['data_uri']);
 				}
 		}
 		

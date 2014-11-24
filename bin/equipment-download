@@ -74,7 +74,7 @@ foreach($datasets as $set){
 	
 	$cachepath .= "-".basename(parse_url($linfo['url'],PHP_URL_PATH));
 
-	if(!file_exists($cachepath) || filemtime($cachepath) < (time()-3600)){ //Debug protection
+	if($linfo['http_code']==200 && (!file_exists($cachepath) || filemtime($cachepath) < (time()-3600))){ //Debug protection
 		echo "Downloading File:\n";
 		$eq->misc_curl_getfile($set['data_uri'], $cachepath);
 	}
@@ -90,10 +90,17 @@ foreach($datasets as $set){
 	
 	if(filemtime($cachepath) < (time()-$eq->config->maxcahceage)){
 		echo "   Error: Cached file too old so skipping\n";
-		$notes['errors'][] = "Error: Cached file too old so skipping";
+		$notes['errors'][] = "Error: Cached file too old so skipping - dataset has been removed";
+		$eq->dataset_disable($set, $notes);
+		$eq->parse_finish($set, $notes);
+		continue;
+	}elseif(filemtime($cachepath) < (time()-$eq->config->maxcahceagewarn)){
+		echo "   Error: Cached file too old so skipping\n";
+		$notes['errors'][] = "Error: Cached file too old so skipping - dataset will be removed in after ".date("d/m/Y",filemtime($cachepath)+$eq->config->maxcahceage);
 		$eq->parse_finish($set, $notes);
 		continue;
 	}
+	
 	
 	$start = $eq->db->exec('SELECT NOW() as time;');
 	
