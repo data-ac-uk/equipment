@@ -9,8 +9,8 @@ $eq_config->cachepath = "{$eq_config->pwd}/var/tmp";
 $eq_config->host = 'equipment.data.ac.uk';
 $eq_config->uribase = 'http://id.equipment.data.ac.uk/';
 
-$eq_config->maxcahceagewarn = 1209600; #2 weeks
-$eq_config->maxcahceage = 2419200; #4 weeks
+$eq_config->maxcahceagewarn = 604800; #1 weeks
+$eq_config->maxcahceage = 1209600; #2 weeks
 
 $eq_config->opds = (object) NULL;
 $eq_config->opds->local = "{$eq_config->pwd}/etc/opds";

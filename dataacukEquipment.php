@@ -1676,7 +1676,7 @@ class dataacukEquipment
 	function messageAlert($to, $subject, $body, $link = ""){
 		
 		$this->launch_db();
-		$old = $this->db->fetch_one('messages', array('message_type' => 'alert', 'message_link'=>$link), array('`message_time`' => ">:DATE_SUB(NOW(),INTERVAL {$this->config->maxcahceage} SECOND)"));
+		$old = $this->db->fetch_one('messages', array('message_type' => 'alert', 'message_link'=>$link,'message_subject'=>$subject), array('`message_time`' => ">:DATE_SUB(NOW(),INTERVAL {$this->config->maxcahceage} SECOND)"));
 		if($old !== false)
 			return false; //Skip if message has been sent 2 weeks ago;
 		
