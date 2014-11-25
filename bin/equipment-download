@@ -62,7 +62,7 @@ foreach($datasets as $set){
 	
 	$linfo = $eq->misc_curl_getinfo($set['data_uri']);
 	
-	if(!in_array($linfo['http_code'],array(200,301,302,303)){
+	if(!in_array($linfo['http_code'],array(200,301,302,303))){
 		echo "   Error: Can't load dataset (HTTP CODE: {$linfo['http_code']})\n";
 		$notes['errors'][] = "Error: Can't load dataset (HTTP CODE: {$linfo['http_code']}), will try cached version.";
 		if(file_exists("{$cachepath}/{$set['data_hash']}.info")){
@@ -74,7 +74,7 @@ foreach($datasets as $set){
 	
 	$cachepath .= "-".basename(parse_url($linfo['url'],PHP_URL_PATH));
 
-	if(in_array($linfo['http_code'],array(200,301,302,303) && (!file_exists($cachepath) || filemtime($cachepath) < (time()-3600))){ //Debug protection
+	if(in_array($linfo['http_code'],array(200,301,302,303)) && (!file_exists($cachepath) || filemtime($cachepath) < (time()-3600))){ //Debug protection
 		echo "Downloading File:\n";
 		$eq->misc_curl_getfile($set['data_uri'], $cachepath);
 	}
