@@ -7,6 +7,8 @@ $eq_config->pwd = dirname(__DIR__);
 $eq_config->cachepath = "{$eq_config->pwd}/var/tmp";
 
 $eq_config->host = 'equipment.data.ac.uk';
+$eq_config->name = 'equipment.data';
+
 $eq_config->uribase = 'http://id.equipment.data.ac.uk/';
 
 $eq_config->maxcahceagewarn = 604800; #1 weeks

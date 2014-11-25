@@ -133,14 +133,13 @@ $hlog .= "Finished: ".date("r"). " - ".time_since(time()-$starttime, true, 2,"",
 $hlog .= "{$div}\n\n";
 
 echo $hlog;
-
 echo $log;
 
 if($cmd == "auto"){
 	
 	$message = str_replace("\n", "\r\n", $hlog.$log);
 	// Send
-	mail( join(", ", $eq_config->crawler->emailto), 'equipment.data Crawler: '.date("r"), $message);
+	mail( join(", ", $eq_config->crawler->emailto), $eq_config->name.' Crawler: '.date("r"), $message);
 	
 	file_put_contents($status, json_encode($stat));
 }
