@@ -1836,7 +1836,15 @@ class eqDB extends DB\SQL {
 		$orderby = array();
 		
 		foreach($params as $k=>$v){
-			if(substr($k,0,5)=='sort:'){
+			if(is_array($v)){
+				$qs = array();
+				foreach($v as $vv){
+					$qs[] = "?";
+					$infields[$i] = $vv;
+					$i++;
+				}
+				$query[] = "`$k` IN (".join(",",$qs).")";
+			}elseif(substr($k,0,5)=='sort:'){
 				if(substr($v,0,2)=="a:"){
 					$orderby[] = substr($v,2)." ASC";
 				}elseif(substr($v,0,2)=="d:"){
@@ -1847,18 +1855,31 @@ class eqDB extends DB\SQL {
 			}elseif(substr($v,0,2)=="<:"){
 				$query[] = "`$k` < ?";
 				$infields[$i] = substr($v,2);
+				$i++;
 			}elseif(substr($v,0,2)==">:"){
 				$query[] = "`$k` > ?";
 				$infields[$i] = substr($v,2);
+				$i++;
+			}elseif(substr($v,0,2)=="f:"){
+				$explode = explode("|", substr($v,2));
+				foreach($explode as $kk=>$vv){
+					if($kk==0){
+						$query[] = "`$k` {$explode[0]}";
+					}else{
+						$infields[$i] = $vv;
+						$i++;
+					}
+				}
 			}elseif(substr($v,0,2)=="!:"){
 				$query[] = "`$k` != ?";
 				$infields[$i] = substr($v,2);
+				$i++;
 			}else{
 				$query[] = "`$k` = ?";
 				$infields[$i] = $v;
+				$i++;
 			}
 			
-			$i++;
 		}
 		foreach($paramsraw as $k=>$v){
 			

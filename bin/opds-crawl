@@ -26,6 +26,10 @@ $eq = new dataacukEquipment($eq_config);
 $eq->launch_db();
 $eq->db->dryrun = $dryrun;
 
+
+$start = $eq->db->exec('SELECT NOW() as time;');
+
+
 $opds = $eq->db->fetch_many('autoOPDs', array('opd_ena' => 1), array());
 
 foreach($opds as $opd){
@@ -159,10 +163,28 @@ foreach($opds as $opd){
 		
 	}
 	
-	
+	//For that organsiation
+	$sets =  $eq->db->fetch_many('datasets', array('data_src' => array('autodiscovered','hosted'),'data_ena'=>1, 'data_org'=>$orgin['org_uri'],'data_lastseen'=>"<:{$start[0]['time']}"));
+	foreach($sets as $set){
+		echo "Disabling: {$set['data_uri']}\n";
+		$eq->dataset_disable($set, array());
+	}
+		
 	
 	
 //	$opdg = 
 }
+
+
+
+//'data_src' => array('manual'),
+
+//Tidy up old datasets
+$sets =  $eq->db->fetch_many('datasets', array('data_src' => array('autodiscovered','hosted'),'data_ena'=>1, 'data_lastseen'=>"f:< DATE_SUB(?, INTERVAL {$eq_config->maxcahceage} SECOND)|{$start[0]['time']}"));
+foreach($sets as $set){
+	echo "Disabling: {$set['data_uri']}\n";
+	$eq->dataset_disable($set, array());
+}
+
 
 	

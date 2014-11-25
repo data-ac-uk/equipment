@@ -38,11 +38,11 @@ $tasks = array(
 	),
 	"opds-crawl" => array(
 		"cmd" => "php opds-crawl",
-		"every"=> TIME_ONEWEEK,
+		"every"=> TIME_ONEDAY,
 	),
 	"orgs-manual" => array(
 		"cmd" => "php orgs-manual",
-		"every"=> TIME_ONEWEEK,
+		"every"=> TIME_ONEDAY,
 	),
 	"orgs-manual" => array(
 		"cmd" => "php orgs-manual",

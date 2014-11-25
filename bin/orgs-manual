@@ -25,6 +25,7 @@ $eq->db->dryrun = $dryrun;
 //$config = read_config("{$eq_config->pwd}/etc/test-list.tsv");
 $config = read_config_db();
 
+$start = $eq->db->exec('SELECT NOW() as time;');
 
 foreach($config as $org){
 	
@@ -107,6 +108,14 @@ foreach($config as $org){
 
 	echo "\n";
 
+}
+
+
+//Tidy up old datasets
+$sets =  $eq->db->fetch_many('datasets', array('data_src' => 'manual','data_ena'=>1,'data_lastseen'=>"<:{$start[0]['time']}"));
+foreach($sets as $set){
+	echo "Disabling: {$set['data_uri']}\n";
+	$eq->dataset_disable($set, array());
 }
 
 
