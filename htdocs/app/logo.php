@@ -28,7 +28,7 @@ class logo {
 		$pic_org = "{$pic_sub}.original";
 		$pic_full = "{$pic_sub}.full";
 		
-		if(!file_exists($pic_org) || filemtime($pic_org) < strtotime("-2 Weeks") ){
+		if(!file_exists($pic_org) || filemtime($pic_org) < strtotime("-1 Day") ){
 			@`rm -f {$pic_sub}.*`;
 			
 			copy($org['org_logo'], $pic_org);
