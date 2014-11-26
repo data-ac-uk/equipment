@@ -139,7 +139,7 @@ if($cmd == "auto"){
 	
 	$message = str_replace("\n", "\r\n", $hlog.$log);
 	// Send
-	mail( join(", ", $eq_config->crawler->emailto), $eq_config->name.' Crawler: '.date("r"), $message);
+	mail( join(", ", $eq_config->crawler->emailto), $eq_config->name.' Crawler: '.date("r"), $message, "From: {$eq_config->messages->from}");
 	
 	file_put_contents($status, json_encode($stat));
 }
