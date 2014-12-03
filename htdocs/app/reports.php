@@ -16,7 +16,7 @@ class reports {
 		}
 		
 		if(isset($_REQUEST['end'])){
-			$enddate = date("Y-m-d h:i:s",strtotime($_REQUEST['end'],strtotime("23:59:59")));
+			$enddate = date("Y-m-d H:i:s",strtotime($_REQUEST['end'],strtotime("00:00:00")));
 		}else{
 			$enddate = date("Y-m-d 23:59:59");
 		}
