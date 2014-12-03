@@ -1424,6 +1424,7 @@ class dataacukEquipment
 	    curl_setopt($curl, CURLOPT_URL, $url);
 	    curl_setopt($curl, CURLOPT_FILETIME, true);
 	    curl_setopt($curl, CURLOPT_NOBODY, true);
+	    curl_setopt($curl, CURLOPT_HEADER, true);
 	    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 		if($follow)
 			curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);

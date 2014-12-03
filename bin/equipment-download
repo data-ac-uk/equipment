@@ -61,7 +61,6 @@ foreach($datasets as $set){
 	$cachepath = "{$eq->config->cachepath}/{$set['data_hash']}";
 	
 	$linfo = $eq->misc_curl_getinfo($set['data_uri']);
-	
 	if(!in_array($linfo['http_code'],array(200))){
 		echo "   Error: Can't load dataset (HTTP CODE: {$linfo['http_code']})\n";
 		$notes['errors'][] = "Error: Can't load dataset (HTTP CODE: {$linfo['http_code']}), will try cached version.";
@@ -120,13 +119,29 @@ foreach($datasets as $set){
 		break;
 		case "uniquip":
 			echo "    Uniquip Dataset\n";
+
 			$map = array("csv"=>"text/csv","xls"=>"application/vnd.ms-excel","xlsx"=>"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 			if(!in_array($linfo['content_type'],$map)){
 				$ext =  pathinfo($linfo['url'], PATHINFO_EXTENSION);
 				if(isset($map[$ext])) {
 					$linfo['content_type'] = $map[$ext];
-				}	
+				}else{
+				    if(preg_match('/Content-Disposition: .*filename=(([^ \"]+)|[\"](.+)[\"])/', $linfo['header'], $matches)) {
+						if(strlen($matches[2])){
+							$ext =  pathinfo($matches[2], PATHINFO_EXTENSION);
+							if(isset($map[$ext])) {
+								$linfo['content_type'] = $map[$ext];
+							}
+						}elseif(strlen($matches[3])){
+							$ext =  pathinfo($matches[3], PATHINFO_EXTENSION);
+							if(isset($map[$ext])) {
+								$linfo['content_type'] = $map[$ext];
+							}
+						}
+					}
+				}
 			}
+					
 			switch($linfo['content_type']){
 				case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": #.xlsx
 				case "application/vnd.ms-excel": #xlsx
