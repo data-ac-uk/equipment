@@ -9,8 +9,18 @@ class reports {
 		$f3->set('content','content.html');
 		$c = array();
 		
-		$startdate = date("Y-m-d 00:00:00", strtotime("-1 month"));
-		$enddate = date("Y-m-d 23:59:59");
+		if(isset($_REQUEST['start'])){
+			$startdate = date("Y-m-d H:i:s",strtotime($_REQUEST['start'],strtotime("00:00:00")));
+		}else{
+			$startdate = date("Y-m-d 00:00:00", strtotime("-1 month"));
+		}
+		
+		if(isset($_REQUEST['end'])){
+			$enddate = date("Y-m-d h:i:s",strtotime($_REQUEST['end'],strtotime("23:59:59")));
+		}else{
+			$enddate = date("Y-m-d 23:59:59");
+		}
+	
 		
 		$eq->launch_db();
 		$statuses = $eq->db->exec(
