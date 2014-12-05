@@ -22,7 +22,8 @@ $eq_config->opds->direct = array(
 	array("path"=>"http://www.aber.ac.uk/en/media/departmental/ibers/iberskit/OPD.txt", "type"=>"url"),
 	array("path"=>"https://www.ucl.ac.uk/platforms/ucl-opd/", "type"=>"url"),
 	array("path"=>"http://www.kcl.ac.uk/innovation/research/corefacilities/opd/equipmentOPD.txt", "type"=>"url"),
-	array("path"=>"http://eip.stfc.ac.uk/EquipData/opd_eip.ttl", "type"=>"url")
+	array("path"=>"http://eip.stfc.ac.uk/EquipData/opd_eip.ttl", "type"=>"url"),
+	array("path"=>"https://equipment.shef.ac.uk/profile.ttl","type"=>"url")
 );
 
 $eq_config->opds->autodiscovers = array(
