@@ -1,6 +1,64 @@
 <?php
 class reports {
 
+	function contacts() {
+		$f3=Base::instance();
+		$eq = $f3->eq;
+		
+		$f3->set('html_title', "Contact Details" );
+		$f3->set('content','content.html');
+		
+		$status = json_decode( file_get_contents( 'data/status-v2.json' ), true );
+		$c []= "<table class='status'>";
+		$c []= "<tr>";
+		$c []= "<th>Organisation</th>";
+		$c []= "<th>ID</th>";
+		$c []= "<th>Level</th>";
+		$c []= "<th>Email 1</th>";
+		$c []= "<th>Email 2</th>";
+		$c []= "</tr>";
+
+		foreach( $status['orgs'] as $feed )
+		{
+			foreach($feed['org_datasets'] as $set){
+
+				$c []= "<tr >";
+				$c []= "<td>{$feed["org_name"]}</td>";
+				$c []= "<td>{$feed["org_id"]}</td>";
+
+				$c []= "<td>".ucwords($set["crawl_gong"])."</td>";
+				
+				$box = "";
+				if(strtolower(substr($set["data_contact"],0,7))=="mailto:"){
+					$box = "<a href=\"{$set["data_contact"]}\">".substr($set["data_contact"],7)."</a>";
+				}else{
+					$box = $set["data_contact"];
+				}
+				
+				$c []= "<td>{$box}</td>";
+				
+				$box = "";
+				if($set["data_corrections"]!=$set["data_contact"]){
+					if(strtolower(substr($set["data_corrections"],0,7))=="mailto:"){
+						$box = "<a href=\"{$set["data_corrections"]}\">".substr($set["data_corrections"],7)."</a>";
+					}else{
+						$box = $set["data_corrections"];
+					}
+				}
+				
+				$c []= "<td>{$box}</td>";
+				
+				$c []= "</tr>";
+			}	
+			
+		}
+		$c []= "</table>";
+		
+		$f3->set('html_content',join("",$c));
+		print Template::instance()->render( "page-template.html" );
+		
+	}
+
 	function search() {
 		$f3=Base::instance();
 		$eq = $f3->eq;
