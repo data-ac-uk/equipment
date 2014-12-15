@@ -406,6 +406,10 @@ ol.faq{
 	text-align: center;
 }
 
+.posters img.lanscape{
+	max-width: 100%; width:564px;
+}
+
 .posters td, .posters h3{
 
 	text-align: center;
