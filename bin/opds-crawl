@@ -38,12 +38,19 @@ foreach($opds as $opd){
 	$orginraw = array();
 	
 	echo "Loading OPD: {$opd['opd_url']}\n";
+	
+	try {
+	    
 	if($opd['opd_src'] == 'local'){
 		$topd = @new OrgProfileDocument( $opd['opd_url'] , 'local');
 	}elseif($opd['opd_type'] != 'text/turtle'){
 		$topd = @new OrgProfileDocument( $opd['opd_url'] , 'url');
 	}else{
 		$topd = @new OrgProfileDocument( $opd['opd_cache'] , 'string');
+	}
+
+	} catch (\Exception $e) {
+		echo "\tError:".$e->getMessage()."\n";
 	}
 	
 	$graph = $topd->graph;

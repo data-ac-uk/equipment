@@ -58,6 +58,19 @@ foreach($datasets as $set){
 		continue;
 	}
 	
+	if(strtotime($set['data_lastseen']) < (time()-$eq->config->maxcahceage)){
+		echo "   Error: Dataset info not updated since {$set['data_lastseen']}\n";
+		$notes['errors'][] = "Error: Dataset info not updated since {$set['data_lastseen']}, dataset disabled, Is your OPD ok?";
+		$eq->dataset_disable($set, $notes);
+		$eq->parse_finish($set, $notes);
+		continue;
+	}elseif(strtotime($set['data_lastseen']) < (time()-$eq->config->maxcahceagewarn)){
+		echo "   Error: Dataset info not updated since {$set['data_lastseen']}\n";
+		$notes['errors'][] = "Error: Dataset info not updated since {$set['data_lastseen']}, dataset will be disabled on ".date("F j, Y",strtotime($set['data_lastseen'])."., Is your OPD ok?";
+	}
+	
+	
+	
 	$cachepath = "{$eq->config->cachepath}/{$set['data_hash']}";
 	
 	$linfo = $eq->misc_curl_getinfo($set['data_uri']);

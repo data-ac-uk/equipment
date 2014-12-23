@@ -28,15 +28,19 @@ class logo {
 		$pic_org = "{$pic_sub}.original";
 		$pic_full = "{$pic_sub}.full";
 		
-		if(!file_exists($pic_org) || filemtime($pic_org) < strtotime("-1 Day") ){
+		if(isset($_REQUEST['nocache']) || !file_exists($pic_org) || filemtime($pic_org) < strtotime("-1 Day") ){
 			@`rm -f {$pic_sub}.*`;
-			
 			copy($org['org_logo'], $pic_org);
 		}
 		
 		if(!file_exists($pic_full)){
 			$exec = "convert ".escapeshellarg($pic_org)." ".escapeshellarg("png:{$pic_full}");
 			@exec($exec);
+		}
+		
+		if(!file_exists($pic_full)){
+			$pic_org = "{$eq->config->pwd}/htdocs/resources/images/institution.png";
+			$pic_full = "{$eq->config->pwd}/htdocs/resources/images/institution.png";
 		}
 		
 		$sizes = array('small'=>'90x35^>','medium'=>'150x100^>');
@@ -53,6 +57,7 @@ class logo {
 			$goimage = $pic_org;
 		}
 		
+				
 		if(!isset($goimage)){
 			$f3->error(404);
 		}
