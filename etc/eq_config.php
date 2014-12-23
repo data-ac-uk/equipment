@@ -42,7 +42,8 @@ $eq_config->id->overides = array(
 	"http://www.eip.rl.ac.uk/#org"=>"other/X8",
 	"http://www.babraham.ac.uk/#org"=>"ukprn/10032038",
 	"http://id.lancaster.ac.uk/"=>"ukprn/10007768",
-	"http://id.sgul.ac.uk/"=>"ukprn/10007782"
+	"http://id.sgul.ac.uk/"=>"ukprn/10007782",
+	"http://www.pirbright.ac.uk/#org"=>"ukprn/10033892"
 );
 
 
