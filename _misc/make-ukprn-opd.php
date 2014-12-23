@@ -16,7 +16,6 @@ echo "loading: $ukprn\n";
 $graph = new Graphite();
 $graph->load( $ukprn );
 $graph->ns("ospost","http://data.ordnancesurvey.co.uk/ontology/postcode/");
-echo $graph->serialize('Turtle');
 
 reset($graph->t['sp']);
 $uri = key($graph->t['sp']);
@@ -60,12 +59,20 @@ $opd->addCompressedTriple( $opduri, "foaf:phone", "tel:+441234567890");
 $opd->addCompressedTriple( $opduri, "owl:sameAs","http://id.learning-provider.data.ac.uk/ukprn/{$argv[1]}");
 
 
-
-
 $opd->addCompressedTriple( $opduri, "vcard:adr", $opduri_a);
 
 foreach($graph->t['sp']["{$uri}#address"] as $p=>$v){
-	$opd->addTriple( $opduri_a, $p, $v[0]);
+	@$opd->addTriple( $opduri_a, $p, $v[0]);
+}
+
+$sameas = @$org->all( "http://www.w3.org/2002/07/owl#sameAs" );	
+$uris = array();
+foreach($sameas as $same){
+	$uria = parse_url($same);
+	$uria['uri'] = (string)$same;
+	$uris[$uria['host']] = $uria;
+	$opd->addCompressedTriple( $opduri, "owl:sameAs",(string)$same);
+	
 }
 
 
@@ -80,7 +87,7 @@ foreach($graph->t['sp']["{$postcode}"] as $p=>$v){
 }
 
 $equrl = "http://equipment.{$org_url_d}/url.csv";
-$conforms = "http://equipment.data.ac.uk/uniquip.html";
+$conforms = "http://equipment.data.ac.uk/uniquip";
 
 
 $opd->addCompressedTriple( $equrl, "a", "dcat:Download");
