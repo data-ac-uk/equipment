@@ -219,7 +219,7 @@ class dataacukEquipment
 	}
 	
 	
-	function parse_finish($set, $notes){
+	function parse_finish($set, $notes, $errorkey = 'parse'){
 		$crawl = array();
 		$crawl['crawl_dataset'] = $set['data_uri'];
 		if(count($notes['errors'])){
@@ -260,9 +260,17 @@ class dataacukEquipment
 				$fields = array();
 				$fields['error_text'] = join("\n",$crawlnotes);
 				$fields['datset_url'] = $set['data_uri'];
-				$email_to = ($this->config->messages->user_force!==false) ? $this->config->messages->user_force :  "andrew@bluerhinos.co.uk";
-				$this->messageFromTemplate("equipment-download-error", $email_to, $fields, 'alert', $set['data_uri']);
+				$email_to = "";
+				if(strtolower(substr($set['data_contact'],0,7))=='mailto:'){
+					$email_to = substr($set['data_contact'],7);
+				}elseif(strtolower(substr($set['data_corrections'],0,7))=='mailto:'){
+					$email_to = substr($set['data_corrections'],7);
 				}
+				if(strlen($email_to)){
+					$email_to = ($this->config->messages->user_force!==false) ? $this->config->messages->user_force : $email_to;
+					$this->messageFromTemplate("equipment-download-error", $email_to, $fields, 'alert', $set['data_uri']."-{$errorkey}");
+				}
+			}
 		}
 		
 	}

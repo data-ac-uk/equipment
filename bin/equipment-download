@@ -66,7 +66,7 @@ foreach($datasets as $set){
 		continue;
 	}elseif(strtotime($set['data_lastseen']) < (time()-$eq->config->maxcahceagewarn)){
 		echo "   Error: Dataset info not updated since {$set['data_lastseen']}\n";
-		$notes['errors'][] = "Error: Dataset info not updated since {$set['data_lastseen']}, dataset will be disabled on ".date("F j, Y",strtotime($set['data_lastseen']))."., Is your OPD ok?";
+		$notes['errors'][] = "Error: Dataset info not updated since {$set['data_lastseen']}, dataset will be disabled on ".date("F j, Y",strtotime($set['data_lastseen'])+$eq->config->maxcahceage)."., Is your OPD ok?";
 	}
 	
 	
