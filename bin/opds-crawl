@@ -86,8 +86,8 @@ foreach($opds as $opd){
 	$orgin['org_sort'] = $eq->misc_order_txt($orgin['org_name']);
 	
 	
-	$orgin['org_url'] = $graph->resource( $primaryTopic )->getString('foaf:homepage');
-	$orgin['org_logo'] = $graph->resource( $primaryTopic )->getString('foaf:logo');
+	$orgin['org_url'] = (string)$graph->resource( $primaryTopic )->getString('foaf:homepage');
+	$orgin['org_logo'] = (string)$graph->resource( $primaryTopic )->getString('foaf:logo');
 	
 	$linfo = $eq->misc_curl_getinfo($orgin['org_logo']);
 	if($linfo['http_code']!=200){
@@ -131,12 +131,14 @@ foreach($opds as $opd){
 		echo "\tNo datasets found\n";
 		continue;
 	}
+	
 	$res = $eq->db->fetch_one('orgs', array('org_uri' => $orgin['org_uri']), array(), "`org_uri`");
 	if(isset($res['org_uri'])){
 		$eq->db->update('orgs', $orgin, $orginraw, array('org_uri' => $orgin['org_uri']));
 	}else{
 		$orginraw['org_firstseen'] = 'NOW()';
 		$eq->db->insert('orgs', $orgin, $orginraw);
+		echo $eq->db->lastsql;
 	}
 	
 

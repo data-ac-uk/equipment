@@ -39,6 +39,11 @@ foreach($config as $org){
 	$orgin['org_sort'] = $eq->misc_order_txt($org['org_name']);
 	$orgin['org_url'] = trim($org['org_url']);
 	$orgin['org_logo'] = $org['org_logo'];
+	
+	$linfo = $eq->misc_curl_getinfo($orgin['org_logo']);
+	if($linfo['http_code']!=200){
+		$orgin['org_logo'] = "";
+	}
 
 	//Check if exists through other means (same url);
 	

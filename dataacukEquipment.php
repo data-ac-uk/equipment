@@ -934,8 +934,7 @@ class dataacukEquipment
 			if(isset($uniquip[$v])){
 				$itemU["itemU_f_{$k}"] = $uniquip[$v];
 			}
-		}	
-	
+		}
 		$itemU['itemU_f_type'] = strtolower($itemU['itemU_f_type']);
 		$this->db->insert('itemUniquips',$itemU,array("itemU_updated"=>"NOW()"),"REPLACE");
 		
@@ -1829,14 +1828,13 @@ class eqDB extends DB\SQL {
 		$i = 1;
 		foreach($fields as $k=>$v){
 			$fieldsraw[$k] = "?";
-			$infields[$i] = $v;
+			$infields[$i] = (string)$v;
 			$i++;
 		}
 		
-		
-		
 		$sql = "$type into `$table` (`".join("`,`",array_keys($fieldsraw))."`) VALUES (".join(",",array_values($fieldsraw)).");"; 
-		$this->exec($sql, $infields);		
+		$this->exec($sql, $infields);	
+		$this->lastsql = $sql;	
 		return $this->lastinsertid();
 	}
 	

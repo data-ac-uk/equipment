@@ -116,7 +116,7 @@ foreach( $eq->config->opds->direct as $direct) {
 	{
 		continue;
 	}
-	
+	echo "Tried {$direct['path']}\n";
 	$opd->opd_url = $direct['path'];
 	
 	echo "Found at {$direct['path']}\n";
