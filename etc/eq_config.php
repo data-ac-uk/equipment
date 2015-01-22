@@ -56,7 +56,8 @@ $eq_config->conformsToMap = array(
 );
 
 $eq_config->licences = array(
-	"ogl" => array('uri'=>"http://www.nationalarchives.gov.uk/doc/open-government-licence/", "label"=>"OGL - The (UK) Open Government License for Public Sector Information"),
+	"oglv2" => array('uri'=>"http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2/", "label"=>"OGLv2 - The (UK) Open Government License for Public Sector Information"),
+	"oglv3" => array('uri'=>"http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/", "label"=>"OGLv3 - The (UK) Open Government License for Public Sector Information"),
 	"odca" => array('uri'=>"http://opendatacommons.org/licenses/by/", "label"=>"ODCA - Open Data Commons Attribution License"),
 	"cc0" => array('uri'=>"http://creativecommons.org/publicdomain/zero/1.0/", "label"=>"CC0 - Public Domain Dedication")
 );

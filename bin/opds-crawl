@@ -27,6 +27,8 @@ $eq->launch_db();
 $eq->db->dryrun = $dryrun;
 
 
+$licencearray = array();
+
 $start = $eq->db->exec('SELECT NOW() as time;');
 
 
@@ -107,9 +109,18 @@ foreach($opds as $opd){
 			if( strcasecmp($thing_subject, $gpsk) == 0 )
 			{
 				if(!isset($datas[(string)$org_thing])) {
+					
+					$license = (string)$org_thing->getString('dcterms:license');
+					if(!isset($licencearray[$license])){
+						$linfo = $eq->misc_curl_getinfo($license);
+						$licencearray[$license] =  $linfo['url'];
+						$license = $linfo['url'];						
+					}
+					$license = $licencearray[$license];
+					
 					$datas[(string)$org_thing] = array(
 						"conformsTo"=>(string)$org_thing->getString('dcterms:conformsTo'),
-						"license"=>(string)$org_thing->getString('dcterms:license'),
+						"license"=>$license,
 						"contact"=>(string)$org_thing->getString('oo:contact'),
 						"corrections"=>(string)$org_thing->getString('oo:corrections'),
 						"type"=>array($gpsn)
@@ -138,7 +149,6 @@ foreach($opds as $opd){
 	}else{
 		$orginraw['org_firstseen'] = 'NOW()';
 		$eq->db->insert('orgs', $orgin, $orginraw);
-		echo $eq->db->lastsql;
 	}
 	
 
@@ -194,6 +204,3 @@ foreach($sets as $set){
 	echo "Disabling: {$set['data_uri']}\n";
 	$eq->dataset_disable($set, array());
 }
-
-
-	

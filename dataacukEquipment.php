@@ -303,6 +303,8 @@ class dataacukEquipment
 			}
 		}
 		
+
+		
 		if($lifound){
 			$gongs['licence'] = 3;
 		}else{
