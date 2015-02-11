@@ -25,11 +25,20 @@ require_once( "{$eq_config->pwd}/lib/Graphite/Graphite.php" );
 
 require_once( "{$eq_config->pwd}/dataacukEquipment.php" );
 
-$regex = '/^(\S+) (\S+) (\S+) \[([^:]+):(\d+:\d+:\d+) ([^\]]+)\] \"(\S+) (.*?) (\S+)\" (\S+) (\S+) "([^"]*)" "([^"]*)"$/';
+require_once( "{$eq_config->pwd}/lib//idna-convert/idna_convert.class.php");
+
+require_once( "{$eq_config->pwd}/lib/phpWhois/src/IpTools.php");
+require_once( "{$eq_config->pwd}/lib/phpWhois/src/WhoisClient.php");
+require_once( "{$eq_config->pwd}/lib/phpWhois/src/Whois.php");
 
 $eq = new dataacukEquipment($eq_config);
 $eq->launch_db();
 $eq->db->dryrun = $dryrun;
+
+
+/*
+$regex = '/^(\S+) (\S+) (\S+) \[([^:]+):(\d+:\d+:\d+) ([^\]]+)\] \"(\S+) (.*?) (\S+)\" (\S+) (\S+) "([^"]*)" "([^"]*)"$/';
+
 
 $mem = array();
 
@@ -116,10 +125,71 @@ if ($handle) {
 }
 
 echo "Added $insertcount terms\n";
+*/
+
+$query = "SELECT * 
+FROM (
+
+SELECT COUNT( * ) AS  `Rows` ,  `search_ip` 
+FROM  `statsSearchTerms` 
+WHERE `search_owner` != ''
+GROUP BY  `search_ip` 
+ORDER BY  `search_ip`
+
+) AS  `ips` 
+LEFT OUTER JOIN  `statsIPOwner` ON  `search_ip` =  `ip_address` 
+LIMIT 0 , 30";
+
+
+$ips = $eq->db->exec($query, array());	
+foreach($ips as $ip){
+	$ups = array();
+	if(!strlen($ip['ip_address'])){
+		$ups['search_owner'] = whois($ip['search_ip']);
+	}else{
+		$ups['search_owner'] = $ip['ip_owner'];
+	}
+		
+
+	$eq->db->update('statsSearchTerms',  $ups, array(), array('search_ip' => $ip['search_ip']));
+	$eq->db->insert('statsIPOwner',  array('ip_address'=>$ip['search_ip'],'ip_owner'=>$ups['search_owner']), array('ip_date'=>'NOW()'));
+	
+}
+
+
 
 //print_r($mem);
 exit();
 
+
+function whois($query){
+	$whois = `whois $query`;
+	 preg_match ('/(OrgId\:)[\s]+([\w\s]+)\n/', $whois , $matches);
+	 switch($matches[2]){
+		 case "RIPE":
+			preg_match ('/(org-name\:)[\s]+([\w\s]+)\n/', $whois , $matcheb);
+			if(strlen($matcheb[2])){
+				return $matcheb[2];
+			}
+			preg_match ('/(descr\:)[\s]+(.+)\n/', $whois , $matcheb);
+			if(strlen($matcheb[2])){
+				return $matcheb[2];
+			}
+		 break;
+		 default:
+			preg_match ('/(OrgName\:)[\s]+([\w\s]+)\n/', $whois , $matcheb);
+			if(strlen($matcheb[2])){
+				return $matcheb[2];
+			}
+			preg_match ('/(descr\:)[\s]+([\w\s]+)\n/', $whois , $matcheb);
+			if(strlen($matcheb[2])){
+				return $matcheb[2];
+			}
+		 break;
+	 }
+	 return "? $query";
+	
+}
 
 function proc_mem(&$mem, $ago){
 	

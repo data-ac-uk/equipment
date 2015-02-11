@@ -1,6 +1,79 @@
 <?php
 class reports {
 
+	function index() {
+		$f3=Base::instance();
+		$eq = $f3->eq;
+		
+		$f3->set('html_title', "Reports" );
+		$f3->set('content','content.html');
+		
+		$c []= "<ul>";
+		
+		$c []= "<li><a href=\"/reports/crawlhistory\">Crawl History</a></li>";
+		$c []= "<li><a href=\"/reports/search?start=".date("Y-m-d",strtotime("-1 month"))."&end=".date("Y-m-d")."\">Searches by Term (Last month)</a></li>";
+		$c []= "<li><a href=\"/reports/search?start=".date("Y-m-d",strtotime("-1 month"))."&end=".date("Y-m-d")."&byinst\">Searches by Institution (Last month)</a></li>";
+		$c []= "<li><a href=\"/reports/contacts\">Institution Contacts</a></li>";
+		$c []= "<li><a href=\"/reports/joined\">Institution Joining Dates</a></li>";
+				
+		$c []= "</ul>";
+		
+
+	
+		$f3->set('html_content',join("",$c));
+		print Template::instance()->render( "page-template.html" );
+		
+	}
+
+	function joined() {
+		
+		$f3=Base::instance();
+		$eq = $f3->eq;
+		
+		$f3->set('html_title', "Contributers Info" );
+		$f3->set('content','content.html');
+		
+		
+		$eq->launch_db();
+		
+		$orgs = $eq->db->fetch_many('orgs', array('sort:1'=>'org_sort', 'sort:2'=>'org_firstseen'));
+		
+		
+		$c []= "<table class='status'>";
+		$c []= "<tr>";
+		$c []= "<th>Organisation</th>";
+		$c []= "<th>ID</th>";
+		$c []= "<th>Status</th>";
+		$c []= "<th>Joined</th>";
+		$c []= "<th>Last Crawled</th>";
+		$c []= "</tr>";
+
+		foreach( $orgs as $feed )
+		{
+			
+			if( $feed["org_ena"] != 0 ){
+				$style = "style=\"background: rgb(200,255,200);\"";
+			}else{	
+				$style = "style=\"background: rgb(255,200,200);\"";
+			}
+			
+			$c []= "<tr $style>";
+			$c []= "<td>{$feed["org_name"]}</td>";
+			$c []= "<td>{$feed["org_idscheme"]}/{$feed["org_id"]}</td>";
+			$c []= "<td>".($feed["org_ena"] ? "&#x2713;" : "&#x2717;")."</td>";
+			$c []= "<td>{$feed["org_firstseen"]}</td>";
+			$c []= "<td>{$feed["org_lastseen"]}</td>";
+			$c []= "</tr>";
+		}
+		
+	
+	
+
+	
+	$f3->set('html_content',join("",$c));
+	print Template::instance()->render( "page-template.html" );
+
+}
 	function contacts() {
 		$f3=Base::instance();
 		$eq = $f3->eq;
@@ -58,12 +131,24 @@ class reports {
 		print Template::instance()->render( "page-template.html" );
 		
 	}
-
+	
 	function search() {
 		$f3=Base::instance();
 		$eq = $f3->eq;
 		
-		$f3->set('html_title', "Search Terms" );
+	
+		if(isset($_REQUEST['byinst'])){
+			$field = 'search_owner';
+			$title = "Searches by Institution";
+			$ftitle = 'Institution';
+		}else{
+			$field = 'search_term';
+			$title = "Searches by search term";
+			$ftitle = 'Term';
+		}
+		
+		
+		$f3->set('html_title', $title );
 		$f3->set('content','content.html');
 		$c = array();
 		
@@ -82,10 +167,10 @@ class reports {
 		
 		$eq->launch_db();
 		$statuses = $eq->db->exec(
-		"SELECT COUNT( * ) AS  `Rows` ,  `search_term` 
+		"SELECT COUNT( * ) AS  `Rows` ,  `$field` 
 FROM  `statsSearchTerms`
 WHERE `search_date` >= ? AND `search_date` <=  ?
-GROUP BY  `search_term`
+GROUP BY  `{$field}`
 ORDER BY  `Rows` DESC",
 		 array(1=>$startdate,2=>$enddate));	
 		
@@ -95,13 +180,13 @@ ORDER BY  `Rows` DESC",
 		$c[] = "<table class='status'>";
 		
 		$c[] = "<tr>";
-			$c[] = "<th>Term</th>";
+			$c[] = "<th>{$ftitle}</th>";
 			$c[] = "<th>No of Searches</th>";
 		$c[] = "</tr>";	
 		
 		foreach($statuses as $ser){
 		$c[] = "<tr>";
-			$c[] = "<td>{$ser['search_term']}</td>";
+			$c[] = "<td>{$ser[$field]}</td>";
 			$c[] = "<td>{$ser['Rows']}</td>";
 		$c[] = "</tr>";	
 
