@@ -25,18 +25,11 @@ require_once( "{$eq_config->pwd}/lib/Graphite/Graphite.php" );
 
 require_once( "{$eq_config->pwd}/dataacukEquipment.php" );
 
-require_once( "{$eq_config->pwd}/lib//idna-convert/idna_convert.class.php");
-
-require_once( "{$eq_config->pwd}/lib/phpWhois/src/IpTools.php");
-require_once( "{$eq_config->pwd}/lib/phpWhois/src/WhoisClient.php");
-require_once( "{$eq_config->pwd}/lib/phpWhois/src/Whois.php");
-
 $eq = new dataacukEquipment($eq_config);
 $eq->launch_db();
 $eq->db->dryrun = $dryrun;
 
 
-/*
 $regex = '/^(\S+) (\S+) (\S+) \[([^:]+):(\d+:\d+:\d+) ([^\]]+)\] \"(\S+) (.*?) (\S+)\" (\S+) (\S+) "([^"]*)" "([^"]*)"$/';
 
 
@@ -125,14 +118,14 @@ if ($handle) {
 }
 
 echo "Added $insertcount terms\n";
-*/
+
 
 $query = "SELECT * 
 FROM (
 
 SELECT COUNT( * ) AS  `Rows` ,  `search_ip` 
 FROM  `statsSearchTerms` 
-WHERE `search_owner` != ''
+WHERE `search_owner` = ''
 GROUP BY  `search_ip` 
 ORDER BY  `search_ip`
 
@@ -140,6 +133,7 @@ ORDER BY  `search_ip`
 LEFT OUTER JOIN  `statsIPOwner` ON  `search_ip` =  `ip_address` 
 LIMIT 0 , 30";
 
+$count = 0;
 
 $ips = $eq->db->exec($query, array());	
 foreach($ips as $ip){
@@ -153,10 +147,12 @@ foreach($ips as $ip){
 
 	$eq->db->update('statsSearchTerms',  $ups, array(), array('search_ip' => $ip['search_ip']));
 	$eq->db->insert('statsIPOwner',  array('ip_address'=>$ip['search_ip'],'ip_owner'=>$ups['search_owner']), array('ip_date'=>'NOW()'));
+
+	$count++;
 	
 }
 
-
+echo "Added $count search institutions\n";
 
 //print_r($mem);
 exit();
