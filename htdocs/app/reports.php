@@ -136,22 +136,6 @@ class reports {
 		$f3=Base::instance();
 		$eq = $f3->eq;
 		
-	
-		if(isset($_REQUEST['byinst'])){
-			$field = 'search_owner';
-			$title = "Searches by Institution";
-			$ftitle = 'Institution';
-		}else{
-			$field = 'search_term';
-			$title = "Searches by search term";
-			$ftitle = 'Term';
-		}
-		
-		
-		$f3->set('html_title', $title );
-		$f3->set('content','content.html');
-		$c = array();
-		
 		if(isset($_REQUEST['start'])){
 			$startdate = date("Y-m-d H:i:s",strtotime($_REQUEST['start'],strtotime("00:00:00")));
 		}else{
@@ -164,34 +148,93 @@ class reports {
 			$enddate = date("Y-m-d 23:59:59");
 		}
 	
+	
+		$urlbase = "/reports/search?start=".urlencode($startdate)."&end=".urlencode($enddate);
 		
-		$eq->launch_db();
-		$statuses = $eq->db->exec(
-		"SELECT COUNT( * ) AS  `Rows` ,  `$field` 
-FROM  `statsSearchTerms`
-WHERE `search_date` >= ? AND `search_date` <=  ?
-GROUP BY  `{$field}`
-ORDER BY  `Rows` DESC",
-		 array(1=>$startdate,2=>$enddate));	
+		if(isset($_REQUEST['byinst'])){
+			$field = 'search_owner';
+			$title = "Searches by Institution";
+			$ftitle = 'Institution';
+			$urlbase .= "&byinst";
+			$afield = 'search_term';
+			$atitle = 'Term';
+		}else{
+			$field = 'search_term';
+			$title = "Searches by search term";
+			$ftitle = 'Term';
+			$afield = 'search_owner';
+			$atitle = 'Who';
+		}
 		
+	
+		$f3->set('html_title', $title );
+		$f3->set('content','content.html');
+		$c = array();
 		
 		$c[] = "<h2>From: {$startdate} to: $enddate</h2>";
+	
+	
 		
 		$c[] = "<table class='status'>";
-		
-		$c[] = "<tr>";
-			$c[] = "<th>{$ftitle}</th>";
-			$c[] = "<th>No of Searches</th>";
-		$c[] = "</tr>";	
-		
-		foreach($statuses as $ser){
-		$c[] = "<tr>";
-			$c[] = "<td>{$ser[$field]}</td>";
-			$c[] = "<td>{$ser['Rows']}</td>";
-		$c[] = "</tr>";	
-
-		}
+	
+		if(isset($_REQUEST['key'])){
 			
+			$c[] = "<h3>Filtered Term: {$_REQUEST['key']}</h3>";
+			
+			$eq->launch_db();
+			$statuses = $eq->db->exec(
+			"SELECT * FROM  `statsSearchTerms`
+	WHERE `search_date` >= ? AND `search_date` <=  ? AND `$field` = ? ORDER BY  `search_date` ASC",
+			 array(1=>$startdate,2=>$enddate,3=>$_REQUEST['key']));	
+			
+			
+ 			$c[] = "<tr>";
+ 				$c[] = "<th>{$atitle}</th>";
+ 				$c[] = "<th>IP</th>";
+ 				$c[] = "<th>Date</th>";
+ 			$c[] = "</tr>";	
+	
+			foreach($statuses as $ser){
+			$c[] = "<tr>";
+				$c[] = "<td>{$ser[$afield]}</td>";
+				$c[] = "<td>{$ser['search_ip']}</td>";
+				$c[] = "<td>{$ser['search_date']}</td>";
+			$c[] = "</tr>";	
+
+			}
+			
+		}else{
+			
+			$eq->launch_db();
+			$statuses = $eq->db->exec(
+			"SELECT COUNT( * ) AS  `Rows` ,  `$field` 
+	FROM  `statsSearchTerms`
+	WHERE `search_date` >= ? AND `search_date` <=  ?
+	GROUP BY  `{$field}`
+	ORDER BY  `Rows` DESC",
+			 array(1=>$startdate,2=>$enddate));	
+		
+		
+		
+			
+			$c[] = "<tr>";
+				$c[] = "<th>{$ftitle}</th>";
+				$c[] = "<th>No of Searches</th>";
+			$c[] = "</tr>";	
+		
+			foreach($statuses as $ser){
+			$c[] = "<tr>";
+				$c[] = "<td><a href=\"{$urlbase}&key=".urlencode($ser[$field])."\">{$ser[$field]}</a></td>";
+				$c[] = "<td>{$ser['Rows']}</td>";
+			$c[] = "</tr>";	
+
+			}
+			
+		}
+		
+		
+		$c[] = "</table>";
+	
 		
 		
 		
