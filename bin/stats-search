@@ -131,7 +131,7 @@ ORDER BY  `search_ip`
 
 ) AS  `ips` 
 LEFT OUTER JOIN  `statsIPOwner` ON  `search_ip` =  `ip_address` 
-LIMIT 0 , 30";
+";
 
 $count = 0;
 
