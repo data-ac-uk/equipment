@@ -136,6 +136,7 @@ $f3->route('GET /item/@id.fragment', 'item->fragment' );
 
 $f3->route('GET	/newsletters', 'newsletters->index' );
 $f3->route('GET	/newsletters/@issue', 'newsletters->issue' );
+$f3->route('GET	/newsletters/@issue/@article', 'newsletters->issue' );
 
 $f3->route('GET /org/ukprn-@id',
     function() {

@@ -2,7 +2,8 @@
 class newsletters {
 
 	var $newsletters = array(
-		//"issue2"=>array("title"=>"Issue 2, November 2013"),
+		"issue3"=>array("title"=>"Issue 3, Feburary 2014"),
+		"issue2"=>array("title"=>"Issue 2, November 2013"),
 		"issue1"=>array("title"=>"Issue 1, June 2013")
 	);
 	
@@ -21,12 +22,18 @@ class newsletters {
 		$f3=Base::instance();
 		
 		$issue = $f3->get( "PARAMS.issue" );
-	
-		$path = "resources/newsletters/{$issue}/newsletter.html";
+		$article = $f3->get( "PARAMS.article" );
+		if(strlen($article)){
+			$path = "resources/newsletters/{$issue}/$article.html";
+		}else{
+			$path = "resources/newsletters/{$issue}/newsletter.html";
+		}
+		
 		
 		if(!file_exists($path)){
 			$f3->error(404);
 		}
+		
 		$is = $this->newsletters[$issue];
 			
 		$content = "<div class='container'>";       
@@ -44,17 +51,31 @@ class newsletters {
 			
 
 		$content .= "<div class='twelve columns' >	";	
-		$content .= "<h2>{$is['title']}</h2>";
+		$content .= "<h2><a href=\"/newsletters/{$issue}\">{$is['title']}</a></h2>";
 		$content .= "<div class=\"newsletter\" style=\"\">";
-		$content .= "<div class=\"banner\">";
-		$content .= "<img src=\"/resources/newsletters/equipmentdata_banner_01.jpg\">";
-		$content .= "<img src=\"/resources/newsletters/equipmentdata_banner_02.jpg\">";
-		$content .= "</div>";
-		$content .= file_get_contents($path);
 
-		$content .= "<div class=\"banner\">";
-		$content .= "<img src=\"/resources/newsletters/banner.jpg\">";
-		$content .= "</div>";
+		if(strlen($article)){
+			
+			$content .= "<div class=\"article\" style=\"\">";		
+			$content .= file_get_contents($path);
+			
+			$content .= "<div class=\"clear\" style=\"\"></div>";	
+			$content .= "</div>";
+		
+
+		}else{
+			$content .= "<div class=\"banner\">";
+			$content .= "<img src=\"/resources/newsletters/equipmentdata_banner_01.jpg\">";
+			$content .= "<img src=\"/resources/newsletters/equipmentdata_banner_02.jpg\">";
+			$content .= "</div>";
+		
+			$content .= file_get_contents($path);
+
+			$content .= "<div class=\"banner\">";
+			$content .= "<img src=\"/resources/newsletters/banner.jpg\">";
+			$content .= "</div>";
+		}
+		
 		$content .= "</div>";
 		$content .= "</div>";
 

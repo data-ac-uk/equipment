@@ -181,6 +181,9 @@ body {
 br {
 	clear: none;
 }
+.clear {
+	clear: both;
+}
 
 
 .ui-widget-content h5{
@@ -431,17 +434,28 @@ ol.faq{
 	border: 1px solid #aaa; max-width: 698px; padding:5px;
 }
 
+.newsletter p{
+	padding: 0 0 7px 0;
+}
+
 .newsletter .banner{
 	margin:0px 0px 5px 0px;
 	padding:0px;
 	line-height: 0px;
+}
+.newsletter .article h3{
+	margin: 0px 0px 5px;
+}
+.newsletter .article img{
+	float: left;
+	padding: 0px 10px 2px 0px;
 }
 
 .newsletter .banner img{
 	max-width: 100%;
 }
 .newsletter .stories{
-	margin: -3px;
+	margin: 5px 0px -3px;
 }
 
 .newsletter .stories td{
