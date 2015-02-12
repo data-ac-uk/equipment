@@ -426,3 +426,24 @@ ol.faq{
  #query{
 	
 }
+
+.newsletter {
+	border: 1px solid #aaa; max-width: 698px; padding:5px;
+}
+
+.newsletter .banner{
+	margin:0px 0px 5px 0px;
+	padding:0px;
+	line-height: 0px;
+}
+
+.newsletter .banner img{
+	max-width: 100%;
+}
+.newsletter .stories{
+	margin: -3px;
+}
+
+.newsletter .stories td{
+	padding: 5px;
+}

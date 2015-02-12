@@ -133,6 +133,10 @@ $f3->route('GET	/org/@type/@id.logo', 'logo->getLogo' );
 $f3->route('GET	/item/@id', 'item->page' );
 $f3->route('GET /item/@id.fragment', 'item->fragment' );
 
+
+$f3->route('GET	/newsletters', 'newsletters->index' );
+$f3->route('GET	/newsletters/@issue', 'newsletters->issue' );
+
 $f3->route('GET /org/ukprn-@id',
     function() {
         $f3=Base::instance();
