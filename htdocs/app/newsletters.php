@@ -2,9 +2,11 @@
 class newsletters {
 
 	var $newsletters = array(
+		"issue5"=>array("title"=>"Issue 5, October 2014"),
+		"issue4"=>array("title"=>"Issue 4, July 2014"),
 		"issue3"=>array("title"=>"Issue 3, Feburary 2014"),
 		"issue2"=>array("title"=>"Issue 2, November 2013"),
-		"issue1"=>array("title"=>"Issue 1, June 2013")
+		"issue1"=>array("title"=>"Issue 1, July 2013")
 	);
 	
 	function index(){
