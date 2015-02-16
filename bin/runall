@@ -34,7 +34,7 @@ $tasks = array(
 	),
 	"opds-autodiscover" => array(
 		"cmd" => "php opds-autodiscover",
-		"every"=> TIME_ONEWEEK,
+		"every"=> TIME_ONEDAY,
 	),
 	"opds-crawl" => array(
 		"cmd" => "php opds-crawl",
