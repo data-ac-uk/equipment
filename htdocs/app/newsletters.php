@@ -2,6 +2,7 @@
 class newsletters {
 
 	var $newsletters = array(
+		"issue6"=>array("title"=>"Issue 6, December 2014"),
 		"issue5"=>array("title"=>"Issue 5, October 2014"),
 		"issue4"=>array("title"=>"Issue 4, July 2014"),
 		"issue3"=>array("title"=>"Issue 3, Feburary 2014"),
@@ -83,7 +84,7 @@ class newsletters {
 
 		$content .= "</div>";
 				
-		$f3->set('html_title', "Newsletters");
+		$f3->set('html_title', "Newsletters: {$is['title']}");
 		$f3->set('content','content.html');
 		$f3->set('html_content', $content );
 		print Template::instance()->render( "page-template.html" );

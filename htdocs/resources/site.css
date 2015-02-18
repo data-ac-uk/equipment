@@ -461,3 +461,17 @@ ol.faq{
 .newsletter .stories td{
 	padding: 5px;
 }
+.newsletter ul{
+	display: block;
+	list-style-type: disc;
+	margin: 0 0px 8px;
+	padding: 0 0 0 40px;
+}
+
+.newsletter h3{
+	margin-top: 20px;
+}
+
+.newsletter ul li{
+	list-style-type: disc;
+}
