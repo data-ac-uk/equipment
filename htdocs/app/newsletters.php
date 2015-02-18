@@ -50,6 +50,8 @@ class newsletters {
 		$content .= "</ul>";
 		
 		
+		
+		$content .= "<br/><a href=\"http://communicatoremail.com/IN/DCF/gIi0ExYiiGVToIeP0L10yN/\" target=\"_blank\">Subscribe to our quarterly newsletter</a>";
 		$content .= "</div>";
 			
 
