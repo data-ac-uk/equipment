@@ -1155,6 +1155,10 @@ class dataacukEquipment
 		fclose($fp_tsv);
 		fclose($fp_json);
 		
+		#convert csv to windows line endings.
+        $exec = "unix2dos -q ".escapeshellarg($path);
+      	`$exec`;
+		
 	}
 	
 	function make_item_turtle(&$set,&$item)

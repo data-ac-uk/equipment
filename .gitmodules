@@ -1,0 +1,18 @@
+[submodule "lib/Graphite"]
+	path = lib/Graphite
+	url = https://github.com/cgutteridge/Graphite.git
+[submodule "lib/arc2"]
+	path = lib/arc2
+	url = https://github.com/semsol/arc2.git
+[submodule "lib/ntcat"]
+	path = lib/ntcat
+	url = https://github.com/cgutteridge/ntcat.git
+[submodule "lib/OPDLib"]
+	path = lib/OPDLib
+	url = https://github.com/data-ac-uk/OPDLib.git
+[submodule "lib/phpLocation"]
+	path = lib/phpLocation
+	url = https://github.com/bluerhinos/phpLocation.git
+[submodule "lib/PHPExcel"]
+	path = lib/PHPExcel
+	url = https://github.com/PHPOffice/PHPExcel.git
