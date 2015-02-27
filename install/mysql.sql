@@ -256,6 +256,7 @@ CREATE TABLE IF NOT EXISTS `orgsManual` (
   `dataset_corrections` varchar(255) NOT NULL,
   `dataset_contact` varchar(255) NOT NULL,
   `org_enabled` tinyint(1) NOT NULL,
+  `org_comment` text NOT NULL,
   PRIMARY KEY (`org_xid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

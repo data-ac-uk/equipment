@@ -49,7 +49,7 @@ $tasks = array(
 		"every"=> TIME_ONEDAY,
 	),
 	"equipment-download" => array(
-		"cmd" => "php equipment-download",
+		"cmd" => "php -d memory_limit=256M equipment-download",
 		"every"=> TIME_ONEDAY,
 	),
 	"equipment-status" => array(
