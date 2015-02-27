@@ -1725,7 +1725,7 @@ class dataacukEquipment
 	
 }
 
-class eqGraphite extends graphite{;
+class eqGraphite extends graphite{
 	function __construct() {
 		parent::__construct();
 		global $eq;
