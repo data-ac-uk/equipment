@@ -34,7 +34,7 @@ class logo {
 		}
 		
 		if(!file_exists($pic_full)){
-			$exec = "convert ".escapeshellarg($pic_org)." ".escapeshellarg("png:{$pic_full}");
+			$exec = $eq->config->imagemagick->convert_path." ".escapeshellarg($pic_org)." ".escapeshellarg("png:{$pic_full}");
 			@exec($exec);
 		}
 		
@@ -48,7 +48,7 @@ class logo {
 		if(isset($_REQUEST['size']) && in_array($_REQUEST['size'],array_keys($sizes))){
 			$pic_size = "{$pic_sub}.{$_REQUEST['size']}";
 			if(!file_exists($pic_size)){
-				$exec = "convert ".escapeshellarg($pic_org)." -resize ".escapeshellarg($sizes[$_REQUEST['size']])." ".escapeshellarg("png:{$pic_size}");
+				$exec = $eq->config->imagemagick->convert_path." ".escapeshellarg($pic_org)." -resize ".escapeshellarg($sizes[$_REQUEST['size']])." ".escapeshellarg("png:{$pic_size}");
 				@exec($exec);
 			}
 

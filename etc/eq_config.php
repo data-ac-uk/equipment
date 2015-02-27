@@ -103,6 +103,9 @@ $eq_config->db->password = 'equipment';
 $eq_config->rapper = (object) NULL;
 $eq_config->rapper->path = 'rapper';
 
+$eq_config->imagemagick = (object) NULL;
+$eq_config->imagemagick->convert_path = 'convert';
+
 $eq_config->gongs = array(1=>'bronze', 2=>'silver', 3=>'gold' );
 
 $eq_config->crawler = (object) NULL;
