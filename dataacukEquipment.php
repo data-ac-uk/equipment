@@ -1731,7 +1731,7 @@ class eqGraphite extends graphite{
 		global $eq;
 		$this->cacheDir($eq->config->cachepath."/graphite");
 
-		$this->arc2config = array('time_out'=>3600);
+		$this->arc2config = array('keep_time_limit'=>1);
 	}
 	
 	
