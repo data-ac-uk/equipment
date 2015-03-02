@@ -1363,10 +1363,15 @@ class dataacukEquipment
 			$html []=  "<div class='corrections'>Issues with this record should be reported to ".$g->resource( $set["data_corrections"] )->prettyLink()."</div>";
 		}
 
+/*
 		$data = array( 
 			"title"=> utf8_encode((string)$item->label() ),
 			"content"=> utf8_encode( join("",$html) ) ) ;
-
+*/
+		$data = array( 
+			"title"=> (string)$item->label(),
+			"content"=>  join("",$html) ) ;
+			
 		$itemid = $this->misc_item_cacheid( $item );
 	
 		

@@ -96,7 +96,7 @@ $eq_config->uniqupextramap = array(
 );
 
 $eq_config->db = (object) NULL;
-$eq_config->db->connection = "mysql:host=localhost;port=3306;dbname=equipment";
+$eq_config->db->connection = "mysql:host=localhost;port=3306;dbname=equipment;charset=utf8";
 $eq_config->db->user = 'equipment';
 $eq_config->db->password = 'equipment';
 
