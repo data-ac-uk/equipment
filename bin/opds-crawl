@@ -53,6 +53,7 @@ foreach($opds as $opd){
 
 	} catch (\Exception $e) {
 		echo "\tError:".$e->getMessage()."\n";
+		continue;
 	}
 	
 	$graph = $topd->graph;
