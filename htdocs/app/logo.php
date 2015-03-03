@@ -5,7 +5,9 @@ class logo {
 	{
 		
 		$f3=Base::instance();
-			
+		
+		$cacheage = 24*3600; // 1Day
+		
 		$eq = $f3->eq;	
 		$eq->launch_db();
 		
@@ -28,7 +30,7 @@ class logo {
 		$pic_org = "{$pic_sub}.original";
 		$pic_full = "{$pic_sub}.full";
 		
-		if(isset($_REQUEST['nocache']) || !file_exists($pic_org) || filemtime($pic_org) < strtotime("-1 Day") ){
+		if(isset($_REQUEST['nocache']) || !file_exists($pic_org) || filemtime($pic_org) < (time()-$cacheage) ){
 			@`rm -f {$pic_sub}.*`;
 			copy($org['org_logo'], $pic_org);
 		}
@@ -62,6 +64,15 @@ class logo {
 			$f3->error(404);
 		}
 		header('Content-Type: image/png');
+	
+		header('max-age: '.$cacheage);
+		header('Cache-Control: public');
+		header('Pragma: cache');
+
+		header('Date: '.gmdate('D, d M Y H:i:s \G\M\T', time()));
+		header('Last-Modified: '.gmdate('D, d M Y H:i:s \G\M\T', filemtime($goimage)));
+		header('Expires: '.gmdate('D, d M Y H:i:s \G\M\T', time() + $cacheage));
+		
 		readfile($goimage);
 		return $path;
 	}
