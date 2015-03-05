@@ -68,11 +68,17 @@ foreach($opds as $opd){
 		$uris[$uri['host']] = $uri;
 	}
 	
-
+	$iduriparse = parse_url($primaryTopic);
+	
 	if(isset($eq->config->id->overides[(string)$primaryTopic])){
 		$id = explode("/",$eq->config->id->overides[(string)$primaryTopic]);
 		$orgin['org_idscheme'] = $id[0];
 		$orgin['org_id'] = $id[1];
+	}elseif($iduriparse['host']=='id.learning-provider.data.ac.uk'){
+		$orgin['org_idscheme'] = 'ukprn';
+		$path = explode("/",$iduriparse['path']);
+		$path2 = explode(".",$path[2]);
+		$orgin['org_id'] = $path2[0];
 	}elseif(isset($uris['id.learning-provider.data.ac.uk'])){
 		$orgin['org_idscheme'] = 'ukprn';
 		$path = explode("/",$uris['id.learning-provider.data.ac.uk']['path']);
