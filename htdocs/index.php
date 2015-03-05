@@ -5,6 +5,13 @@ require_once( "../lib/Graphite/Graphite.php" );
 
 
 date_default_timezone_set( "Europe/London" );
+
+if(substr($_SERVER['HTTP_HOST'],0,4)=='www.'){
+	header("HTTP/1.1 301 Moved Permanently"); 
+	header("Location: http".( (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 's' : '' )."://".substr($_SERVER['HTTP_HOST'],4)."/"); 
+	exit();
+}
+
 try {
     $f3=require('lib/base.php');
 } catch (Exception $e) {
