@@ -5,13 +5,14 @@
 require_once( "../lib/arc2/ARC2.php" );
 require_once( "../lib/Graphite/Graphite.php" );
 
+$STDERR = fopen('php://stderr', 'w+');
 
 $ukprn = $argv[1];
 if((int)($ukprn) == $ukprn){ 
 	$ukprn = "http://learning-provider.data.ac.uk/ukprn/{$ukprn}.ttl";
 }
 
-echo "loading: $ukprn\n";
+fwrite($STDERR,"loading: $ukprn\n");
 
 $graph = new Graphite();
 $graph->load( $ukprn );
@@ -75,9 +76,7 @@ foreach($sameas as $same){
 	
 }
 
-
-echo $postcode = $org->get("ospost:postcode");
-echo "-----\n";
+$postcode = $org->get("ospost:postcode");
 
 
 $opd->addCompressedTriple( $opduri, "foaf:based_near", $postcode);
@@ -99,10 +98,10 @@ $opd->addCompressedTriple( $equrl, "oo:contact", "mailto:equpiment-data@{$org_ur
 $opd->addCompressedTriple( $equrl, "oo:corrections", "mailto:equpiment-data@{$org_url_d}");
 
 
-
-echo "\n\nNew OPD\n";
+fwrite($STDERR,"\n\n---New OPD----------\n");
 echo $opd->serialize('Turtle');
-echo "\nENDOPD\n";
+fwrite($STDERR,"\n\n---End OPD----------\n");
+
 
 function myCase($title){
 	$title = strtolower($title);
