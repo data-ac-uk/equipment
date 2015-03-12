@@ -234,11 +234,9 @@ class reports {
 				$c[] = "</tr>";	
 				$totalcount += $ser['Rows'];
 			}
-			
-		}
 		
 		$c[] = "<tr>";
-			$c[] = "<th>Total no of Searchs</td>";
+			$c[] = "<th>Total no of Searches</td>";
 			$c[] = "<td>{$totalcount}</td>";
 		$c[] = "</tr>";	
 		$c[] = "<tr>";
@@ -247,7 +245,7 @@ class reports {
 		$c[] = "</tr>";	
 		$c[] = "</table>";
 	
-		
+		}
 		
 		
 		$f3->set('html_content',join("",$c));
