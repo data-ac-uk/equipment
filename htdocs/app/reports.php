@@ -203,6 +203,11 @@ class reports {
 
 			}
 			
+			$c[] = "<tr>";
+				$c[] = "<th colspan=2>Total no of Rows</th>";
+				$c[] = "<td>".count($statuses)."</td>";
+			$c[] = "</tr>";	
+			
 		}else{
 			
 			$eq->launch_db();
@@ -221,18 +226,25 @@ class reports {
 				$c[] = "<th>{$ftitle}</th>";
 				$c[] = "<th>No of Searches</th>";
 			$c[] = "</tr>";	
-		
+			$totalcount = 0;
 			foreach($statuses as $ser){
-			$c[] = "<tr>";
-				$c[] = "<td><a href=\"{$urlbase}&key=".urlencode($ser[$field])."\">{$ser[$field]}</a></td>";
-				$c[] = "<td>{$ser['Rows']}</td>";
-			$c[] = "</tr>";	
-
+				$c[] = "<tr>";
+					$c[] = "<td><a href=\"{$urlbase}&key=".urlencode($ser[$field])."\">{$ser[$field]}</a></td>";
+					$c[] = "<td>{$ser['Rows']}</td>";
+				$c[] = "</tr>";	
+				$totalcount += $ser['Rows'];
 			}
 			
 		}
 		
-		
+		$c[] = "<tr>";
+			$c[] = "<th>Total no of Searchs</td>";
+			$c[] = "<td>{$totalcount}</td>";
+		$c[] = "</tr>";	
+		$c[] = "<tr>";
+			$c[] = "<th>Total no of Searchers</td>";
+			$c[] = "<td>".count($statuses)."</td>";
+		$c[] = "</tr>";	
 		$c[] = "</table>";
 	
 		
