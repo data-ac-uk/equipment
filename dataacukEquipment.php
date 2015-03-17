@@ -405,7 +405,8 @@ class dataacukEquipment
 		
 		$graph = new eqGraphite();
 		$graph->ns( "oldcerif", "http://spi-fm.uca.es/neologism/cerif#" );
-
+		$graph->ns( "vcard", "http://www.w3.org/2006/vcard/ns#" );
+						
 		$tmpfile_err = "{$this->config->cachepath}/{$set['data_hash']}.err";
 		$tmpfile_nt = "{$this->config->cachepath}/{$set['data_hash']}.nt";
 		
@@ -420,7 +421,6 @@ class dataacukEquipment
 			$notes["errors"][] = "Parse error: ".$errors;
 			return false; 
 		}
-		
 		$n = $graph->load( $tmpfile_nt );
 		unlink( $tmpfile_nt );
 
@@ -442,8 +442,18 @@ class dataacukEquipment
 				$graph->addCompressedTriple( "$item", "http://id.equipment.data.ac.uk/ns/hasURI", "$uri", "literal" );
 				$graph->addCompressedTriple( "$item", "http://id.equipment.data.ac.uk/ns/hasPage", "$url" );
 				$aliases[ "$item" ] = $uri;	
+				foreach( $item->all( "oo:contact" ) as $contact  )
+				{
+					
+					if( !$contact->has( "foaf:mbox" ) && $contact->has( "vcard:email" ) ) {
+						$graph->addCompressedTriple( "$contact", "foaf:mbox", $contact->getString( "vcard:email" ) );
+					}
+					
+				
+				}
 			}
 		}
+		
 		
 		return  $graph->cloneGraphWithAliases( $aliases );
 	}
