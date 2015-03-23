@@ -1,0 +1,19 @@
+#!/usr/bin/php
+<?php
+
+require_once( "../etc/eq_config.php" );
+
+require_once( "{$eq_config->pwd}/lib/arc2/ARC2.php" );
+require_once( "{$eq_config->pwd}/lib/Graphite/Graphite.php" );
+
+
+require_once( "{$eq_config->pwd}/dataacukEquipment.php" );
+
+
+if(isset($eq_config->replication->hosts)){
+	foreach($eq_config->replication->hosts as $host){
+		echo "Syncing {$host}\n";
+		$cmd = "rsync -a --delete {$eq_config->pwd}/htdocs/data/* \"{$host}\" --exclude=tmp";
+		exec($cmd);
+	}
+}

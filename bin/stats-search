@@ -15,6 +15,13 @@ if(in_array('--gz',$argv)){
 	$gz = false;	
 }
 
+$cmd = $argv[1];
+if(isset($argv[2]) && in_array($argv[2],array('master','slave','single'))){
+	$role = $argv[2];
+}else{
+	$role = 'single';
+}
+
 $insertcount = 0;
 
 require_once( "../etc/eq_config.php" );
@@ -26,8 +33,14 @@ require_once( "{$eq_config->pwd}/lib/Graphite/Graphite.php" );
 require_once( "{$eq_config->pwd}/dataacukEquipment.php" );
 
 $eq = new dataacukEquipment($eq_config);
-$eq->launch_db();
-$eq->db->dryrun = $dryrun;
+
+if($role == 'slave'){
+	$eq->db = new eqDB($eq_config->masterdb->connection,$eq_config->masterdb->user,$eq_config->masterdb->password);
+}else{
+	$eq->launch_db();
+	$eq->db->dryrun = $dryrun;
+	
+};
 
 
 $regex = '/^(\S+) (\S+) (\S+) \[([^:]+):(\d+:\d+:\d+) ([^\]]+)\] \"(\S+) (.*?) (\S+)\" (\S+) (\S+) "([^"]*)" "([^"]*)"$/';
@@ -35,7 +48,7 @@ $regex = '/^(\S+) (\S+) (\S+) \[([^:]+):(\d+:\d+:\d+) ([^\]]+)\] \"(\S+) (.*?) (
 
 $mem = array();
 
-$logfile = end($argv);
+$logfile = $argv[1];
 $lastage = 0;
 if($gz)
 	$handle = @gzopen($logfile, "r");
@@ -189,6 +202,7 @@ function whois($query){
 
 function proc_mem(&$mem, $ago){
 	
+	
 	foreach($mem as $ip=>$me){
 		if($me['time'] < $ago){
 			
@@ -231,11 +245,11 @@ function register_search($term, $ip, $time){
 	$ins['search_term'] = $term;
 	
 	$res = $eq->db->fetch_one('statsSearchTerms', array('search_key' => $ins['search_key']), array(), "`search_key`");
+
 	if(!isset($res['search_key'])){	
-		$eq->db->insert('statsSearchTerms',$ins, array(),"REPLACE");
+		$eq->db->insert('statsSearchTerms',$ins, array(),"INSERT");
 		$insertcount ++;
 	}
- 	
 	
 }
 

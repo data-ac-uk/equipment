@@ -96,9 +96,18 @@ $eq_config->uniqupextramap = array(
 );
 
 $eq_config->db = (object) NULL;
+$eq_config->db->host = "localhost";
+$eq_config->db->db = "equipment";
 $eq_config->db->connection = "mysql:host=localhost;port=3306;dbname=equipment;charset=utf8";
 $eq_config->db->user = 'equipment';
 $eq_config->db->password = 'equipment';
+
+$eq_config->masterdb = (object) NULL;
+$eq_config->masterdb->host = "master";
+$eq_config->masterdb->db = "equipment";
+$eq_config->masterdb->connection = "mysql:host={$eq_config->masterdb->host};port=3306;dbname={$eq_config->masterdb->db};charset=utf8";
+$eq_config->masterdb->user = 'equipment';
+$eq_config->masterdb->password = 'equipment';
 
 $eq_config->rapper = (object) NULL;
 $eq_config->rapper->path = 'rapper';

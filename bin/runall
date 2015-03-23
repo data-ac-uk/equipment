@@ -9,18 +9,35 @@ if(in_array('-v',$argv)){
 	$v = false;	
 }
 
-$cmd = end($argv);
+$cmd = $argv[1];
+if(isset($argv[2]) && in_array($argv[2],array('master','slave','single'))){
+	$role = $argv[2];
+}else{
+	$role = 'single';
+}
 
 require_once( "../etc/eq_config.php" );
 
+
+switch($role){
+	case "single":
+		$tasklist = array("unilist-download","opds-autodiscover","opds-crawl","orgs-manual","orgs-manual", "equipment-download", "equipment-status","stats-search");
+	case "master":
+		$tasklist = array("unilist-download","opds-autodiscover","opds-crawl","orgs-manual","orgs-manual", "equipment-download", "equipment-status","data-rsync","stats-search");
+	break;
+	case "slave":
+		$tasklist = array("mysql-resync","stats-search");
+	break;
+}
 
 $status = "{$eq_config->pwd}/var/crawl-status.json";
 if(file_exists($status)){
 	$stat = json_decode(file_get_contents($status),true);
 }
 
-if(!isset($stat['lastrun']))
+if(!isset($stat['lastrun'])){
 	$stat['lastrun'] = array();
+}
 
 define('TIME_ONEDAY', 24 * 3600);
 define('TIME_ONEWEEK', 7 * 24 * 3600);
@@ -56,8 +73,16 @@ $tasks = array(
 		"cmd" => "php equipment-status",
 		"every"=> TIME_ONEDAY,
 	),
+	"mysql-resync" => array(
+		"cmd" => "php mysql-resync",
+		"every"=> TIME_ONEDAY,
+	),
+	"data-rsync" => array(
+		"cmd" => "php data-rsync",
+		"every"=> TIME_ONEDAY,
+	),
 	"stats-search" => array(
-		"cmd" => "php stats-search {$eq_config->stats}",
+		"cmd" => "php stats-search {$eq_config->stats} {$role}",
 		"every"=> TIME_ONEDAY,
 	),
 );
@@ -68,16 +93,16 @@ $log = "";
 $div = "=================================================";
 
 if(!in_array($cmd, array("auto", "all")) && !in_array($cmd, array_keys($tasks))){
-	die("Usage:\n\trunall [-v] [auto | all | SCRIPTNAME]\n");
+	die("Usage:\n\trunall [-v] [auto | all | SCRIPTNAME] [ ]\n");
 }
 
 
 
 if($cmd == "all"){
-	$todo = array_keys($tasks);
+	$todo = $tasklist;
 }elseif($cmd == "auto"){
 	$todo = array();
-	foreach($tasks as $tk => $task){
+	foreach($tasklist as $tk){
 		
 		if(isset($stat['lastrun'][$tk])){
 			$time = (time() - ($task['every'])) + 3600; //Adds an hour so will run every day

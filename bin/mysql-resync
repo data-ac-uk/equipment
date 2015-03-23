@@ -1,0 +1,70 @@
+#!/usr/bin/php
+<?php
+
+# This script uses the list of learning providers to auto discover any opds
+# This takes the list of files to download from a configuration file, which is
+# generated from the data at hub.data.ac.uk
+
+
+if(in_array('--dryrun',$argv)){
+	$dryrun = true;
+}else{
+	$dryrun = false;	
+}
+
+
+
+require_once( "../etc/eq_config.php" );
+
+require_once( "{$eq_config->pwd}/lib/arc2/ARC2.php" );
+require_once( "{$eq_config->pwd}/lib/Graphite/Graphite.php" );
+
+
+require_once( "{$eq_config->pwd}/dataacukEquipment.php" );
+
+
+$eq = new dataacukEquipment($eq_config);
+$eq->launch_db();
+
+$masterdb = new eqDB($eq_config->masterdb->connection,$eq_config->masterdb->user,$eq_config->masterdb->password);
+
+$status_master = $masterdb->exec("SHOW MASTER STATUS;");
+$status_slave = $eq->db->exec("SHOW SLAVE STATUS;");
+
+
+$error = false;
+if( $status_slave[0]['Last_IO_Errno']!=0){
+	$error = true;
+	$error_text = "IO Error: {$status_slave[0]['Last_IO_Errno']} {$status_slave[0]['Last_IO_Error']}";
+}elseif( $status_slave[0]['Last_SQL_Errno']!=0){
+	$error = true;
+	$error_text = "SQL Error: {$status_slave[0]['Last_SQL_Errno']} {$status_slave[0]['Last_SQL_Error']}";
+}elseif( $status_slave[0]['Slave_IO_Running']!='Yes'){
+	$error = true;
+	$error_text = "Slave_IO_Running: {$status_slave[0]['Slave_IO_Running']}";
+}elseif($status_slave[0]['Slave_SQL_Running']!='Yes'){
+	$error = true;
+	$error_text = "Slave_SQL_Running: {$status_slave[0]['Slave_SQL_Running']}";
+}elseif($status_slave[0]['Seconds_Behind_Master']>10){
+	$error = true;
+	$error_text = "Seconds_Behind_Master: {$status_slave[0]['Seconds_Behind_Master']}";
+}if($status_slave[0]['Slave_IO_State'] == 'Waiting for master to send event' && ($status_master[0]['File'] != $status_slave[0]['Master_Log_File'] || $status_master[0]['Position'] != $status_slave[0]['Read_Master_Log_Pos'])){
+	$error = true;
+	$error_text = "Slave_IO_State: {$status_slave[0]['Slave_IO_State']} and not in sync!";
+}
+
+if($error){
+	echo "$error_text - Resyncing\n";
+	$masterdb->exec("FLUSH TABLES WITH READ LOCK;");
+	$eq->db->exec("SLAVE STOP;");
+	$status_master = $masterdb->exec("SHOW MASTER STATUS;");
+	$cmd = "mysqldump -h {$eq_config->masterdb->host} -u {$eq_config->masterdb->user} -p{$eq_config->masterdb->password} --opt {$eq_config->masterdb->db} > /tmp/equipment.sql | mysql  -h {$eq_config->db->host} -u {$eq_config->db->user} -p{$eq_config->db->password} {$eq_config->db->db}";
+		`$cmd`;
+	$eq->db->exec("CHANGE MASTER TO MASTER_HOST='{$eq_config->masterdb->host}',MASTER_USER='{$eq_config->masterdb->user}', MASTER_PASSWORD='{$eq_config->masterdb->password}', MASTER_LOG_FILE='{$status_master[0]['File']}', MASTER_LOG_POS=  {$status_master[0]['Position']}");
+ 	$eq->db->exec("SLAVE START;");
+	$masterdb->exec("UNLOCK TABLES;");
+	exit(1);
+}else{
+	echo "DB is in sync :) \n";
+	exit(0);
+}
