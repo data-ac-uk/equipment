@@ -17,7 +17,6 @@ $eq_config->maxcahceage = 1209600; #2 weeks
 $eq_config->opds = (object) NULL;
 $eq_config->opds->local = "{$eq_config->pwd}/etc/opds";
 $eq_config->opds->direct = array(
-	array("path"=>"http://id.leeds.ac.uk/","type"=>"url"),
 	array("path"=>"http://www.ncl.ac.uk/nclrdf/newcastle.ttl","type"=>"url"),
 	array("path"=>"http://www.aber.ac.uk/en/media/departmental/ibers/iberskit/OPD.txt", "type"=>"url"),
 	array("path"=>"https://www.ucl.ac.uk/platforms/ucl-opd/", "type"=>"url"),

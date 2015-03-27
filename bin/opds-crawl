@@ -118,12 +118,14 @@ foreach($opds as $opd){
 				if(!isset($datas[(string)$org_thing])) {
 					
 					$license = (string)$org_thing->getString('dcterms:license');
+					
 					if(!isset($licencearray[$license])){
 						$linfo = $eq->misc_curl_getinfo($license);
 						$licencearray[$license] =  $linfo['url'];
-						$license = $linfo['url'];						
+						$license = $linfo['url'];		
+					}else{
+						$license = $licencearray[$license];
 					}
-					$license = $licencearray[$license];
 					
 					$datas[(string)$org_thing] = array(
 						"conformsTo"=>(string)$org_thing->getString('dcterms:conformsTo'),

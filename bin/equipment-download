@@ -79,9 +79,11 @@ foreach($datasets as $set){
 		$notes['errors'][] = "Error: Can't load dataset (HTTP CODE: {$linfo['http_code']}), will try cached version.";
 		if(file_exists("{$cachepath}/{$set['data_hash']}.info")){
 			$linfo = unserialize(file_put_contents("{$cachepath}/{$set['data_hash']}.info"));	
-		}	
+		}
+		$downloaded = false;	
 	}else{
-		file_put_contents("{$cachepath}.info", serialize($linfo));
+		file_put_contents("{$cachepath}/{$set['data_hash']}.info", serialize($linfo));
+		$downloaded = true;
 	}
 	
 	$cachepath .= "-".basename(parse_url($linfo['url'],PHP_URL_PATH));
@@ -100,14 +102,14 @@ foreach($datasets as $set){
 		continue;
 	}
 	
-	if(filemtime($cachepath) < (time()-$eq->config->maxcahceage)){
-		echo "   Error: Cached file too old so skipping\n";
+	if(!$downloaded && filemtime($cachepath) < (time()-$eq->config->maxcahceage)){
+		echo "   Error: Cached file too old so skipping - dataset has been removed\n";
 		$notes['errors'][] = "Error: Cached file too old so skipping - dataset has been removed";
 		$eq->dataset_disable($set, $notes);
 		$eq->parse_finish($set, $notes);
 		continue;
-	}elseif(filemtime($cachepath) < (time()-$eq->config->maxcahceagewarn)){
-		echo "   Error: Cached file too old so skipping\n";
+	}elseif($downloaded && filemtime($cachepath) < (time()-$eq->config->maxcahceagewarn)){
+		echo "   Error: Cached file too old so skipping - dataset will be removed\n";
 		$notes['errors'][] = "Error: Cached file too old so skipping - dataset will be removed in after ".date("d/m/Y",filemtime($cachepath)+$eq->config->maxcahceage);
 		$eq->parse_finish($set, $notes);
 		continue;
