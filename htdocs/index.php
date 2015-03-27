@@ -32,7 +32,8 @@ $eq = new dataacukEquipment($eq_config);
 
 $f3->eq = $eq;
 
-	
+
+$f3->set('SERVER_NAME', $eq_config->name);	
 $f3->set('DEBUG',3);
 $f3->set('AUTOLOAD',"app/");
 $f3->set('UI','ui/');
