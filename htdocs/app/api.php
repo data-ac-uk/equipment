@@ -69,7 +69,7 @@ class api {
 				}
 
 			}
-			$params['filters'] = $paramfilters;
+			$params['filter'] = json_encode($paramfilters);
 		}
 	
 		
@@ -164,6 +164,7 @@ class api {
 			$ret['results'][] = $ret_item;
 		}
 		
+	
 		
 		$ret['completed_in'] = microtime(true) - $starttime;
 		if($_REQUEST['dev']){
