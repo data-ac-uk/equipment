@@ -30,6 +30,19 @@ h5 {
 	padding:0px;
 	font-weight: bold;
 }
+
+h2#subtitle{
+	margin-top: -1.5em;
+	margin-bottom: 1em;
+}
+
+h1 sup.beta{
+	font-weight: bold;
+	font-size: 50%;
+	color:#193965;
+	top:-1em;
+}
+
 #results {
 	margin-top: 8px;
 	font-size: 120%;
@@ -53,6 +66,72 @@ h5 {
 #results .search-result:hover { 
 	background-color: #dddddd;
 }
+
+.advsearch {
+	text-align: left;
+}
+
+#adv_org_select {
+	text-align: center;
+	margin: 5px 0 0 0;
+	font-size: 110%;
+}
+
+#adv_org_select label{
+	width: auto;
+	float: none;
+	clear: none;
+	display: inline-block;
+	text-align: left;
+	padding: 0;	
+}
+
+#adv_results .item {
+	border-radius: 10px;
+	border: 1px solid #193965;
+	margin-bottom: 10px;
+	padding:2px 8px;
+}
+
+#adv_results .item .advitemimage{
+	margin:7px 0px 4px 4px;
+	float:right;
+	border-radius: 3px;
+	border: 1px solid #aaa;
+	text-align:center;
+
+	padding: 2px;
+	width:116px;
+}
+
+#adv_results .item div.advitemimage.img img{
+	max-width: 115px;
+	margin: auto;
+	display:block;
+}
+
+#adv_results .item div.advitemimage.logo{
+
+	width:100px;
+	padding: 10px;
+}
+
+#adv_results .item div.advitemimage.logo img{
+	max-width:95px;
+	max-height: 80px;
+	opacity: 0.4;
+}
+
+
+#adv_results .item .advitemlogo{
+	max-height: 32px;
+}
+
+#adv_results .advpages{
+	text-align:center;
+}
+
+
 #qs-sort {
 	background-repeat: no-repeat;
 	background-position: 98% center;
@@ -77,7 +156,7 @@ h5 {
 	position:fixed;
 	top:0;
 	width:100%;
-	z-index:997;
+	z-index:957;
 	display:none;
 }
 
@@ -385,6 +464,9 @@ ol.faq{
 
 .extralinks{
 	float: right;
+	clear:right;
+	
+	margin-top: 20px;
 	margin-right: 12px;
 }
 
@@ -423,9 +505,6 @@ ol.faq{
 }
 
 
-.advsearch {
-	text-align: center;
-}
  #query{
 	
 }
@@ -474,4 +553,8 @@ ol.faq{
 
 .newsletter ul li{
 	list-style-type: disc;
+}
+
+input[type="radio"]{
+    vertical-align: 0px;
 }

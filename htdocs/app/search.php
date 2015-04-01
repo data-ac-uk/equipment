@@ -105,8 +105,39 @@ class search {
 	
 	function advanced() {
 		$f3=Base::instance();
-		$f3->set('html_title', "Advanced Search" );
-		$f3->set('content','search-advanced.html');
+		$eq = $f3->eq;	
+		
+		$normal = true;
+		if(isset($_REQUEST['instsearch'])){
+
+			$eq->launch_db();
+			list($org_scheme,$org_id) = explode("/",$_REQUEST['instsearch']);
+			$org = $eq->db->fetch_one('orgs', array('org_idscheme' => $org_scheme,'org_id'=>$org_id));
+			if($org!==false){
+				$html = "<a class=\"uni-logo\" title=\"{$org['org_name']}\" href=\"{$org['org_name']}\"><img style=\"max-height:80px\" src=\"/org/{$org_scheme}/{$org_id}.logo?size=medium\"></a>";
+		
+				$f3->set('template_style','rebrand');
+				$f3->set('template_style_insert',$html);
+			
+
+				$f3->set('adv_org', $org );
+				
+				$f3->set('html_title', "Institutional Search" );
+				$f3->set('html_subtitle', $org['org_name'] );
+				$normal = false;
+			}
+			
+		}
+		
+		
+		if($normal){
+			$f3->set('html_title', "Search" );
+		}
+		
+		
+
+			$f3->set('content','search-advanced.html');
+		
 		print Template::instance()->render( "page-template.html" );
 	}
 

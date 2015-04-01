@@ -46,20 +46,44 @@
 
 <div class="container">
   <div class="sixteen columns padding_top_30 ">
-    <nav role="navigation" id="main-menu">
-      <ul class="links inline clearfix">
-        <li class=""><a title="Uniquip" href="/uniquip">Uniquip</a></li>
-        <li class=""><a title="FAQ" href="/faq">FAQ</a></li>
-        <li class=""><a title="Status" href="/status">Status</a></li>
-        <li class=""><a title="Compliance" href="/compliance">Compliance</a></li>
-      </ul>
-    </nav>
+	
+	<check if="{{ @template_style }}"> 
+	  	<true>
+	    	<div style="float:right;">{{ @template_style_insert | raw }}</div>
+	    </true>
+	    <false>
+		    <nav role="navigation" id="main-menu">
+		      <ul class="links inline clearfix">
+		        <li class=""><a title="Uniquip" href="/uniquip">Uniquip</a></li>
+		        <li class=""><a title="FAQ" href="/faq">FAQ</a></li>
+		        <li class=""><a title="Status" href="/status">Status</a></li>
+		        <li class=""><a title="Compliance" href="/compliance">Compliance</a></li>
+		      </ul>
+		    </nav>
+			
+			<div class='extralinks'>
+				<a href="http://www.data.ac.uk/get-in-touch/" class="getintouch" onclick="$('#contactable_inner').click(); return false;">Get in touch</a> | 
+				<a href="http://twitter.com/equipmentacuk" class="twitter">Follow us</a>
+			</div>
+			
+			
+	    </false>
+	</check>
+	
+	<!--
+   
+  -->
   <div><a href='/'><img src='/resources/images/eq-data-title.png' alt="Equipment.Data Logo"/></a></div>
-	<div class='extralinks'>
-		<a href="http://www.data.ac.uk/get-in-touch/" class="getintouch" onclick="$('#contactable_inner').click(); return false;">Get in touch</a> | 
-		<a href="http://twitter.com/equipmentacuk" class="twitter">Follow us</a>
-	</div>
+	
+
+	
   <h1>{{ @html_title }}</h1>
+
+	<check if="{{ @html_subtitle }}"> 
+	  	<true>
+	    	<h2 id="subtitle">{{ @html_subtitle }}</h2>
+	    </true>
+	</check>
 
   {{@note | raw}}
   <F3:include href="{{@content}}"/>

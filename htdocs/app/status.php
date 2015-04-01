@@ -13,11 +13,13 @@ class status {
 		$c []= "<p>The data from each organisation has been normalised into <a href='/uniquip'>Uniquip Spreadsheet Format</a> and RDF encoded as Turtle (.ttl) and using the <a href='http://openorg.ecs.soton.ac.uk/wiki/Facilities_and_Equipment'>OpenOrg</a> pattern for equipment and facilities data.</p>";
 		$c []= "<table class='status'>";
 		$c []= "<tr>";
-		$c []= "<th rowspan=\"2\" colspan=\"2\">Organisation</th>";
+		$c []= "<th rowspan=\"1\" colspan=\"3\">Organisation</th>";
 		$c []= "<th colspan=\"7\">Datasets</th>";
 		$c []= "</tr>";
 		$c []= "<tr>";
 
+		$c []= "<th colspan=\"2\"></th>";
+		$c []= "<th>Tools</th>";
 		$c []= "<th>Raw Source</th>";
 		$c []= "<th>Type</th>";
 		$c []= "<th>Download*</th>";
@@ -42,6 +44,11 @@ class status {
 			
 			$c []= "</td>";
 			
+			$c []= "<td rowspan=\"".count($feed['org_datasets'])."\">";
+			
+			$c []= "<a href=\"/search/advanced?instsearch=".$feed["org_idscheme"]."/".$feed["org_id"]."\">institutional search</a>";
+			
+			$c []= "</td>";
 		
 			
 			foreach($feed['org_datasets'] as $set){

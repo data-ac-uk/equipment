@@ -2,9 +2,17 @@
 class api {
 
 	function search() {
+		
         $f3=Base::instance();
 		
 		$params['q'] = $_REQUEST['q'];
+		//forwarded gets
+		foreach(array('instsearch') as $i){
+			if(isset($_REQUEST[$i])){
+				$params[$i] = $_REQUEST[$i];
+			}
+		}
+		
 		
 		$starttime = microtime(true);
 		
@@ -131,17 +139,24 @@ class api {
 		
 		foreach($res as $item){
 			
-			$ret_item = array();
+			$ret_item = array("uniquip"=>array());
+			
+			$ret_item['eqID'] = $item["itemU_id"];
 			
 			foreach($eq->config->uniqupmap as $k=>$v){
-				$ret_item[$v] = $item["itemU_f_{$k}"];
+				$ret_item['uniquip'][$v] = $item["itemU_f_{$k}"];
 			}
 			
 			$item['loc_text'] = "{$item['loc_lat']} {$item['loc_long']}";
 			
 			foreach($eq->config->uniqupextramap as $k=>$v){
-				$ret_item[$v] = $item["{$k}"];
+				$ret_item['uniquip'][$v] = $item["{$k}"];
 			}
+			
+			$ret_item['org'] = "{$item['item_org']}";
+			$ret_item['orgID'] = "{$item['org_idscheme']}/{$item['org_id']}";
+			$ret_item['orgIDHash'] = md5("{$item['item_org']}");
+				
 			if(isset($params['geocode'])){
 				$ret_item['_Distance'] = $item["distance"];
 			}

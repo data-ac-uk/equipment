@@ -16,6 +16,13 @@
         <input id='search-button' class='search-button' type='submit' value='&#x279C;' title='Start Search'   />
  
       </div>
+
+  	<check if="{{ isset(@adv_org) }}"> 
+  	  	<true>
+  	    	<div id="adv_org_select">Show only <input name="adv_org" type="radio" value="{{@adv_org['org_uri']}}" id="adv_org_select_org" checked> <label for="adv_org_select_org"> {{@adv_org['org_name']}} items</label>
+					 or <input name="adv_org" type="radio" value="0" id="adv_org_select_all"> <label for="adv_org_select_all">all items</label></div>
+  	    </true> 
+	  </check>
   </div>
 	 	 
   </div>
@@ -23,16 +30,39 @@
   </div>
  <div class="container"> 
   
-   <div class="three columns advsearch">
-   		<h2>Refine Results</h2>
+   <!--div class="three columns advsearch">
+   		<h3>Refine Results</h3>
         <div class="sidebox">
-        	<h3>Our Newsletter</h3>
+        	<h5>Result Type</h5>
+		</div>
+        <div class="sidebox">
+        	<h5>Order By Distance</h5>
+		</div>
+   </div-->
+   
+   <div class="thirteen columns advsearch">
+   		<h3 id="adv_results_title"></h3>
+      	<div id="adv_results">
+			
 		</div>
    </div>
+   
+   
    
 </div>
 
 <script>
+  	<check if="{{ isset(@adv_org) }}"> 
+  	  	<true>
+			var instsearch = "{{@_REQUEST['instsearch']}}";
+  	    </true>
+		<false>
+			var instsearch = 0;
+		</false>
+	</check>
+	
+
+
 $( document ).ready(function() {	
 	$('#qs-input').on("keypress", function(e) {
 	        if (e.keyCode == 13) {
@@ -46,19 +76,164 @@ $( document ).ready(function() {
 	        return false; // prevent the button click from happening
 	});
 	
+	checksearch('get');
+	
+	
+	$('h1').append("<sup class=\"beta\">BETA</sup>");
 	
 });
 
+function proclink(a){
+	var link = $(a).attr('href');
+	checksearch(link.substr(1));
+	return false;
+}
+
+function checksearch(qs) {
+	if(qs == 'get'){
+		qs = document.location.search;
+	}
+    qs = qs.split("+").join(" ");
+    var params = {},
+        tokens,
+        re = /[?&]?([^=]+)=([^&]*)/g;
+
+    while (tokens = re.exec(qs)) {
+        params[decodeURIComponent(tokens[1])]
+            = decodeURIComponent(tokens[2]);
+    }
+	
+	if(instsearch){
+		if(typeof params.filter != 'undefined'){
+			var filters = JSON.parse(params.filter);
+			if(typeof filters.org != 'undefined'){
+				$('#adv_org_select_org').prop('checked', true);
+			}else{
+				$('#adv_org_select_all').prop('checked', true);
+			}
+		}else{
+			if(typeof params.q == 'undefined' || params.q.length ==0) { 
+				$('#adv_org_select_org').prop('checked', true);
+			}else{
+				$('#adv_org_select_all').prop('checked', true);
+			}
+		}
+	}
+	
+	if(typeof params.q == 'undefined' || params.q.length ==0) { 
+		return false;
+	}
+	
+	$('#qs-input').val(params.q);
+  	preformAdvSearchGo(params);
+}
 
 function preformAdvSearch(){
 	 var query = $('#qs-input').val();
 	 
 	 var request = {};
+	 var filters = {};
+	 
 	 request.q = query;
 	 
-	 console.log(request);
+	 if(instsearch){
+	 	var org_inst = $('input:radio[name=adv_org]:checked').val();
+		if(org_inst != "0"){
+			filters.org = org_inst;
+		}
+		request.instsearch = instsearch;
+	 }
+	 
+	 if(Object.keys(filters).length){
+		 request.filter = JSON.stringify(filters);
+	 }
+	 
+	 preformAdvSearchGo(request);
+
+}
+ 
+function preformAdvSearchGo(request){	
+	window.history.pushState(request, 'New Search', '/search/advanced?'+$.param( request ));
+	$("#adv_results_title").html('Results - loading');
+	$("#adv_results").html("<center><img src=\"/resources/images/loading.gif\" style=\"padding:50px\"/></center>");
+	
+	 $.get( "/api/search", request, resultsAdvSearch);
+	
 	 
 	 
 }
+
+function resultsAdvSearch(data){
+	
+	
+	$("#adv_results_title").html('Results - ' + data.total + ' items');
+	
+	$("#adv_results").html("");
+	if(data.total != 0){
+		$.each(data.results, function(i, res) {
+		  $("#adv_results").append(drawItem(res));
+		});	
+		
+		var ret = '<div class="advpages">';
+	
+		if(typeof data.previous_page!='undefined'){
+			ret += ' <a href="' + data.previous_page + '" onClick="proclink(this); return false;"> &lt; previous page </a>';		
+		}
+	
+		ret += ' Page ' + (data.page+1) + ' of ' + data.total_pages ;
+	
+		if(typeof data.next_page!='undefined'){
+			ret += ' <a href="' + data.next_page + '" onClick="proclink(this); return false;"> next page &gt; </a>';		
+		}
+		ret += '</div>';
+
+	  $("#adv_results").append(ret	);
+			
+	}else{
+		$("#adv_results").append('<p> We found no items matching your query.</p>');
+	}
+	
+	
+	
+	
+	
+	
+	
+}
+
+function drawItem(item){
+	
+	
+	var pageurl = '/item/' + item.eqID +'.html'
+	var ret = '<div class="item">';
+	
+	if(item.uniquip.Photo.length){
+		ret += '<div class="advitemimage img"> <a href="'+ pageurl + '"> <img src="'+item.uniquip.Photo+'" /> </a> </div>';
+	}else{
+		ret += '<div class="advitemimage logo"><a href="'+ pageurl + '"> <img src="/org/' + item.orgID + '.logo?size=small"/> </a> </div>';
+	}
+	
+	ret += '<h3><a href="'+ pageurl + '">' + item.uniquip.Name +'</a></h3>';
+	if(item.uniquip.Description.length){
+		ret += '<p>' + item.uniquip.Description + '</p>';
+	}
+	
+
+	ret += '<a href="'+item.uniquip['Institution URL']+'" title="'+item.uniquip['Institution Name']+'">';
+	if(item.uniquip['Institution Logo URL'].length){
+		ret += '<img src="/org/' + item.orgID + '.logo?size=small" class="advitemlogo">';
+	}else{
+		ret += item.uniquip['Institution Name'];
+	}
+	ret += '</a>';
+	
+	ret += '<div class="clear"></div>';
+	
+	ret += '</div>';
+	
+	return ret;
+}
+
+
 
 </script>
