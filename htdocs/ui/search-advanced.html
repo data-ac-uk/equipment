@@ -208,7 +208,7 @@ function drawItem(item){
 	var ret = '<div class="item">';
 	
 	if(item.uniquip.Photo.length){
-		ret += '<div class="advitemimage img"> <a href="'+ pageurl + '"> <img src="'+item.uniquip.Photo+'" /> </a> </div>';
+		ret += '<div class="advitemimage img"> <a href="'+ pageurl + '"> <img src="/item/'+item.eqID+'/image.jpg?size=small" /> </a> </div>';
 	}else{
 		ret += '<div class="advitemimage logo"><a href="'+ pageurl + '"> <img src="/org/' + item.orgID + '.logo?size=small"/> </a> </div>';
 	}

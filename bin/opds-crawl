@@ -85,10 +85,11 @@ foreach($opds as $opd){
 		$orgin['org_id'] = $path[2];
 	}else{
 		$orgin['org_idscheme'] = 'other';
-		$orgin['org_id'] = 'X?';
+		$orgin['org_id'] = 'X-'.substr(md5($primaryTopic),0,8);
 	}
 
 	$orgin['org_name'] = $graph->resource( $primaryTopic )->getString('foaf:name');
+	
 	if(!strlen($orgin['org_name']))
 		$orgin['org_name'] = $graph->resource( $primaryTopic )->getString('skos:prefLabel');
 	
@@ -96,12 +97,22 @@ foreach($opds as $opd){
 	
 	
 	$orgin['org_url'] = (string)$graph->resource( $primaryTopic )->getString('foaf:homepage');
-	$orgin['org_logo'] = (string)$graph->resource( $primaryTopic )->getString('foaf:logo');
 	
-	$linfo = $eq->misc_curl_getinfo($orgin['org_logo']);
-	if($linfo['http_code']!=200){
-		$orgin['org_logo'] = "";
+	$orgin['org_logo'] = "";
+	foreach( $graph->resource( $primaryTopic )->all( 'foaf:logo' ) as $logo3 ) { 
+		$logo = (string)$logo3;
+		echo "$logo";
+		$linfo = $eq->misc_curl_getinfo($logo);
+		if($linfo['http_code']==200){
+			$orgin['org_logo'] = $logo;
+			break;
+		}
 	}
+ 
+ 
+		
+	
+	echo "{$orgin['org_logo']}\n";
 
 	
 	$orginraw['org_lastseen'] = 'NOW()';

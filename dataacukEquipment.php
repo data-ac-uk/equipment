@@ -188,7 +188,7 @@ class dataacukEquipment
 	/**
 		Returns org 
 		@return array
-		@param $org_uri string
+		@param $org_url string
 	**/
 	
 	function get_org($org_uri){
@@ -1305,6 +1305,9 @@ class dataacukEquipment
 	
 	function make_item_page(&$set,&$item)
 	{
+		
+			
+		$itemid = $this->misc_item_cacheid( $item );
 	
 		# create cache for displaying results
 		$html = array();
@@ -1315,7 +1318,7 @@ class dataacukEquipment
 		
 		if( $item->has( "foaf:depiction" ) )
 		{
-			$html []= "<img style='max-width:200px' src='".$item->get( "foaf:depiction" )."' />";
+			$html []= "<img style='max-width:200px' src='/item/{$itemid}/image.jpg?size=medium' />";
 		}
 		$html []= "</div>";
 		if( $item->has( "foaf:page" ) )
@@ -1382,7 +1385,6 @@ class dataacukEquipment
 			"title"=> (string)$item->label(),
 			"content"=>  join("",$html) ) ;
 			
-		$itemid = $this->misc_item_cacheid( $item );
 	
 		
 		$this->db->insert('itemPages',array("page_id"=>$itemid, "page_org"=>$set['data_org'],"page_dataset"=>$set['data_uri'],"page_title"=>(string)$item->label(),"page_content"=>&$data['content'] ),array("page_updated"=>"NOW()"),"REPLACE");
@@ -1470,7 +1472,7 @@ class dataacukEquipment
 		@param $file string
 		@param $follow bool
 	**/
-	function misc_curl_getfile($url, $file, $follow = true){
+	function misc_curl_getfile($url, $file, $follow = true, $headers = array()){
 	
 	
 		$fp = fopen ($file, 'w+');//This is the file where we save the    information
@@ -1480,6 +1482,9 @@ class dataacukEquipment
 	    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($curl, CURLOPT_TIMEOUT, 50);
 		curl_setopt($curl, CURLOPT_FILE, $fp); // write curl response to file
+		if(count($headers))
+			curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+		
 		if($follow)
 			curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
 	    $header = curl_exec($curl);

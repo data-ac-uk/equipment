@@ -140,6 +140,7 @@ $f3->route('GET	/org/@type/@id/@dataset', 'org->page' );
 $f3->route('GET	/org/@type/@id.logo', 'logo->getLogo' );
 $f3->route('GET	/item/@id', 'item->page' );
 $f3->route('GET /item/@id.fragment', 'item->fragment' );
+$f3->route('GET /item/@id/image.jpg', 'logo->getItemImage' );
 
 
 $f3->route('GET	/newsletters', 'newsletters->index' );
