@@ -101,11 +101,7 @@ class api {
 		$sql_where = "WHERE ".join(" AND ",$sql_where);
 		$count = $eq->db->exec("SELECT count(`item_id`) as tcount $sql_sel  {$sql_from} {$sql_where}", $sql_params);
 		
-		if($_REQUEST['showsql']){
-			echo "<pre>";
-			echo "SELECT count(`item_id`) as tcount $sql_sel  {$sql_from} {$sql_where}\n";
-			print_r($sql_params);
-		}
+		
 		
 		if(isset($_REQUEST['page'])){
 			if( (int)$_REQUEST['page'] >= ceil($count[0]['tcount']/$params['page_size'])){
@@ -119,6 +115,12 @@ class api {
 		
 		$sql_limit = " LIMIT ".($params['page_size']*$params['page']).", {$params['page_size']}";
 		
+		
+		if($_REQUEST['showsql']){
+			echo "<pre>";
+			echo "SELECT * {$sql_sel} {$sql_from} {$sql_where} {$sql_order} {$sql_limit}\n";
+			print_r($sql_params);
+		}
 		
 		$ret['query'] = $params['q'];
 		$ret['page'] = $params['page'];
