@@ -141,7 +141,9 @@ class api {
 		$ret['count'] = count($res);
 		$ret['total'] = $count[0]['tcount'];
 		
-	
+		if($_REQUEST['showsql']){
+			var_dump($res);
+		}
 		
 		
 		
