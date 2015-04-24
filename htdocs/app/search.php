@@ -112,7 +112,7 @@ class search {
 
 			$eq->launch_db();
 			list($org_scheme,$org_id) = explode("/",$_REQUEST['instsearch']);
-			$org = $eq->db->fetch_one('orgs', array('org_idscheme' => $org_scheme,'org_id'=>$org_id));
+			$org = $eq->db->fetch_one('orgs', array('org_idscheme' => $org_scheme,'org_id'=>$org_id, 'org_ena'=>1));
 			if($org!==false){
 				$html = "<a class=\"uni-logo\" title=\"{$org['org_name']}\" href=\"{$org['org_name']}\"><img style=\"max-height:80px\" src=\"/org/{$org_scheme}/{$org_id}.logo?size=medium\"></a>";
 		
