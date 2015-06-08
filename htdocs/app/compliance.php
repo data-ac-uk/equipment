@@ -26,10 +26,13 @@ class compliance {
 		);
 		
 		
+		$counts = array("silver" => 0, "gold" => 0, "bronze" => 0);
+		
 		$cc = array("silver" => "", "gold" => "", "bronze" => "");
 		foreach($levels as $k=>$v){
 			foreach($podium[$k] as $hash=>$feed){
 				$cc[$k] .= "<a href=\"/compliance?dataset={$hash}#summary\"><img src='/org/{$feed["org_idscheme"]}/{$feed["org_id"]}.logo?size=small' class=\"org_logo\" style=\"height: 35px; margin:3px;\"/>";
+				$counts[$k] ++;
 			}
 		}
 		
@@ -41,9 +44,9 @@ class compliance {
 		}	
 		$c[] = "</tr>";		
 
-		$c[] = "<tr><td rowspan=\"3\" style=\"background: #eee; border: 1px solid black; border-width: 2px 0px 0px 0px; height: 200px; text-align:center; padding:10px;\"><img src=\"/resources/images/gongs/equipment-data-gold-60.png\"/> <h3>Gold</h3></td></td>";
-		$c[] = "<tr><td rowspan=\"2\" style=\"background: #eee; border: 1px solid black; border-width: 2px 0px 0px 0px;  height: 150px; text-align:center; padding:10px;\"><img src=\"/resources/images/gongs/equipment-data-silver-60.png\"/> <h3>Silver</h3></td></td>";
-		$c[] = "<tr><td rowspan=\"1\" style=\"background: #eee; border: 1px solid black; border-width: 2px 0px 0px 0px; height: 100px; text-align:center; padding:10px;\"><img src=\"/resources/images/gongs/equipment-data-bronze-60.png\"/> <h3>Bronze</h3></td></td>";
+		$c[] = "<tr><td rowspan=\"3\" style=\"background: #eee; border: 1px solid black; border-width: 2px 0px 0px 0px; height: 200px; text-align:center; padding:10px;\"><img src=\"/resources/images/gongs/equipment-data-gold-60.png\"/> <h3>Gold ({$counts['gold']})</h3></td></td>";
+		$c[] = "<tr><td rowspan=\"2\" style=\"background: #eee; border: 1px solid black; border-width: 2px 0px 0px 0px;  height: 150px; text-align:center; padding:10px;\"><img src=\"/resources/images/gongs/equipment-data-silver-60.png\"/> <h3>Silver ({$counts['silver']})</h3></td></td>";
+		$c[] = "<tr><td rowspan=\"1\" style=\"background: #eee; border: 1px solid black; border-width: 2px 0px 0px 0px; height: 100px; text-align:center; padding:10px;\"><img src=\"/resources/images/gongs/equipment-data-bronze-60.png\"/> <h3>Bronze ({$counts['bronze']})</h3></td></td>";
 		
 		
 		$c[] = "</table>";
