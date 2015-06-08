@@ -172,7 +172,7 @@ exit();
 
 
 function whois($query){
-	$whois = `whois $query`;
+	$whois = `timeout 10 whois $query`;
 	 preg_match ('/(OrgId\:)[\s]+([\w\s]+)\n/', $whois , $matches);
 	 switch($matches[2]){
 		 case "RIPE":
