@@ -26,6 +26,9 @@ $org_name = myCase($org->get( "rdfs:label" ));
 
 $opduri =  $org->get( "foaf:homepage" )."#org";
 $opduri_a = $org->get( "foaf:homepage" )."#address";
+$org_homepage = (string)$org->get( "foaf:homepage");
+
+
 
 $org_url = parse_url($org->getString( "foaf:homepage" ));
 
@@ -44,6 +47,7 @@ $opd->ns("owl","http://www.w3.org/2002/07/owl#");
 $opd->ns("dcat","http://www.w3.org/ns/dcat#");
 $opd->ns("dcterms","http://purl.org/dc/terms/");
 $opd->ns("oo","http://purl.org/openorg/");
+$opd->ns("lyou","http://purl.org/linkingyou/");
 
 $opd->addCompressedTriple( "profile.ttl", "a", "oo:OrganizationProfileDocument");
 $opd->addCompressedTriple( "profile.ttl", "http://xmlns.com/foaf/0.1/primaryTopic", $opduri);
@@ -77,13 +81,33 @@ foreach($sameas as $same){
 }
 
 $postcode = $org->get("ospost:postcode");
-
-
 $opd->addCompressedTriple( $opduri, "foaf:based_near", $postcode);
 
 foreach($graph->t['sp']["{$postcode}"] as $p=>$v){
 	$opd->addTriple( $postcode, $p, $v[0]);
 }
+
+
+
+//Social media,
+$accccc = preg_replace("/[^A-Za-z0-9]/","",$org_url_c->domain);
+$opd->addCompressedTriple( $opduri, "foaf:account", "https://twitter.com/{$accccc}");
+$opd->addCompressedTriple( "https://twitter.com/{$accccc}",  "a", "foaf:OnlineAccount");
+$opd->addCompressedTriple( "https://twitter.com/{$accccc}", "foaf:accountName", "$accccc");
+$opd->addCompressedTriple( "https://twitter.com/{$accccc}", "foaf:accountServiceHomepage", "https://twitter.com/");
+
+$opd->addCompressedTriple( $opduri, "foaf:account", "https://www.facebook.com/{$accccc}");
+
+$opd->addCompressedTriple( "https://www.facebook.com/{$accccc}", "a", "foaf:OnlineAccount");
+$opd->addCompressedTriple( "https://www.facebook.com/{$accccc}", "foaf:accountName", "$accccc");
+$opd->addCompressedTriple( "https://www.facebook.com/{$accccc}", "foaf:accountServiceHomepage", "https://www.facebook.com/");
+
+//Linking You
+$opd->addCompressedTriple( $opduri, "lyou:about", "{$org_homepage}about/");
+$opd->addCompressedTriple( $opduri, "lyou:events", "{$org_homepage}events/");
+$opd->addCompressedTriple( $opduri, "lyou:news", "{$org_homepage}news/");
+
+
 
 $equrl = "http://equipment.{$org_url_d}/url.csv";
 $conforms = "http://equipment.data.ac.uk/uniquip";
@@ -98,10 +122,52 @@ $opd->addCompressedTriple( $equrl, "oo:contact", "mailto:equpiment-data@{$org_ur
 $opd->addCompressedTriple( $equrl, "oo:corrections", "mailto:equpiment-data@{$org_url_d}");
 
 
-fwrite($STDERR,"\n\n---New OPD----------\n");
-echo $opd->serialize('Turtle');
-fwrite($STDERR,"\n\n---End OPD----------\n");
+$oaiurl = "http://archive.{$org_url_d}/cgi/oai2";
+$conforms = "http://www.openarchives.org/OAI/openarchivesprotocol.html";
 
+$opd->addCompressedTriple( $oaiurl, "a", "dcat:Download");
+$opd->addCompressedTriple( $oaiurl, "oo:organization", $opduri);
+$opd->addCompressedTriple( $oaiurl, "dcterms:subject", "http://purl.org/openorg/theme/ResearchOutputs");
+$opd->addCompressedTriple( $oaiurl, "dcterms:conformsTo", "$conforms");
+$opd->addCompressedTriple( $oaiurl, "dcterms:license", "http://creativecommons.org/publicdomain/zero/1.0/");
+$opd->addCompressedTriple( $oaiurl, "oo:contact", "mailto:research@{$org_url_d}");
+$opd->addCompressedTriple( $oaiurl, "oo:corrections", "mailto:research@{$org_url_d}");
+
+
+
+
+
+$ttl = $opd->serialize('Turtle');
+
+$replace = array(
+	"/".preg_replace("/([\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|])/", '\\\$0',"<$equrl>")."(.+)/" => "#Equipment Dataset: http://opd.data.ac.uk/docs/datasets \n#<URL of dataset>\n\\0",
+	"/".preg_replace("/([\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|])/", '\\\$0',"<$oaiurl>")."(.+)/" => "#Reaserch Outputs Dataset: http://opd.data.ac.uk/docs/datasets \n#<URL of oai endpoint>\n\\0",
+	"/dcterms:license(.+)/" => "\\0 # Licence for the Dataset, Please pick one of the three listed on http://opd.data.ac.uk/docs/datasets",
+	"/oo:contact(.+)/" => "\\0  # contact for the dataset (will be used as default contact for any records without a contact)",
+	"/oo:corrections(.+)/" => "\\0 # a contact for any corrections ",
+	
+	"/foaf:logo(.+)/" => "\\0 # URL to University logo",
+	"/foaf:mbox(.+)/" => "\\0 # Gereneric Email account (delete line if you havn't got one)",
+	"/foaf:phone(.+)/" => "\\0 # Switchboard phone number",
+	
+	"/lyou:about(.+)/" => "\\0 # Linking-You links to key pages (More-info:http://opd.data.ac.uk/docs/key-pages)",
+	"/foaf:account (.+)/" => "\\0 # Social media accounts, you also need to change the sections further down (More-info:http://opd.data.ac.uk/docs/social)"
+	
+ );
+$ttl = preg_replace(array_keys($replace),array_values($replace),$ttl);
+
+fwrite($STDERR,"\n\n---New OPD----------\n");
+echo <<<END
+# This is an example Organisation Profile Document, OPD created for {$org_name} 
+# This is an RDF Turtle document and for a getting started/primer guide check out http://en.wikipedia.org/wiki/Turtle_(syntax) and http://www.w3.org/2007/02/turtle/primer/
+# For documentation specificly on the OPD goto http://opd.data.ac.uk/
+# To test your OPD use our online checker at http://opd.data.ac.uk/checker
+
+
+END;
+
+echo $ttl;
+fwrite($STDERR,"\n\n---End OPD----------\n");
 
 function myCase($title){
 	$title = strtolower($title);
