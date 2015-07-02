@@ -21,9 +21,9 @@ require_once( "../etc/eq_config.php" );
 
 switch($role){
 	case "single":
-		$tasklist = array("unilist-download","opds-autodiscover","opds-crawl","orgs-manual","orgs-manual", "equipment-download", "equipment-status","stats-search");
+		$tasklist = array("unilist-download","opds-autodiscover","opds-crawl","orgs-manual","orgs-group", "equipment-download", "equipment-status","stats-search");
 	case "master":
-		$tasklist = array("unilist-download","opds-autodiscover","opds-crawl","orgs-manual","orgs-manual", "equipment-download", "equipment-status","data-rsync","stats-search");
+		$tasklist = array("unilist-download","opds-autodiscover","opds-crawl","orgs-manual","orgs-group", "equipment-download", "equipment-status","data-rsync","stats-search");
 	break;
 	case "slave":
 		$tasklist = array("mysql-resync","stats-search");
@@ -61,8 +61,8 @@ $tasks = array(
 		"cmd" => "php orgs-manual",
 		"every"=> TIME_ONEDAY,
 	),
-	"orgs-manual" => array(
-		"cmd" => "php orgs-manual",
+	"orgs-group" => array(
+		"cmd" => "php orgs-group",
 		"every"=> TIME_ONEDAY,
 	),
 	"equipment-download" => array(

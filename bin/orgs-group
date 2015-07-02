@@ -38,11 +38,11 @@ foreach($groups as $group){
 		
 		$id = basename($member);
 		
-		$res = $eq->db->fetch_one('orgs', array('org_idscheme' => 'ukprn', 'org_id' => $id), array(), "`org_uri`,`org_name`");
+		$res = $eq->db->fetch_one('orgs', array('org_idscheme' => 'ukprn', 'org_id' => $id, 'org_ena'=>1), array(), "`org_uri`,`org_name`");
 
 
 		if($res!==false){
-			echo "\t{$res['org_name']}\n";
+			echo "\t{$res['org_name']} \n";
 			$eq->db->insert('groupLinks', array('link_group'=>(string)$dbgroup['group_id'], 'link_org'=>$res['org_uri']), array(), 'REPLACE');
 		}
 	
