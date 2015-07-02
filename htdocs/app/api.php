@@ -185,7 +185,7 @@ class api {
 		}
 		$res = $eq->db->exec("SELECT * {$sql_sel} {$sql_from} {$sql_where} {$sql_order} {$sql_limit}", $sql_params);
 		$ret['count'] = count($res);
-		$ret['total'] = $count[0]['tcount'];
+		$ret['total'] = (isset($count[0]['tcount']) ? $count[0]['tcount']: 0);
 		
 		if($_REQUEST['showsql']){
 			var_dump($res);

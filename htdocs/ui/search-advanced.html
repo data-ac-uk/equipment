@@ -157,9 +157,10 @@ function preformAdvSearch(){
 	 var filters = {};
 	 
 	 request.q = query;
-	 
+	 var org_inst = "0";
+	
 	 if(instsearch){
-	 	var org_inst = $('input:radio[name=adv_org]:checked').val();
+	 	org_inst = $('input:radio[name=adv_org]:checked').val();
 		
 		if(org_inst.substring(0,10)=='consortia:'){
 			filters.consortia = org_inst.substring(10);
@@ -171,6 +172,11 @@ function preformAdvSearch(){
 		console.log(filters);
 		request.instsearch = instsearch;
 	 }
+	 
+	 if(request.q.length == 0 && org_inst == "0"){
+		 return false;
+	 }
+	 
 	 
 	 if(Object.keys(filters).length){
 		 request.filter = JSON.stringify(filters);
