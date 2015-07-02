@@ -19,8 +19,8 @@
 
   	<check if="{{ isset(@adv_org) }}"> 
   	  	<true>
-  	    	<div id="adv_org_select">Show only <input name="adv_org" type="radio" value="{{@adv_org['org_uri']}}" id="adv_org_select_org" checked> <label for="adv_org_select_org"> {{@adv_org['org_name']}} items</label>
-					 or <input name="adv_org" type="radio" value="0" id="adv_org_select_all"> <label for="adv_org_select_all">all items</label></div>
+  	    	<div id="adv_org_select">Show only <input name="adv_org" type="radio" value="{{@adv_org['org_uri']}}" id="adv_org_select_org" checked> <label for="adv_org_select_org"> <strong>{{@adv_org['org_name']}}</strong> items</label><check if="{{ isset(@adv_cons) and count(@adv_cons) }}"><F3:repeat group="{{ @adv_cons }}" value="{{ @cons }}">,  <input name="adv_org" type="radio" value="consortia:{{@cons['group_id']}}" id="adv_org_select_{{@cons['group_sname']}}"> <label for="adv_org_select_{{@cons['group_sname']}}"><strong>{{@cons['group_name']}}</strong> items</label></F3:repeat></check>
+					 or <input name="adv_org" type="radio" value="0" id="adv_org_select_all"> <label for="adv_org_select_all"><strong>all</strong> items</label></div>
   	    </true> 
 	  </check>
   </div>
@@ -30,15 +30,22 @@
   </div>
  <div class="container"> 
   
-   <!--div class="three columns advsearch">
+   <div class="three columns advsearch" id="adv_results_sidebar" style="display:none;">
    		<h3>Refine Results</h3>
         <div class="sidebox">
         	<h5>Result Type</h5>
+			<input name="filter_type" type="radio" value="all" id="filter_type_all" checked onChange="preformAdvSearch();"> <label for="filter_type_all" >All</label> <br/>
+			<F3:repeat group="{{ $eq_config->types }}" value="{{ @v }}" key="{{ @k }}">
+				<input name="filter_type" type="radio" value="{{ @k }}" id="filter_type_{{@k}}" onChange="preformAdvSearch();"> <label for="filter_type_{{@k}}">{{@v}}</label><br/>
+			</F3:repeat>
 		</div>
-        <div class="sidebox">
+        <!--div class="sidebox">
         	<h5>Order By Distance</h5>
-		</div>
-   </div-->
+			<input name="filter_geocode" type="radio" value="all" id="filter_geocode_none" checked onChange="preformAdvSearch();"> <label for="filter_geocode_none" >None</label> <br/>
+			<input name="filter_geocode" type="radio" value="all" id="filter_geocode_inst"  onChange="" > <label for="filter_geocode_inst" >Institution</label> <br/>
+			<input name="filter_geocode_inst_text" type="text" style="width: 94%;"  id="filter_geocode_inst_text"/>
+		</div=-->
+   </div>
    
    <div class="thirteen columns advsearch">
    		<h3 id="adv_results_title"></h3>
@@ -81,6 +88,13 @@ $( document ).ready(function() {
 	
 	$('h1').append("<sup class=\"beta\">BETA</sup>");
 	
+	$( "#filter_geocode_inst_text" ).autocomplete({
+	      minLength: 2,
+	      source: "/api/inst",
+	     }
+	    );
+	
+	
 });
 
 function proclink(a){
@@ -103,10 +117,18 @@ function checksearch(qs) {
             = decodeURIComponent(tokens[2]);
     }
 	
+	if(typeof params.filter != 'undefined'){
+		var filters = JSON.parse(params.filter);
+	}
+	if(typeof filters.type != 'undefined'){
+		$('input:radio[name=filter_type][value=\''+filters.type+'\']').prop('checked', true);
+	}
+	
 	if(instsearch){
 		if(typeof params.filter != 'undefined'){
-			var filters = JSON.parse(params.filter);
-			if(typeof filters.org != 'undefined'){
+			if(typeof filters.consortia != 'undefined'){
+				$('input:radio[name=adv_org][value=\'consortia:'+filters.consortia+'\']').prop('checked', true);
+			}else if(typeof filters.org != 'undefined'){
 				$('#adv_org_select_org').prop('checked', true);
 			}else{
 				$('#adv_org_select_all').prop('checked', true);
@@ -138,9 +160,15 @@ function preformAdvSearch(){
 	 
 	 if(instsearch){
 	 	var org_inst = $('input:radio[name=adv_org]:checked').val();
-		if(org_inst != "0"){
+		
+		if(org_inst.substring(0,10)=='consortia:'){
+			filters.consortia = org_inst.substring(10);
+		}else if(org_inst != "0"){
 			filters.org = org_inst;
 		}
+
+	 	filters.type = $('input:radio[name=filter_type]:checked').val();
+		console.log(filters);
 		request.instsearch = instsearch;
 	 }
 	 
@@ -149,7 +177,6 @@ function preformAdvSearch(){
 	 }
 	 
 	 preformAdvSearchGo(request);
-
 }
  
 function preformAdvSearchGo(request){	
@@ -164,7 +191,7 @@ function preformAdvSearchGo(request){
 }
 
 function resultsAdvSearch(data){
-	
+	$("#adv_results_sidebar").show();
 	
 	$("#adv_results_title").html('Results - ' + data.total + ' items');
 	

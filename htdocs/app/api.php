@@ -1,10 +1,51 @@
 <?php
 class api {
+	
+	function inst() {
+        $f3=Base::instance();
+		global $eq_config;
+		$q = $_REQUEST['term'];
+		
+		$files = array( 
+			"{$eq_config->pwd}/var/learning-providers-plus.tsv",
+			"{$eq_config->pwd}/var/extra-orgs.tsv" );
+
+		$data = array();
+		foreach( $files as $file )
+		{
+			$rows = file( $file );
+			$title_row = array_shift( $rows );
+			$fields = preg_split( "/\t/", chop($title_row) );
+			foreach( $rows as $row )
+			{
+		    		$cells = preg_split( "/\t/", chop($row) );
+		    		$r = array();
+    		
+		    		for( $i=0; $i<sizeof($fields); ++$i )
+		    		{
+		        		$r[$fields[$i]] = $cells[$i];
+		    		}
+					
+					if(!stristr($r['PROVIDER_NAME'], $q)){
+						continue;
+					}
+
+		    		$data[] = array( "id"=> $r['UKPRN'], 'value'=>$r['PROVIDER_NAME'],'label'=>$r['PROVIDER_NAME']);
+					
+		    		if( $r["EASTING"] == "" ) {
+		        		# we don't have data for Northern Ireland universities
+		        		continue;
+		    		}
+			}
+		}
+		echo json_encode( $data );	
+		
+	}
 
 	function search() {
 		
         $f3=Base::instance();
-		
+		global $eq_config;
 		$params['q'] = $_REQUEST['q'];
 		//forwarded gets
 		foreach(array('instsearch') as $i){
@@ -66,13 +107,18 @@ class api {
 						$sql_params[$sql_params_i++] = "$fv";
 						$paramfilters['org'] = $fv;					
 					break;
+					case "type":
+						if(in_array($fv, array_keys($eq_config->types))){
+							$sql_where[] = "`itemU_f_type` = ?";
+							$sql_params[$sql_params_i++] = "$fv";
+							$paramfilters['type'] = $fv;					
+						}
+					break;
 				}
 
 			}
 			$params['filter'] = json_encode($paramfilters);
 		}
-	
-		
 		if(isset($_REQUEST['geocode'])){
 			$parts = explode(",",$_REQUEST['geocode']);
 			$params['geocode'] = $_REQUEST['geocode'];

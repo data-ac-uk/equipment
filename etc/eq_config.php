@@ -130,5 +130,9 @@ if(file_exists("{$eq_config->pwd}/etc/eq_config.local.php")){
 	include("{$eq_config->pwd}/etc/eq_config.local.php");
 }
 
+$eq_config->types = array(
+	"equipment" => "Equipment",
+	"facility" => "Facilities",
+);
 
 

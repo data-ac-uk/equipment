@@ -118,8 +118,9 @@ class search {
 		
 				$f3->set('template_style','rebrand');
 				$f3->set('template_style_insert',$html);
-			
-
+				$cons = array();
+				$cons = $eq->db->exec("SELECT * FROM `groupLinks` INNER JOIN `groups` ON `link_group` = `group_id` WHERE `link_org` = ? ", array(1=>$org['org_uri']));
+				$f3->set('adv_cons', $cons );
 				$f3->set('adv_org', $org );
 				
 				$f3->set('html_title', "Institutional Search" );
@@ -135,7 +136,8 @@ class search {
 		}
 		
 		
-
+		global $eq_config;
+		$f3->set('eq_config',$eq_config);;
 			$f3->set('content','search-advanced.html');
 		
 		print Template::instance()->render( "page-template.html" );

@@ -131,6 +131,11 @@ h1 sup.beta{
 	text-align:center;
 }
 
+#adv_results_sidebar label{
+	display: inline !important;
+	float: none;
+	padding: 0px;
+}
 
 #qs-sort {
 	background-repeat: no-repeat;
