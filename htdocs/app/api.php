@@ -93,8 +93,8 @@ class api {
 		
 		if(isset($_REQUEST['filter'])){
 			$filters = json_decode($_REQUEST['filter'],true);
+			$paramfilters = array();
 			foreach($filters as $fk=>$fv){
-				$paramfilters = array();
 				switch($fk){
 					case "consortia":
 						$sql_from .= "\nINNER JOIN `groupLinks` ON `link_org` = `org_uri`";
@@ -118,6 +118,8 @@ class api {
 
 			}
 			$params['filter'] = json_encode($paramfilters);
+
+			$ret['filters'] = $paramfilters;
 		}
 		if(isset($_REQUEST['geocode'])){
 			$parts = explode(",",$_REQUEST['geocode']);
