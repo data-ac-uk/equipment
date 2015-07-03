@@ -140,7 +140,6 @@ class search {
 			$rows = file( "../var/learning-providers-plus.tsv" );
 			$title_row = array_shift( $rows );
 			$fields = array_flip(preg_split( "/\t/", chop($title_row) ));
-			print_r($fields);
 			foreach( $rows as $line )
 			{
 				$cells = preg_split( "/\t/", $line );
