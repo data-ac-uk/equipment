@@ -39,12 +39,21 @@
 				<input name="filter_type" type="radio" value="{{ @k }}" id="filter_type_{{@k}}" onChange="preformAdvSearch();"> <label for="filter_type_{{@k}}">{{@v}}</label><br/>
 			</F3:repeat>
 		</div>
-        <!--div class="sidebox">
+        <div class="sidebox">
         	<h5>Order By Distance</h5>
-			<input name="filter_geocode" type="radio" value="all" id="filter_geocode_none" checked onChange="preformAdvSearch();"> <label for="filter_geocode_none" >None</label> <br/>
-			<input name="filter_geocode" type="radio" value="all" id="filter_geocode_inst"  onChange="" > <label for="filter_geocode_inst" >Institution</label> <br/>
-			<input name="filter_geocode_inst_text" type="text" style="width: 94%;"  id="filter_geocode_inst_text"/>
-		</div=-->
+			<input name="filter_geocode" type="radio" value="none" id="filter_geocode_none" checked onChange="preformAdvSearch();"> <label for="filter_geocode_none" >None</label> <br/>
+			
+			<check if="{{ isset(@geo_inst) }}"> 
+		  	  	<true>
+					<input name="filter_geocode" type="radio" value="inst" id="filter_geocode_inst"  onChange="preformAdvSearch();" local="os,{{@geo_inst[1]}},{{@geo_inst[2]}}"> <label for="filter_geocode_inst" >Your Institution 
+					<small style="padding-left:18px;">({{@geo_inst[0]}})</small></label>
+		  	    	
+		  	    </true> 
+			  </check>
+			  
+			<input name="filter_geocode" type="radio" value="geo" id="filter_geocode_local" onChange="getLocation();" local="NULL"> <label for="filter_geocode_local" >Your location</label> <br/>
+			<small style="padding-left:18px; display:none;" id="filter_geocode_local_display"></small></label>
+		</div>
    </div>
    
    <div class="thirteen columns advsearch">
@@ -83,7 +92,7 @@ $( document ).ready(function() {
 	        return false; // prevent the button click from happening
 	});
 	
-	checksearch('get');
+	checksearch('get',false);
 	
 	
 	$('h1').append("<sup class=\"beta\">BETA</sup>");
@@ -97,13 +106,45 @@ $( document ).ready(function() {
 	
 });
 
+function getLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition,showPositionError);
+    } else {
+        alert("We can't get your possition or Geolocation is not supported by this browser.");
+    }
+}
+function showPosition(position) {
+	$('input:radio[name=filter_geocode][value=\'geo\']').attr('local', position.coords.latitude.toFixed(6) + ',' + position.coords.longitude.toFixed(6));
+	$('#filter_geocode_local_display').html('('+position.coords.latitude.toFixed(6) + ',' + position.coords.longitude.toFixed(6)+')');
+	$('#filter_geocode_local_display').fadeIn();
+	preformAdvSearch()
+}
+
+function showPositionError(error) {
+    switch(error.code) {
+        case error.PERMISSION_DENIED:
+            break;
+        case error.POSITION_UNAVAILABLE:
+            alert("Location information is unavailable.");
+            break;
+        case error.TIMEOUT:
+            alert( "The request to get user location timed out.");
+            break;
+        case error.UNKNOWN_ERROR:
+			alert("An unknown error occurred.");
+            break;
+    }
+	
+	$('input:radio[name=filter_geocode][value=\'none\']').prop('checked', true);
+}
+
 function proclink(a){
 	var link = $(a).attr('href');
-	checksearch(link.substr(1));
+	checksearch(link.substr(1), true);
 	return false;
 }
 
-function checksearch(qs) {
+function checksearch(qs, link) {
 	if(qs == 'get'){
 		qs = document.location.search;
 	}
@@ -119,9 +160,22 @@ function checksearch(qs) {
 	
 	if(typeof params.filter != 'undefined'){
 		var filters = JSON.parse(params.filter);
+	}else{
+		var filters = {};
 	}
 	if(typeof filters.type != 'undefined'){
 		$('input:radio[name=filter_type][value=\''+filters.type+'\']').prop('checked', true);
+	}
+	
+	if(typeof params.geocode != 'undefined'){
+		if( params.geocode.substr(0, 3) == 'os,'){
+			$('input:radio[name=filter_geocode][value=\'inst\']').prop('checked', true);
+		}else{
+			$('input:radio[name=filter_geocode][value=\'geo\']').prop('checked', true);
+			$('input:radio[name=filter_geocode][value=\'geo\']').attr('local', params.geocode);
+			$('#filter_geocode_local_display').html('('+params.geocode+')');
+			$('#filter_geocode_local_display').fadeIn();
+		}
 	}
 	
 	if(instsearch){
@@ -142,7 +196,7 @@ function checksearch(qs) {
 		}
 	}
 	
-	if(typeof params.q == 'undefined' || params.q.length ==0) { 
+	if(!link && (typeof params.q == 'undefined' || params.q.length ==0)) { 
 		return false;
 	}
 	
@@ -167,9 +221,7 @@ function preformAdvSearch(){
 		}else if(org_inst != "0"){
 			filters.org = org_inst;
 		}
-
-	 	filters.type = $('input:radio[name=filter_type]:checked').val();
-		console.log(filters);
+		
 		request.instsearch = instsearch;
 	 }
 	 
@@ -178,10 +230,25 @@ function preformAdvSearch(){
 		 return false;
 	 }
 	 
+	 if(typeof filters.type != 'undefined'){
+ 		filters.type = $('input:radio[name=filter_type]:checked').val();
+	 }
 	 
 	 if(Object.keys(filters).length){
 		 request.filter = JSON.stringify(filters);
 	 }
+	 
+	 var local = $("input:radio[name=filter_geocode]:checked").val();
+	 switch (local) {
+		 case "geo":
+		 case "inst":
+			 if($("input:radio[name=filter_geocode]:checked").attr('local') != 'NULL'){
+				 request.geocode = $("input:radio[name=filter_geocode]:checked").attr('local');
+			 }
+		 break;
+	 }
+	 
+	 
 	 
 	 preformAdvSearchGo(request);
 }
@@ -247,6 +314,10 @@ function drawItem(item){
 		ret += '<div class="advitemimage logo"><a href="'+ pageurl + '"> <img src="/org/' + item.orgID + '.logo?size=small"/> </a> </div>';
 	}
 	
+	if(typeof item._Distance != 'undefined'){
+			ret += '<div style="float:right;">Distance: '+item._Distance+'km</div>';
+	}
+		
 	ret += '<h3><a href="'+ pageurl + '">' + item.uniquip.Name +'</a></h3>';
 	if(item.uniquip.Description.length){
 		ret += '<p>' + item.uniquip.Description + '</p>';
@@ -260,6 +331,7 @@ function drawItem(item){
 		ret += item.uniquip['Institution Name'];
 	}
 	ret += '</a>';
+	
 	
 	ret += '<div class="clear"></div>';
 	

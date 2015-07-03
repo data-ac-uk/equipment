@@ -124,22 +124,34 @@ class api {
 		if(isset($_REQUEST['geocode'])){
 			$parts = explode(",",$_REQUEST['geocode']);
 			$params['geocode'] = $_REQUEST['geocode'];
-			if(!(float)$parts[0] || !(float)$parts[1]){
-				die("Please form geocode properly");
-			}
 			
 			require_once($eq->config->pwd."/lib/phpLocation/phpLocation.php");
 			$pos = new phpLocation();
-			$pos->lat = (float)$parts[0];
-			$pos->lon = (float)$parts[1];
-			$pos->toGrid();
+						
+			if($parts[0]=="os"){
+				array_shift($parts);
+				if(!(int)$parts[0] || !(int)$parts[1]){
+					die("Please form geocode properly");
+				}
+				$pos->east = $parts[0];
+				$pos->north = $parts[1];
+			}else{
+				if(!(float)$parts[0] || !(float)$parts[1]){
+					die("Please form geocode properly");
+				}
 			
-			$sql_where .= " and `item_location` NOT LIKE '' ";
+				$pos->lat = (float)$parts[0];
+				$pos->lon = (float)$parts[1];
+				$pos->toGrid();
+			}
+			
+			
+			$sql_where[] = "`item_location` NOT LIKE '' ";
 			$sql_sel .= ", ROUND(SQRT( POW({$pos->east} - `loc_easting`, 2) + POW({$pos->north} - `loc_northing`, 2) )/1000,2) as distance ";
 			$sql_order = "ORDER BY `distance` ASC";
 			
 			if(isset($parts[2]) && $dist = (float)$parts[2]){
-				$sql_where .= " and `distance` <= $dist";
+			//	$sql_where [] =  "`distance` <= $dist";
 			}
 			
 		}
