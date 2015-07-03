@@ -83,6 +83,10 @@ foreach($opds as $opd){
 		$orgin['org_idscheme'] = 'ukprn';
 		$path = explode("/",$uris['id.learning-provider.data.ac.uk']['path']);
 		$orgin['org_id'] = $path[2];
+	}elseif(isset($uris['learning-provider.data.ac.uk'])){
+		$orgin['org_idscheme'] = 'ukprn';
+		$path = explode("/",$uris['learning-provider.data.ac.uk']['path']);
+		$orgin['org_id'] = $path[2];
 	}else{
 		$orgin['org_idscheme'] = 'other';
 		$orgin['org_id'] = 'X-'.substr(md5($primaryTopic),0,8);
