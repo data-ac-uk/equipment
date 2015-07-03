@@ -55,12 +55,14 @@ $eq_config->conformsToMap = array(
 	"pure"=>"http://equipment.data.ac.uk/pure"
 );
 
+//all urls have to be http (even if they are https)
 $eq_config->licences = array(
 	"oglv2" => array('uri'=>"http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2/", "label"=>"OGLv2 - The (UK) Open Government License for Public Sector Information"),
 	"oglv3" => array('uri'=>"http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/", "label"=>"OGLv3 - The (UK) Open Government License for Public Sector Information"),
 	"odca" => array('uri'=>"http://opendatacommons.org/licenses/by/", "label"=>"ODCA - Open Data Commons Attribution License"),
-	"cc0" => array('uri'=>"https://creativecommons.org/publicdomain/zero/1.0/", "label"=>"CC0 - Public Domain Dedication")
+	"cc0" => array('uri'=>"http://creativecommons.org/publicdomain/zero/1.0/", "label"=>"CC0 - Public Domain Dedication")
 );
+
 
 $eq_config->uniqupmap = array(
 		"type"=>"Type",

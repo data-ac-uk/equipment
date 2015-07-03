@@ -296,14 +296,17 @@ class dataacukEquipment
 		
 		//Find license if not best can do is silver;
 		$lifound = false;
+		
+		if(substr($set['data_license'],0,6) == "https:"){ //strip https
+			$set['data_license'] = "http:".substr($set['data_license'],6);
+		}
+		
 		foreach($this->config->licences as $li){
 			if($li['uri']==$set['data_license']){
 				$lifound = true;
 				break;
 			}
 		}
-		
-
 		
 		if($lifound){
 			$gongs['licence'] = 3;
