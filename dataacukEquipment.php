@@ -330,11 +330,19 @@ class dataacukEquipment
 			$uri = "http://id.equipment.data.ac.uk/item/$id";
 			$url = "http://equipment.data.ac.uk/item/$id.html";
 
+			if(empty($item->title) && empty($item->description)){
+				echo  $item->uid."\n";
+				$notes["errors"][] = "Item: $item->uid has no title or description";
+				continue;
+			}
+
 			$graph->addCompressedTriple( $uri, "rdf:type", "oo:Equipment" );
 
 			$graph->addCompressedTriple( "$uri", "http://id.equipment.data.ac.uk/ns/hasCode", $id, "literal" );
 			$graph->addCompressedTriple( "$uri", "http://id.equipment.data.ac.uk/ns/hasURI", "$uri", "literal" );
 			$graph->addCompressedTriple( "$uri", "http://id.equipment.data.ac.uk/ns/hasPage", "$url" );
+
+			
 
 			$graph->addCompressedTriple( $uri, "rdfs:label", (string)$item->title, "literal" );
 			if($set['org']['org_idscheme']=='ukprn'){
