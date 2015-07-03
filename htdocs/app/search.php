@@ -145,7 +145,6 @@ class search {
 				$cells = preg_split( "/\t/", $line );
 				if( $cells[9] == "http://www.".$domain."/" )
 				{
-					echo $cells[$fields['PROVIDER_NAME']];
 					$defaultsort = $cells[1];
 					$f3->set('geo_inst', array($cells[$fields['PROVIDER_NAME']], $cells[$fields['EASTING']], $cells[$fields['NORTHING']]) );	
 				}
