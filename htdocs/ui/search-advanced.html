@@ -47,10 +47,10 @@
 		  	  	<true>
 					<input name="filter_geocode" type="radio" value="inst" id="filter_geocode_inst"  onChange="preformAdvSearch();" local="os,{{@geo_inst[1]}},{{@geo_inst[2]}}"> <label for="filter_geocode_inst" >Your Institution 
 					<small style="padding-left:18px;">({{@geo_inst[0]}})</small></label>
-		  	    	
+
+					<br/>
 		  	    </true> 
 			  </check>
-			<br/> 
 			<input name="filter_geocode" type="radio" value="geo" id="filter_geocode_local" onChange="getLocation();" local="NULL" style="clear:left;"> <label for="filter_geocode_local" >Your location</label> <br/>
 			<small style="padding-left:18px; display:none;" id="filter_geocode_local_display"></small></label>
 		</div>
@@ -230,7 +230,8 @@ function preformAdvSearch(){
 		 return false;
 	 }
 	 
-	 if(typeof filters.type != 'undefined'){
+	 var type = $('input:radio[name=filter_type]:checked').val();
+	 if(typeof type != 'undefined' && type != '' && type !='all'){
  		filters.type = $('input:radio[name=filter_type]:checked').val();
 	 }
 	 
