@@ -55,12 +55,6 @@
   <F3:include href="{{@content}}"/>
 
 
- 
-
-  
- </div>
-</div>
-
   <div class="bottomtitle">
     <h1>{{ @html_title }}</h1>
 
@@ -73,12 +67,15 @@
 
   <div class="poweredby"><a href='/'> Powered by</br>
 	  	<img src='/resources/images/eq-data-title.png' alt="Equipment.Data Logo"/></a></div>
+;{{$_SERVER['HTTP_REFERER']}};
+	<footer>
+	<span style="float: left;">&copy; Equipemnt.data {{date("Y")}}</span>
+	This site uses cookies for Google Analytics. 
+	</footer>
 	
+	
+</div>
 
-<footer>
-<span style="float: left;">&copy; Equipemnt.data {{date("Y")}}</span>
-This site uses cookies for Google Analytics. 
-</footer>
 
 
 <script type="text/javascript">
@@ -113,6 +110,7 @@ This site uses cookies for Google Analytics.
 
     </true>
 </check>
+
 
 <check if="{{isset($_SERVER['HTTP_REFERER'])}}"> 
 	  	<true>
