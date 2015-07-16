@@ -563,3 +563,32 @@ ol.faq{
 input[type="radio"]{
     vertical-align: 0px;
 }
+
+.bottomtitle{
+	font-size: 60%;
+	text-align:center;
+	margin: 30px auto 20px;
+	max-width:400px;
+	width: 100%;
+}
+
+
+.bottomtitle h1{
+	font-size: 20px;
+	padding:0px;
+	margin:0px;
+	line-height: 22px;
+}
+.bottomtitle h2#subtitle{
+	font-size: 14px;
+	line-height: 16px;
+	margin: 0px;
+}
+
+
+.poweredby{
+	margin: 10px auto;
+	max-width:212px;
+}
+
+bottomtitle

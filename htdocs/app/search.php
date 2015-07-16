@@ -160,7 +160,13 @@ class search {
 		$f3->set('eq_config',$eq_config);;
 			$f3->set('content','search-advanced.html');
 		
-		print Template::instance()->render( "page-template.html" );
+		if(isset($_REQUEST['embeded']) and $_REQUEST['embeded']){
+			print Template::instance()->render( "page-embeded.html" );	
+		}else{
+			print Template::instance()->render( "page-template.html" );
+		}
+		
+
 	}
 
 

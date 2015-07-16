@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html lang="en">
+<!--<![endif]-->
+<head>
+
+<!-- Basic Page Needs
+  ================================================== -->
+<meta charset="utf-8">
+<title>{{ @html_title }}</title>
+<meta value="description" content="equipment.data.ac.uk: Open data about equipment and facilities of UK Universities ">
+<meta value="author" content="Christopher Gutteridge">
+
+<!-- Mobile Specific Metas
+  ================================================== -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- CSS
+  ================================================== -->
+<script src="/resources/jquery/jquery-1.9.1.js"></script>
+<script src="/resources/jquery/jquery-ui.js"></script>
+<link rel="stylesheet" href="//network-bar.data.ac.uk/subsite.css?v=2" type="text/css">
+<link rel="stylesheet" href="/resources/jquery/jquery-ui.css?v=2" />
+<link rel="stylesheet" href="/resources/site.css?v=2">
+    
+    <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+	
+    <link rel="shortcut icon" href="http://network-bar.data.ac.uk/images/favicon.ico">
+    
+    <link rel="apple-touch-icon" href="http://network-bar.data.ac.uk/images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="http://network-bar.data.ac.uk/images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="http://network-bar.data.ac.uk/images/apple-touch-icon-114x114.png">
+	
+	<script> 
+
+ 		document.domain = 'ac.uk';
+ 
+	var _prum = [['id', '53feea66abe53d1f1521cfd3'], ['mark', 'firstbyte', (new Date()).getTime()]]; (function() { var s = document.getElementsByTagName('script')[0], p = document.createElement('script'); p.async = 'async'; p.src = '//rum-static.pingdom.net/prum.min.js'; s.parentNode.insertBefore(p, s); })(); </script>
+</head>
+
+<body class="embedded">
+
+<!-- Primary Page Layout
+    ================================================== --> 
+
+<div class="container" id="content">
+
+
+  {{@note | raw}}
+  <F3:include href="{{@content}}"/>
+
+
+ 
+
+  
+ </div>
+</div>
+
+  <div class="bottomtitle">
+    <h1>{{ @html_title }}</h1>
+
+  	<check if="{{ @html_subtitle }}"> 
+  	  	<true>
+  	    	<h2 id="subtitle">{{ @html_subtitle }}</h2>
+  	    </true>
+  	</check>
+  </div>
+
+  <div class="poweredby"><a href='/'> Powered by</br>
+	  	<img src='/resources/images/eq-data-title.png' alt="Equipment.Data Logo"/></a></div>
+	
+
+<footer>
+<span style="float: left;">&copy; Equipemnt.data {{date("Y")}}</span>
+This site uses cookies for Google Analytics. 
+</footer>
+
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-39143407-1']);
+  _gaq.push(['_setDomainName', 'equipment.data.ac.uk']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+<check if="{{0}}"> 
+	  	<true>
+
+			<script type="text/javascript" src="//network-bar.data.ac.uk/network-bar.js?v=1"></script>
+<!--start contactable -->
+<div id="contactable"><!-- contactable html placeholder --></div>
+<script type="text/javascript" src="//network-bar.data.ac.uk/feedback/jquery.validate.pack.js?v=1"></script>
+<script type="text/javascript" src="//network-bar.data.ac.uk/feedback/jquery.contactable.php?v=1"></script>
+<link rel="stylesheet" href="//network-bar.data.ac.uk/feedback/contactable.css?v=1" type="text/css" />
+<script>
+	var tracking = {};
+	$(function(){$('#contactable').contactable({productKey: 'equipment.data', extra: tracking, 'title': 'Get in touch'});});
+</script>
+<!--end contactable -->
+
+    </true>
+</check>
+
+
+ </body>
+</html>
+<!-- Server: {{@SERVER_NAME}} -->
