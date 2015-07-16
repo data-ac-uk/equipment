@@ -77,7 +77,11 @@
 		</false>
 	</check>
 	
-
+			if(typeof embedded != 'undefined' && embedded){
+				var target = '_blank';
+			}else{
+				var target = '_self';
+			}
 
 $( document ).ready(function() {	
 	$('#qs-input').on("keypress", function(e) {
@@ -310,22 +314,22 @@ function drawItem(item){
 	var ret = '<div class="item">';
 	
 	if(item.uniquip.Photo.length){
-		ret += '<div class="advitemimage img"> <a href="'+ pageurl + '"> <img src="/item/'+item.eqID+'/image.jpg?size=small" /> </a> </div>';
+		ret += '<div class="advitemimage img"> <a href="'+ pageurl + '"  target="'+target+'"> <img src="/item/'+item.eqID+'/image.jpg?size=small"/> </a> </div>';
 	}else{
-		ret += '<div class="advitemimage logo"><a href="'+ pageurl + '"> <img src="/org/' + item.orgID + '.logo?size=small"/> </a> </div>';
+		ret += '<div class="advitemimage logo"><a href="'+ pageurl + '" target="'+target+'"> <img src="/org/' + item.orgID + '.logo?size=small"/> </a> </div>';
 	}
 	
 	if(typeof item._Distance != 'undefined'){
 			ret += '<div style="float:right;">Distance: '+item._Distance+'km</div>';
 	}
 		
-	ret += '<h3><a href="'+ pageurl + '">' + item.uniquip.Name +'</a></h3>';
+	ret += '<h3><a href="'+ pageurl + '" target="'+target+'">' + item.uniquip.Name +'</a></h3>';
 	if(item.uniquip.Description.length){
 		ret += '<p>' + item.uniquip.Description + '</p>';
 	}
 	
 
-	ret += '<a href="'+item.uniquip['Institution URL']+'" title="'+item.uniquip['Institution Name']+'">';
+	ret += '<a href="'+item.uniquip['Institution URL']+'" title="'+item.uniquip['Institution Name']+'" target="'+target+'">';
 	if(item.uniquip['Institution Logo URL'].length){
 		ret += '<img src="/org/' + item.orgID + '.logo?size=small" class="advitemlogo">';
 	}else{

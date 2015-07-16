@@ -37,9 +37,9 @@
     <link rel="apple-touch-icon" sizes="114x114" href="http://network-bar.data.ac.uk/images/apple-touch-icon-114x114.png">
 	
 	<script> 
-
- 		document.domain = 'ac.uk';
- 
+	
+	var embedded = true;
+	
 	var _prum = [['id', '53feea66abe53d1f1521cfd3'], ['mark', 'firstbyte', (new Date()).getTime()]]; (function() { var s = document.getElementsByTagName('script')[0], p = document.createElement('script'); p.async = 'async'; p.src = '//rum-static.pingdom.net/prum.min.js'; s.parentNode.insertBefore(p, s); })(); </script>
 </head>
 
@@ -114,6 +114,25 @@ This site uses cookies for Google Analytics.
     </true>
 </check>
 
+<check if="{{isset($_SERVER['HTTP_REFERER'])}}"> 
+	  	<true>
+<script>
+ var theParent = '{{@_SERVER['HTTP_REFERER']}}';
+ jQuery(this).bind('load',function(){
+     var doc = window.document;
+	     $(doc).ajaxStart(function(){
+			 parent.postMessage($('#content').height() + 30,theParent);
+	     });
+     $(doc).ajaxComplete(function(){
+		 parent.postMessage($('#content').height() + 30,theParent);
+		 $(doc).find('img').load(function(){
+			  parent.postMessage($('#content').height() + 30,theParent);
+		 });
+	 });
+});
+</script>
+    </true>
+</check>
 
  </body>
 </html>
