@@ -115,6 +115,7 @@
 	  	<true>
 <script>
  var theParent = '{{@_SERVER['HTTP_REFERER']}}';
+ if(typeof parent.postMessage != 'undefined'){
  jQuery(this).bind('load',function(){
      var doc = window.document;
 	     $(doc).ajaxStart(function(){
@@ -126,7 +127,9 @@
 			  parent.postMessage($('#content').height() + 30,theParent);
 		 });
 	 });
+ }
 });
+
 </script>
     </true>
 </check>
