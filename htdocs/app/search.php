@@ -112,7 +112,16 @@ class search {
 
 			$eq->launch_db();
 			list($org_scheme,$org_id) = explode("/",$_REQUEST['instsearch']);
-			$org = $eq->db->fetch_one('orgs', array('org_idscheme' => $org_scheme,'org_id'=>$org_id, 'org_ena'=>1));
+			
+			if($org_scheme == 'consortia'){
+				$constort = $eq->db->fetch_one('groups', array('group_sname'=>$org_id));
+				$org = array('org_name'=>$constort['group_name'], 'org_logo'=>"{$constort['group_logo']}",'org_uri'=>"consortia:".$constort['group_id']);
+				$f3->set('html_title', "Consortium Search" );
+			}else{
+				$org = $eq->db->fetch_one('orgs', array('org_idscheme' => $org_scheme,'org_id'=>$org_id, 'org_ena'=>1));
+				$f3->set('html_title', "Institutional Search" );
+			}
+			
 			if($org!==false){
 				$html = "<a class=\"uni-logo\" title=\"{$org['org_name']}\" href=\"{$org['org_name']}\"><img style=\"max-height:80px\" src=\"/org/{$org_scheme}/{$org_id}.logo?size=medium\"></a>";
 		
@@ -122,8 +131,6 @@ class search {
 				$cons = $eq->db->exec("SELECT * FROM `groupLinks` INNER JOIN `groups` ON `link_group` = `group_id` WHERE `link_org` = ? ", array(1=>$org['org_uri']));
 				$f3->set('adv_cons', $cons );
 				$f3->set('adv_org', $org );
-				
-				$f3->set('html_title', "Institutional Search" );
 				$f3->set('html_subtitle', $org['org_name'] );
 				$normal = false;
 			}

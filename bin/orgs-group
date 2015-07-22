@@ -28,9 +28,12 @@ foreach($groups as $group){
 		"group_type"=>"consortia",
 		"group_name"=>(string)$group->label(),
 		"group_sname"=>createShortName((string)$group->label()),
+		"group_url"=>($group->has('foaf:homepage'))? $group->get('foaf:homepage')->toString() : '',
+		'group_ena'=>1
 	);
+	
 	echo "Group ".$group->label()."\n";
-	$eq->db->insert('groups', $dbgroup, array(), 'REPLACE');
+	$eq->db->insert('groups', $dbgroup, array('group_updated'=>'now()'), 'REPLACE');
 	
 	$members = $group->all( 'foaf:member' );
 	

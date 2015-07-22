@@ -15,11 +15,19 @@ class logo {
 		$idtype = preg_replace( '/[^-a-z0-9]/i','',$idtype );
 		$id = $f3->get( "PARAMS.id" );
 	
-		if($id != 'none'){
-			$org = $eq->db->fetch_one('orgs', array('org_idscheme' => $idtype,'org_id'=>$id, 'org_ena'=>1));
+	
+		if($idtype == 'consortia'){
+			$constort = $eq->db->fetch_one('groups', array('group_sname'=>$id));
+			$org = array('org_logo'=>"{$constort['group_logo']}");
 		}else{
-			$org = array('org_logo'=>"{$eq->config->pwd}/htdocs/resources/images/institution.png");
+			if($id != 'none'){
+				$org = $eq->db->fetch_one('orgs', array('org_idscheme' => $idtype,'org_id'=>$id, 'org_ena'=>1));
+			}else{
+				$org = array('org_logo'=>"{$eq->config->pwd}/htdocs/resources/images/institution.png");
+			}
 		}
+	
+		
 		
 		if(!isset($org['org_logo']) || !strlen($org['org_logo'])){
 			$f3->error(404);
