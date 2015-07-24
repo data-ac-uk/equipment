@@ -6,6 +6,8 @@ require_once( "../etc/eq_config.php" );
 require_once( "{$eq_config->pwd}/lib/arc2/ARC2.php" );
 require_once( "{$eq_config->pwd}/lib/Graphite/Graphite.php" );
 
+require_once( "{$eq_config->pwd}/lib/OPDLib/OrgProfileDocument.php" );
+
 $uri = "http://learning-provider.data.ac.uk/data/groups.ttl";
 
 
@@ -19,7 +21,9 @@ $graph = new Graphite();
 $graph->load( $uri );
 $groups = $graph->ns( "lprov", "http://id.learning-provider.data.ac.uk/terms#" );
 
-$groups = $graph->allOfType(  "lprov:InstitutionalGroup" );
+$groups = $graph->allOfType( "lprov:InstitutionalGroup" );
+
+$now =   $eq->db->now();
 
 foreach($groups as $group){
 	
@@ -32,8 +36,64 @@ foreach($groups as $group){
 		'group_ena'=>1
 	);
 	
+	$replace = array('group_id' => $group->toString());
 	echo "Group ".$group->label()."\n";
-	$eq->db->insert('groups', $dbgroup, array('group_updated'=>'now()'), 'REPLACE');
+	
+	if(strlen($dbgroup['group_url'])){
+		try{ 
+			$foundopd = true;
+			$opd = @OrgProfileDocument::discover( $dbgroup['group_url'] );
+		}
+		catch( OPD_Discover_Exception $e )
+		{
+			$foundopd = false;
+		}
+		catch( OPD_Load_Exception $e )
+		{
+			$foundopd = false;
+		}
+		catch( OPD_Parse_Exception $e )
+		{
+			$foundopd = false;
+		}
+		catch( Exception $e )
+		{
+			$foundopd = false;
+		}
+		if($foundopd){ 
+			$primaryTopic = (string)$opd->org;
+			$dbgroup['group_id'] = $primaryTopic;
+			
+			echo " Found OPD: {$primaryTopic}\n";
+			
+			$dbgroup['group_opd'] = (string)$opd->opd_url;
+			
+			$dbgroup['group_name'] = $opd->org->getString('foaf:name');
+			if(!strlen($dbgroup['group_name']))
+				$dbgroup['group_name'] = $opd->org->getString('skos:prefLabel');
+			
+			$dbgroup['group_sname'] = createShortName($dbgroup['group_name']);
+			
+			foreach( $opd->org->all( 'foaf:logo' ) as $logo3 ) { 
+				$logo = (string)$logo3;
+				$linfo = $eq->misc_curl_getinfo($logo);
+				if($linfo['http_code']==200){
+					$dbgroup['group_logo'] = $logo;
+					break;
+				}
+			}
+		
+		
+			$replace = array('group_url' => $dbgroup['group_url']);
+		}
+	}
+
+	$res = $eq->db->fetch_one('groups', $replace);
+	if($res===false){
+		$eq->db->insert('groups', $dbgroup, array('group_updated'=>'now()'), 'REPLACE');
+	}else{
+		$eq->db->update('groups', $dbgroup, array('group_updated'=>'now()'), $replace);
+	}
 	
 	$members = $group->all( 'foaf:member' );
 	
@@ -46,13 +106,17 @@ foreach($groups as $group){
 
 		if($res!==false){
 			echo "\t{$res['org_name']} \n";
-			$eq->db->insert('groupLinks', array('link_group'=>(string)$dbgroup['group_id'], 'link_org'=>$res['org_uri']), array(), 'REPLACE');
+			$eq->db->insert('groupLinks', array('link_group'=>(string)$dbgroup['group_id'], 'link_org'=>$res['org_uri'], 'link_ena'=>1), array('link_updated'=>'now()'), 'REPLACE');
 		}
 	
 		
 	}
 	
 }
+#Disable old links
+$eq->db->update('groups',  array('group_ena'=>'0'), array(), array('group_updated'=>'<:'.$now));
+$eq->db->update('groupLinks',  array('link_ena'=>'0'), array(), array('link_updated'=>'<:'.$now));
+
 
 
 function createShortName($name){

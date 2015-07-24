@@ -1990,6 +1990,8 @@ class eqDB extends DB\SQL {
 		if($limit)
 			$sql .= " Limit ".$limit;
 
+
+		$this->lastsql = $sql;
 		return $this->exec($sql, $infields);
 	}
 	
@@ -2021,6 +2023,7 @@ class eqDB extends DB\SQL {
 		if($limit)
 			$sql .= " Limit ".$limit;
 
+		$this->lastsql = $sql;
 		return $this->exec($sql, $infields);
 	}
 	
@@ -2050,5 +2053,10 @@ class eqDB extends DB\SQL {
 			return false;
 		else
 			return $res[0];
+	}
+	
+	function now(){
+		$res =  $this->exec("SELECT NOW( ) AS  'now'");
+		return $res[0]['now'];
 	}
 }

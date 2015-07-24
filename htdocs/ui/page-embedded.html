@@ -58,14 +58,23 @@
   <div class="bottomtitle">
     <h1>{{ @html_title }}</h1>
 
-  	<check if="{{ @html_subtitle }}"> 
+  	<check if="{{ @html_subtitle_html }}"> 
   	  	<true>
-  	    	<h2 id="subtitle">{{ @html_subtitle }}</h2>
+  	    	<h2 id="subtitle">{{ @html_subtitle_html | raw }}</h2>
   	    </true>
+		<false>
+		  	<check if="{{ @html_subtitle }}"> 
+		  	  	<true>
+		  	    	<h2 id="subtitle">{{ @html_subtitle }}</h2>
+		  	    </true>
+		  	</check>
+		</false>
   	</check>
+
+  	
   </div>
 
-  <div class="poweredby"><a href='/'> Powered by</br>
+  <div class="poweredby"><a href='/' target="_blank"> Powered by</br>
 	  	<img src='/resources/images/eq-data-title.png' alt="Equipment.Data Logo"/></a></div>
 	<footer>
 	<span style="float: left;">&copy; Equipemnt.data {{date("Y")}}</span>
@@ -115,6 +124,8 @@
 	  	<true>
 <script>
  var theParent = '{{@_SERVER['HTTP_REFERER']}}';
+ 
+ 
  if(typeof parent.postMessage != 'undefined'){
  jQuery(this).bind('load',function(){
      var doc = window.document;
@@ -127,6 +138,7 @@
 			  parent.postMessage($('#content').height() + 30,theParent);
 		 });
 	 });
+	  parent.postMessage($('#content').height() + 30,theParent);
  });
 };
 

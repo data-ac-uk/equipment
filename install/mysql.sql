@@ -82,6 +82,8 @@ CREATE TABLE IF NOT EXISTS `datasets` (
 CREATE TABLE IF NOT EXISTS `groupLinks` (
   `link_group` varchar(255) NOT NULL,
   `link_org` varchar(255) NOT NULL,
+  `link_updated` datetime NOT NULL,
+  `link_ena` tinyint(1) NOT NULL,
   PRIMARY KEY (`link_group`,`link_org`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -96,9 +98,14 @@ CREATE TABLE IF NOT EXISTS `groups` (
   `group_type` varchar(127) NOT NULL,
   `group_name` varchar(255) NOT NULL,
   `group_sname` varchar(255) NOT NULL,
+  `group_logo` VARCHAR( 255 ) NOT NULL ,
+  `group_url` VARCHAR( 255 ) NOT NULL ,
+  `group_updated` DATETIME NOT NULL,
+  `group_ena` TINYINT(1) NOT NULL
   PRIMARY KEY (`group_id`),
   KEY `group_type` (`group_type`,`group_sname`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 -- --------------------------------------------------------
 

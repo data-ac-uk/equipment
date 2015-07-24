@@ -66,7 +66,7 @@ class api {
 		$sql_where = array();
 		$sql_params = array();
 		$sql_params_i = 1;
-				
+		$sql_order = array();		
 		$ret = array();
 	
 		
@@ -80,16 +80,24 @@ class api {
 			INNER JOIN `orgs` ON `itemU_org` = `org_uri`
 				LEFT OUTER JOIN `locations` ON item_location = loc_uri";	
 		
+	
+		
 		if(strlen($params['q'])){
 		
-			$sql_where[] = "(`itemU_f_name` LIKE ? OR `itemU_f_desc` LIKE ? OR `itemU_f_technique` LIKE ? )";
-				
-		
+			//$sql_where[] = "(`itemU_f_name` LIKE ? OR `itemU_f_desc` LIKE ? OR `itemU_f_technique` LIKE ? )";
+			$sql_where[] = "( MATCH (itemU_f_name, itemU_f_desc, itemU_f_technique)  AGAINST (?) > 0 OR (`itemU_f_name` LIKE ? OR `itemU_f_desc` LIKE ? OR `itemU_f_technique` LIKE ? ) ) ";
+			array_unshift($sql_order," `score` DESC ");
+			$sql_sel = ", MATCH (itemU_f_name, itemU_f_desc, itemU_f_technique)  AGAINST (?) as 'score' ";
+			$sql_params[$sql_params_i++] = "{$params['q']}";
+			$sql_params[$sql_params_i++] = "{$params['q']}";
 			$sql_params[$sql_params_i++] = "%{$params['q']}%";
 			$sql_params[$sql_params_i++] = "%{$params['q']}%";
 			$sql_params[$sql_params_i++] = "%{$params['q']}%";
 	
+		}else{
+			array_unshift($sql_order, "CONCAT(`itemU_f_name`,itemU_f_desc, itemU_f_technique) ASC ");	
 		}
+		
 		
 		if(isset($_REQUEST['filter'])){
 			$filters = json_decode($_REQUEST['filter'],true);
@@ -98,7 +106,7 @@ class api {
 				switch($fk){
 					case "consortia":
 						$sql_from .= "\nINNER JOIN `groupLinks` ON `link_org` = `org_uri`";
-						$sql_where[] = "`link_group` = ?";
+						$sql_where[] = "`link_group` = ? AND `link_ena` = 1";
 						$sql_params[$sql_params_i++] = "$fv";
 						$paramfilters['consortia'] = $fv;
 					break;
@@ -148,7 +156,7 @@ class api {
 			
 			$sql_where[] = "`item_location` NOT LIKE '' ";
 			$sql_sel .= ", ROUND(SQRT( POW({$pos->east} - `loc_easting`, 2) + POW({$pos->north} - `loc_northing`, 2) )/1000,2) as distance ";
-			$sql_order = "ORDER BY `distance` ASC";
+			array_unshift($sql_order," `distance` ASC");
 			
 			if(isset($parts[2]) && $dist = (float)$parts[2]){
 			//	$sql_where [] =  "`distance` <= $dist";
@@ -175,6 +183,10 @@ class api {
 		
 		$sql_limit = " LIMIT ".($params['page_size']*$params['page']).", {$params['page_size']}";
 		
+		
+		if(count($sql_order)){
+			$sql_order = "ORDER BY ".join(",",$sql_order);
+		}
 		
 		if($_REQUEST['showsql']){
 			echo "<pre>";
