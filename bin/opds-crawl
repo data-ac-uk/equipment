@@ -45,10 +45,12 @@ foreach($opds as $opd){
 	    
 	if($opd['opd_src'] == 'local'){
 		$topd = @new OrgProfileDocument( $opd['opd_url'] , 'local');
-	}elseif($opd['opd_type'] != 'text/turtle'){
-		$topd = @new OrgProfileDocument( $opd['opd_url'] , 'url');
+// Removing cacha as was causing problems		
+//	}elseif($opd['opd_type'] != 'text/turtle'){
 	}else{
-		$topd = @new OrgProfileDocument( $opd['opd_cache'] , 'string');
+		$topd = @new OrgProfileDocument( $opd['opd_url'] , 'url');
+//	}else{
+//		$topd = @new OrgProfileDocument( $opd['opd_cache'] , 'string');
 	}
 
 	} catch (\Exception $e) {
@@ -105,7 +107,6 @@ foreach($opds as $opd){
 	$orgin['org_logo'] = "";
 	foreach( $graph->resource( $primaryTopic )->all( 'foaf:logo' ) as $logo3 ) { 
 		$logo = (string)$logo3;
-		echo "$logo";
 		$linfo = $eq->misc_curl_getinfo($logo);
 		if($linfo['http_code']==200){
 			$orgin['org_logo'] = $logo;
@@ -113,12 +114,6 @@ foreach($opds as $opd){
 		}
 	}
  
- 
-		
-	
-	echo "{$orgin['org_logo']}\n";
-
-	
 	$orginraw['org_lastseen'] = 'NOW()';
 	
 	
