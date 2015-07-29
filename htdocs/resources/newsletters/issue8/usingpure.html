@@ -1,0 +1,14 @@
+<h3>Using Pure to contribute to equipment.data Pure User Group – May 2015</h3>
+<img src="/resources/newsletters/issue8/Business-Data-Sharing-Cloud.jpg" width="175">
+
+<p>Earlier this year we were invited to attend the UK Pure user group held at University of East Anglia. A Current Research Information System from <a href="http://www.elsevier.com/" title="Elsevier">Elsevier</a>, <a href="http://www.elsevier.com/solutions/pure" title="Pure | Helps Research Managers at your Institution">Pure</a> is designed to help institutions manage their Publication, Academic and (most importantly from our point of view) Research Equipment and Facilities information. This provided us with an ideal opportunity to engage with the Pure Equipment Working Group and progress development of the module to support contribution to equipment.data. </p>
+	
+<p>An introduction and history of equipment.data was given to the attendees, but the main purpose of our presentation was to show the workflow that Aberystwyth University have used to publish their equipment dataset. To achieve this Antony Corfield from the Research, Business & Innovation department at the Aberystwyth, wrote the Java webapp pureToOORDF. 
+</p>	
+<p>	At Aberystwyth they have decided that the definitive list of their equipment is to be held within Pure. This list can be exposed via Pure’s web services API which can then be queried by the pureToOORDF webapp. For performance reasons Pure limits API queries to 20. This means that the web app has to perform multiple queries to produce a full list. It then uses an XSLT (Extensible Stylesheet Language Transformations) to convert Pure’s internal XML to RDF (which conforms to the <a href="http://purl.org/openorg/" title="Open Organisations | Vocabularies Server">Open Organisations</a> definition). Once the RDF equipment list has been created it is then made available online for equipment.data to consume.
+</p> 
+<img src="/resources/newsletters/issue8/pureToOORDF.png" style="width:100%;"/><br/>
+<p>	The webapp has been made open source and is available on <a href="https://github.com/data-ac-uk/pureToOORDF">github</a>.
+</p>
+<p>	The work that Aberystwyth University has done, demonstrates the importance of getting the workflow right. Whether it is a timed export from an asset register, having a centralised database solely for equipment e.g. Kit Catalogue, or in this case a Current Research Information System, thought should always be given to the question “Do we have this data already?” as managing data workflows is a key element of efficient data management. 
+</p>

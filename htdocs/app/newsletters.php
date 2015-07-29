@@ -2,6 +2,7 @@
 class newsletters {
 
 	var $newsletters = array(
+		"issue8"=>array("title"=>"Issue 8, July 2015"),
 		"issue7"=>array("title"=>"Issue 7, April 2015"),
 		"issue6"=>array("title"=>"Issue 6, December 2014"),
 		"issue5"=>array("title"=>"Issue 5, October 2014"),
