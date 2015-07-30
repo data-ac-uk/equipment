@@ -101,7 +101,7 @@ CREATE TABLE IF NOT EXISTS `groups` (
   `group_logo` VARCHAR( 255 ) NOT NULL ,
   `group_url` VARCHAR( 255 ) NOT NULL ,
   `group_updated` DATETIME NOT NULL,
-  `group_ena` TINYINT(1) NOT NULL
+  `group_ena` TINYINT(1) NOT NULL,
   PRIMARY KEY (`group_id`),
   KEY `group_type` (`group_type`,`group_sname`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
