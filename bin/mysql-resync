@@ -58,7 +58,7 @@ if($error){
 	$masterdb->exec("FLUSH TABLES WITH READ LOCK;");
 	$eq->db->exec("SLAVE STOP;");
 	$status_master = $masterdb->exec("SHOW MASTER STATUS;");
-	$cmd = "mysqldump -h {$eq_config->masterdb->host} -u {$eq_config->masterdb->user} -p{$eq_config->masterdb->password} --opt {$eq_config->masterdb->db} > /tmp/equipment.sql | mysql  -h {$eq_config->db->host} -u {$eq_config->db->user} -p{$eq_config->db->password} {$eq_config->db->db}";
+	$cmd = "mysqldump -h {$eq_config->masterdb->host} -u {$eq_config->masterdb->user} -p{$eq_config->masterdb->password} --opt {$eq_config->masterdb->db} | mysql  -h {$eq_config->db->host} -u {$eq_config->db->user} -p{$eq_config->db->password} {$eq_config->db->db}";
 		`$cmd`;
 	$eq->db->exec("CHANGE MASTER TO MASTER_HOST='{$eq_config->masterdb->host}',MASTER_USER='{$eq_config->masterdb->user}', MASTER_PASSWORD='{$eq_config->masterdb->password}', MASTER_LOG_FILE='{$status_master[0]['File']}', MASTER_LOG_POS=  {$status_master[0]['Position']}");
  	$eq->db->exec("SLAVE START;");
