@@ -4,6 +4,8 @@ require_once( "../lib/arc2/ARC2.php" );
 require_once( "../lib/Graphite/Graphite.php" );
 
 
+
+
 date_default_timezone_set( "Europe/London" );
 
 if(substr($_SERVER['HTTP_HOST'],0,4)=='www.'){
@@ -29,6 +31,9 @@ if (function_exists('apache_get_modules') &&
 require_once( "../etc/eq_config.php" );
 require_once( "{$eq_config->pwd}/dataacukEquipment.php" );
 $eq = new dataacukEquipment($eq_config);
+
+
+header("X-Host: {$eq_config->name}"); 
 
 $f3->eq = $eq;
 
