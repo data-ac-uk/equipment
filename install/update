@@ -19,13 +19,6 @@ if(isset($argv[1]) && in_array($argv[1],$roles)){
 
 require_once( "etc/eq_config.php" );
 
-$eq_config->replication = (object) NULL;
-$eq_config->replication->hosts = array(
-        "_equipment@srv01193.soton.ac.uk:/data/httpd/equipment/app/htdocs/data/."
-);
-
-
-
 switch($role){
 	case "this":
 		$cmd = "git pull; git submodule update;";
