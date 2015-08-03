@@ -1,0 +1,46 @@
+#!/usr/bin/php
+<?php
+
+chdir(dirname(__DIR__));
+
+if(in_array('-v',$argv)){
+	$v = true;
+}else{
+	$v = false;	
+}
+
+$roles = array('this','slave');
+
+if(isset($argv[1]) && in_array($argv[1],$roles)){
+	$role = $argv[1];
+}else{
+	die("Useage: ./update ('this' | 'slave')\n");
+}
+
+require_once( "etc/eq_config.php" );
+
+$eq_config->replication = (object) NULL;
+$eq_config->replication->hosts = array(
+        "_equipment@srv01193.soton.ac.uk:/data/httpd/equipment/app/htdocs/data/."
+);
+
+
+
+switch($role){
+	case "this":
+		$cmd = "git pull; git submodule update;";
+		passthru($cmd);
+	break;
+	case "slave":
+	if(isset($eq_config->replication->hosts) && is_array($eq_config->replication->hosts)){
+		foreach($eq_config->replication->hosts as $host){	
+		   $hosti = explode(":",$host);
+		   $cmd = "ssh {$hosti[0]} ".escapeshellarg("cd ".dirname(dirname($hosti[1]))."; git pull; gitsubmodule update");
+		   passthru($cmd);
+		}
+	}else{
+		die("No slaves configured");
+	}
+	break;
+	
+}
