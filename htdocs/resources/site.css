@@ -161,7 +161,7 @@ h1 sup.beta{
 	position:fixed;
 	top:0;
 	width:100%;
-	z-index:957;
+	z-index:998;
 	display:none;
 }
 
@@ -334,7 +334,7 @@ a.fileicon.rdf{
 	border: 1px solid #193965;
 	padding: 8px;
 	position: relative;
-	z-index: 1001000;
+	z-index: 1000;
 	background:white;
 }
 
@@ -394,7 +394,7 @@ a.fileicon.rdf{
 	border: 1px solid #193965;
 	border-top:none;
 	border-radius: 0px 0px 10px 10px;
-	z-index: 1000;
+	z-index: 999;
 	position: absolute;
 	background: white;
 
@@ -591,4 +591,14 @@ input[type="radio"]{
 	max-width:212px;
 }
 
-bottomtitle
+#twitter-timeline{
+	border-radius: 5px;
+	border: 1px solid #193965;
+	padding: 0px;
+	overflow: hidden;
+	margin-bottom:10px;
+}
+
+#twitter-timeline iframe{
+	margin-bottom: -5px !important;
+}
