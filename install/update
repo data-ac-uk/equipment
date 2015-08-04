@@ -28,7 +28,7 @@ switch($role){
 	if(isset($eq_config->replication->hosts) && is_array($eq_config->replication->hosts)){
 		foreach($eq_config->replication->hosts as $host){	
 		   $hosti = explode(":",$host);
-		   $cmd = "ssh {$hosti[0]} ".escapeshellarg("cd ".dirname(dirname(dirname($hosti[1])))."; git pull; git submodule update");
+		   $cmd = "ssh {$hosti[0]} ".escapeshellarg("cd ".dirname(dirname(dirname($hosti[1])))."; git pull; git submodule init; git submodule update");
 		   passthru($cmd);
 		}
 	}else{
