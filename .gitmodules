@@ -16,6 +16,3 @@
 [submodule "lib/PHPExcel"]
 	path = lib/PHPExcel
 	url = https://github.com/PHPOffice/PHPExcel.git
-[submodule "lib/network-bar"]
-	path = lib/network-bar
-	url = https://github.com/data-ac-uk/network-bar.git
