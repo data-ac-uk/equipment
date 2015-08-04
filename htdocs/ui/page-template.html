@@ -114,11 +114,11 @@ This site uses cookies for Google Analytics.
 <!--start contactable -->
 <div id="contactable"><!-- contactable html placeholder --></div>
 <script type="text/javascript" src="/network-bar/feedback/jquery.validate.pack.js?v=1"></script>
-<script type="text/javascript" src="/network-bar/feedback/jquery.contactable.php?v=1"></script>
+<script type="text/javascript" src="/network-bar/feedback/jquery.contactable.min.js?v=2"></script>
 <link rel="stylesheet" href="/network-bar/feedback/contactable.css?v=1" type="text/css" />
 <script>
 	var tracking = {};
-	$(function(){$('#contactable').contactable({productKey: 'equipment.data', extra: tracking, 'title': 'Get in touch'});});
+	$(function(){$('#contactable').contactable({productKey: 'equipment.data', extra: tracking, 'title': 'Get in touch', url: '/network-bar/feedback/endpoint',base:'/network-bar/feedback/'});});
 </script>
 <!--end contactable -->
 
