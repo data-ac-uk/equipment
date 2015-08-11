@@ -48,7 +48,7 @@ class api {
 		global $eq_config;
 		$params['q'] = $_REQUEST['q'];
 		//forwarded gets
-		foreach(array('instsearch') as $i){
+		foreach(array('instsearch','imagesonly') as $i){
 			if(isset($_REQUEST[$i])){
 				$params[$i] = $_REQUEST[$i];
 			}
@@ -57,7 +57,7 @@ class api {
 		
 		$starttime = microtime(true);
 		
-		if(isset($_REQUEST['page_size']) and (int)$_REQUEST['page_size'] and (int)$_REQUEST['page_size'] < 100){
+		if(isset($_REQUEST['page_size']) and (int)$_REQUEST['page_size'] and (int)$_REQUEST['page_size'] <= 100){
 			$params['page_size'] = (int)$_REQUEST['page_size'];
 		}else{
 			$params['page_size'] = 10;
@@ -98,6 +98,10 @@ class api {
 			array_unshift($sql_order, "CONCAT(`itemU_f_name`,itemU_f_desc, itemU_f_technique) ASC ");	
 		}
 		
+		
+		if(strlen($params['imagesonly']) && $params['imagesonly'] == 'true'){
+			$sql_where[] = "`itemU_f_photo` != ''";
+		}
 		
 		if(isset($_REQUEST['filter'])){
 			$filters = json_decode($_REQUEST['filter'],true);
@@ -242,7 +246,9 @@ class api {
 			if(isset($params['geocode'])){
 				$ret_item['_Distance'] = $item["distance"];
 			}
-			
+			if(strlen($ret_item['uniquip']['Photo'])){
+				$ret_item['_eqPhoto'] = "/item/{$item["itemU_id"]}/image.jpg";
+			}
 			$ret['results'][] = $ret_item;
 		}
 		

@@ -123,8 +123,11 @@ class search {
 			}
 			
 			if($org!==false){
+				if(strlen($org['org_logo'])){
 				$html = "<a class=\"uni-logo\" title=\"{$org['org_name']}\" href=\"{$org['org_url']}\"><img style=\"max-height:80px\" src=\"/org/{$org_scheme}/{$org_id}.logo?size=medium\"></a>";
-		
+				}else{
+					$html = "";
+				}
 				$f3->set('template_style','rebrand');
 				$f3->set('template_style_insert',$html);
 				$cons = array();
@@ -168,7 +171,7 @@ class search {
 			$f3->set('content','search-advanced.html');
 		
 		if(isset($_REQUEST['embedded']) and $_REQUEST['embedded']){
-			if($org['org_logo']){
+			if(strlen($org['org_logo'])){
 				$html = "<a class=\"uni-logo\" title=\"{$org['org_name']}\" href=\"{$org['org_url']}\"  target=\"_parent\"><img style=\"max-height:40px\" src=\"/org/{$org_scheme}/{$org_id}.logo?size=small\"></a>";
 				$f3->set('html_subtitle_html', $html);
 			}

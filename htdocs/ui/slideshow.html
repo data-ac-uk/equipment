@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html lang="en">
+<!--<![endif]-->
+<head>
+
+<!-- Basic Page Needs
+  ================================================== -->
+<meta charset="utf-8">
+<title>Equipment Silde Show</title>
+<meta value="description" content="equipment.data.ac.uk: Open data about equipment and facilities of UK Universities ">
+<meta value="author" content="Christopher Gutteridge">
+
+<!-- Mobile Specific Metas
+  ================================================== -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- CSS
+  ================================================== -->
+<script src="/resources/jquery/jquery-1.9.1.js"></script>
+<script src="/resources/jquery/jquery-ui.js"></script>
+
+<style>
+body {
+	background-color: #ffffff;
+	color: #000040;
+	margin: 0;
+	padding:0;
+	font-family: Helvetica, Arial, sans-serif;
+}
+#p1, #p2 {
+	background-color: #fff;
+	position: absolute;
+	top:0;
+	left:0;
+	height:100%;
+	width:100%;
+}
+#l1, #l2 {
+	width: 10%;
+	top: 1%;
+	right: 1%;
+	position: absolute;
+	text-align: center;
+}
+#l1 img, #l2 img { 
+	max-width: 100%;
+}
+#l3 {
+	width: 10%;
+	top: 1%;
+	left: 1%;
+	position: absolute;
+	z-index: 200;
+}
+#l4 {
+	bottom: 1%;
+	right: 1%;
+	position: absolute;
+	z-index: 200;
+	font-size: 60%;
+}
+
+
+#c11, #c22 {
+	padding:0;
+	margin: 0;
+	position: absolute;
+	top:0;
+	left:0;
+	height: 100%;
+	width: 50%;
+}
+#c12, #c21 {
+	padding:0;
+	margin: 0;
+	position: absolute;
+	top:0;
+	left:50%;
+	height: 100%;
+	width: 50%;
+}
+.ill {
+	max-width: 90%;
+	max-height: 90%;
+}
+.text {
+}
+
+</style>
+
+</head>
+
+<body class="embedded">
+<div id='p1'><div id='c11'></div><div id='c12'></div><div id='l1' data-pos-h='0.5' data-pos-v='0.9'></div></div>
+<div id='p2'><div id='c21'></div><div id='c22'></div><div id='l2' data-pos-h='0.5' data-pos-v='0.9'></div></div>
+<a href='http://equipment.data.ac.uk'><img id='l3' src='http://equipment.data.ac.uk/resources/images/eq-data-title.png' /></a>
+<div id='l4'>This page uses data from <a href='http://equipment.data.ac.uk/'>equipment.data.ac.uk</a>, sourced from open data of <a href='http://equipment.data.ac.uk/status'>{{ count( @status['orgs'] ) }} UK Institutions</a>, Listing {{ number_format(@status['totals']['items'],0) }} items.</div>
+</body>
+</html>
+<script>
+
+
+jQuery.prototype.position = function() 
+{
+	var hPos = 0.5;
+	var vPos = 0.5;
+	if( this.attr( 'data-pos-h' ) )
+	{
+		hPos = this.attr( 'data-pos-h' );
+	}
+	if( this.attr( 'data-pos-v' ) )
+	{
+		vPos = this.attr( 'data-pos-v' );
+	}
+	var xPos = this.parent().innerWidth()*hPos - this.outerWidth()*0.5;
+	var yPos = this.parent().innerHeight()*vPos - this.outerHeight()*0.5;
+	this.css( 'margin-left', xPos+'px' );
+	this.css( 'margin-top', yPos+'px' );
+}
+
+jQuery.prototype.scale = function(max,min) 
+{
+	this.css('display','inline-block');
+	var hRatio = 1;
+	var vRatio = 1;
+	if( this.attr( 'data-scale-h' ) )
+	{
+		hRatio = this.attr( 'data-scale-h' );
+	}
+	if( this.attr( 'data-scale-v' ) )
+	{
+		vRatio = this.attr( 'data-scale-v' );
+	}
+	var maxW = this.parent().innerWidth()*hRatio;
+	var maxH = this.parent().innerHeight()*vRatio;
+	this.css('max-width',(maxW-1)+"px");
+	var css=0;
+	var ttl=100;
+
+	do {
+		css+=10;
+		this.css( 'font-size',css+"%" );
+		this.find( 'img' ).css( 'width',css+"%" );
+		
+		ttl--;
+		
+		if(css > max){
+			ttl = 0;
+		}
+		
+	}
+	while( ttl>0 && this.innerHeight() <= maxH && this.innerWidth() <= maxW );
+
+//alert( "ttl:"+ttl+" oh:"+this.innerHeight()+" maxh:"+maxH+" ow:"+this.innerWidth()+" maxw:"+maxW+" css:"+css);
+
+	ttl=30;
+	do {
+		css-=0.5;
+		this.css( 'font-size',css+"%" );
+		this.find( 'img' ).css( 'width',css+"%" );
+		ttl--;
+	}
+	while( ttl>0 && ( this.innerHeight() > maxH || this.innerWidth() > maxW ) );
+	this.find( 'img' ).each(function(i,img){
+		img=$(img);
+		var w=img.innerWidth();
+		var h=img.innerHeight();
+		img.width(w);
+		img.height(h);
+	});
+	//this.css('display','inline-block');
+
+	if( ttl==0 ) { alert( "error: ttl on sclaing "+this.html()+" ran out" ); }
+}
+
+$(document).ready( applyTweaks );
+$(window).resize( applyTweaks );
+
+function applyTweaks() {
+	$('.scale-me').each( function(i,e){ $(e).scale(); } );
+	$('.position-me').each( function(i,e){ $(e).position(); } );
+}
+
+
+
+	recursively_ajax("/api/search?imagesonly=true&page_size=100");
+
+
+
+  var keepers = [];
+  function recursively_ajax(gourl){
+	  $.ajax({
+		    url: gourl,
+		    context: document.body
+		  }).done(function(loadedData) {
+		    for( var i=0;i<loadedData.count;++i)
+		    {
+		      var r = loadedData.results[i].uniquip;
+		      if( r["Photo"] == undefined ) { continue; }
+		      if( r["Photo"] == "" ) { continue; }
+			  if( r.Description.length < 10){
+				  continue;
+			  }
+	  
+			  r['Photo'] = loadedData.results[i]["_eqPhoto"];
+		      keepers.push( r );
+		    }
+			
+			if(loadedData.next_page == undefined || loadedData.next_page == ''){
+			    keepers.sort(function() {return 0.5 - Math.random()});
+				showNextItem();
+				console.log(keepers.length);
+			}else{
+				recursively_ajax("/api/search" + loadedData.next_page);
+				return true;
+			}
+	
+		    
+    
+		  });
+  
+  	}
+  
+  
+  
+  var n=0;
+  var slide=1;
+  
+  
+  function showNextItem()
+  {
+    n++;
+    if( n>=keepers.length ) { n=0; }
+
+    var img = $('<img class="ill" data-pos-v="0.5" data-pos-h="0.5" />');
+    img.error( function() {
+      showNextItem();
+    });
+    img.load( function() {
+      var old_slide = slide;
+      slide++; if(slide>2) { slide=1; }
+      $('#p'+slide).css( 'z-index',0 );
+      $('#p'+slide).show();
+      $('#p'+old_slide).css( 'z-index',100);
+      $('#c'+slide+'1').html("").append( img );
+      $(this).position();
+      $(this).css('border','solid 2px black');
+
+      var text = $( '<div data-pos-v="0.5" data-pos-h="0.5" data-scale-v="0.8" data-scale-h="0.8" class="text"></div>' );
+      text.append( $('<h2></h2>').text(keepers[n].Name) );
+      if( keepers[n].Description[0] == '<' )
+      {
+        text.append( $(keepers[n].Description) );
+      }
+      else
+      {
+        text.append( $('<p></p>').text(keepers[n].Description) );
+      }
+      $('#c'+slide+'2').html('').append( text );
+      text.scale(250);
+      text.position();
+      $('#l'+slide).html( '<img src="'+keepers[n]["Institution Logo URL"]+'" />' );
+      $('#p'+old_slide).fadeOut();
+      setTimeout( showNextItem, 8000 );
+    } );
+    img.attr( 'src', keepers[n].Photo );
+  }
+//#{"Type":"equipment","Name":"Beckman Coulter Optima MAX-XP benchtop ultracentrifuge","Description":"Benchtop ultracentrifuge that runs at up to 150,000 RPM (2,500 revolutions per second). With full-color touch screen for monitoring and control. ","Related Facility ID":"26477","Technique":"Micro-Ultracentrifugation","Location":"http://en.wikipedia.org/wiki/University_of_Cambridge","Contact Name":"PEDERSEN, Professor Roger","Contact Telephone":"01223 763236","Contact URL":"","Contact Email":"ralp2@cam.ac.uk","Secondary Contact Name":"","Secondary Contact Telephone":"","Secondary Contact URL":"","Secondary Contact Email":"","ID":"36492","Photo":"http://www.equipment.admin.cam.ac.uk/photo/equipment-36492X1363612599000-800.jpg","Department":"","Site Location":"Cambridge","Building":"","Service Level":"ACCESS_ONLY","Web Address":"http://surgery.medschl.cam.ac.uk/","Institution Name":"University of Cambridge","Institution URL":"http://www.cam.ac.uk/","Institution Logo URL":"http://www.cam.ac.uk/sites/www.cam.ac.uk/files/inner-images/logo.jpg","Datestamp":"2015-02-05T08:06:34+00:00","Approximate Coordinates":"52.2053 0.117222","Corrections":"mailto:christopher.r.wilkinson@admin.cam.ac.uk","__URI":"http://id.equipment.data.ac.uk/item/0002ac0d783338cfeab0b2bdbd872cda","__ID":"0002ac0d783338cfeab0b2bdbd872cda"}
+
+</script>
+
+
+<!-- Server: {{@SERVER_NAME}} -->

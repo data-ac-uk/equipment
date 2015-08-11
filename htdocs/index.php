@@ -170,6 +170,16 @@ $f3->route('GET /data/org/ukprn-@id',
 		$f3->reroute("/org/$type/$id");
     }
 );
+$f3->route('GET	/demo/slideshow', function() {
+
+    $f3=Base::instance();
+	$status = json_decode( file_get_contents( 'data/status-v2.json' ), true );
+	$f3->set('status', $status );
+//$status
+	print Template::instance()->render( "slideshow.html" );
+	exit();
+	}
+);
 
 $f3->set('ONERROR',function() use($f3) {
  	$f3=Base::instance();
