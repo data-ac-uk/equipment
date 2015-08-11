@@ -90,6 +90,16 @@ body {
 .text {
 }
 
+#loading{
+	width: 100%;
+	margin-top: 200px;
+	position: absolute;
+	top:0;
+	left:0;
+	z-index: 100;
+	text-align:center;
+}
+
 </style>
 
 </head>
@@ -99,6 +109,7 @@ body {
 <div id='p2'><div id='c21'></div><div id='c22'></div><div id='l2' data-pos-h='0.5' data-pos-v='0.9'></div></div>
 <a href='http://equipment.data.ac.uk'><img id='l3' src='http://equipment.data.ac.uk/resources/images/eq-data-title.png' /></a>
 <div id='l4'>This page uses data from <a href='http://equipment.data.ac.uk/'>equipment.data.ac.uk</a>, sourced from open data of <a href='http://equipment.data.ac.uk/status'>{{ count( @status['orgs'] ) }} UK Institutions</a>, Listing {{ number_format(@status['totals']['items'],0) }} items.</div>
+<div id='loading'><img src="/resources/images/loading.gif" width="32" height="32" alt="Loading"> </br>Loading</div>
 </body>
 </html>
 <script>
@@ -212,8 +223,9 @@ function applyTweaks() {
 			
 			if(loadedData.next_page == undefined || loadedData.next_page == ''){
 			    keepers.sort(function() {return 0.5 - Math.random()});
+				$('#loading').fadeOut();
 				showNextItem();
-				console.log(keepers.length);
+				console.log($('#loading'));
 			}else{
 				recursively_ajax("/api/search" + loadedData.next_page);
 				return true;
