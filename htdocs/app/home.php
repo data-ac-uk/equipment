@@ -70,7 +70,7 @@ END;
 				<script>
 					
 					setTimeout(function() {
-							ga('send', 'event','search', 'njsearch','term','{$q}', {'nonInteraction': 1});
+							ga('send', 'event','search', 'njsearch','{$q}');
 						}, 1000);
 				</script>";
 		}

@@ -1,3 +1,6 @@
+var currentsearch = '';
+var currentsearchID = 0;
+
 $(function() {
 <?php
 
@@ -130,6 +133,17 @@ print "var availableTags = ".json_encode( array_keys( $data ) ).";";
                 }, 
                 function(results) { $('#results').html( results ); },
                 'html' );
+			
+			currentsearch = tracking.currentSearchTerm;
+			if(currentsearchID){
+				clearTimeout(currentsearchID);
+			}
+			
+			currentsearchID = setTimeout(function() {
+				currentsearchID = 0;
+			    register_search(tracking.currentSearchTerm);
+			}, 3000);
+			
         }
     
         if (text.length < 3) {
@@ -148,6 +162,12 @@ print "var availableTags = ".json_encode( array_keys( $data ) ).";";
         $('#results').html('');
     }
 
+	function register_search(term){
+		if(term == currentsearch){
+			ga('send', 'event','search', 'fpsearch',term);
+		}
+	}
+
 });
 
 // this function is called from the code produced by ajax so is tricky
@@ -158,7 +178,7 @@ function show_result( id, title )
 	tracking.currentItemTitle= title;
     
     $.get('item/'+id+".fragment", function(page) {
-  	    _gaq.push(['_trackPageview', '/item/'+id]);
+		ga('send', 'pageview', '/item/'+id);
         $('#featured-result').scrollTop(0);
         $('#featured-result').html( page );
     }, 'html');

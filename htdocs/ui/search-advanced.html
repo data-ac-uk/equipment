@@ -71,9 +71,11 @@
   	<check if="{{ isset(@adv_org) }}"> 
   	  	<true>
 			var instsearch = "{{@_REQUEST['instsearch']}}";
+			var searchtype = 'instsearch';
   	    </true>
 		<false>
 			var instsearch = 0;
+			var searchtype = 'advsearch';
 		</false>
 	</check>
 	
@@ -264,9 +266,8 @@ function preformAdvSearchGo(request){
 	$("#adv_results").html("<center><img src=\"/resources/images/loading.gif\" style=\"padding:50px\"/></center>");
 	
 	 $.get( "/api/search", request, resultsAdvSearch);
-	
-	 
-	 
+	 ga('send', 'event','search', searchtype,request.q);
+
 }
 
 function resultsAdvSearch(data){
