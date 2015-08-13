@@ -31,13 +31,12 @@
 
 # Describe the source of equipment data, what standard it conforms to, and the license.
 # delete the dcterms:subject as applicable, but you need to have one of
-# facilities/equipment/capabilities to trigger the automatic aggregation of the data.
+# facilities/equipment to trigger the automatic aggregation of the data.
 
 <http://www.example.ac.uk/equipment.xls>
         oo:organization <http://id.example.ac.uk/> ;
         oo:corrections <mailto:bob@example.ac.uk> ;
         dcterms:subject <http://purl.org/openorg/theme/facilities> ;  
         dcterms:subject <http://purl.org/openorg/theme/equipment> ;
-        dcterms:subject <http://purl.org/openorg/theme/capabilities> ;
         dcterms:conformsTo <http://equipment.data.ac.uk/uniquip> ;
         dcterms:license <http://creativecommons.org/publicdomain/zero/1.0/> .
