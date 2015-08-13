@@ -66,6 +66,13 @@ END;
 			}
 			$search .= "  </div>";
 			$search .= "</div>";
+			$search .= "
+				<script>
+					
+					setTimeout(function() {
+							ga('send', 'event','search', 'njsearch','term','{$q}', {'nonInteraction': 1});
+						}, 1000);
+				</script>";
 		}
 		else
 		{
@@ -87,4 +94,5 @@ END;
 		print Template::instance()->render( "page-template.html" );
 	}
 }
+
 
