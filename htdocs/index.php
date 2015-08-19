@@ -181,6 +181,40 @@ $f3->route('GET	/demo/slideshow', function() {
 	}
 );
 
+
+$f3->route('GET	/guides/@guide', function() {
+
+    $f3=Base::instance();
+	$guide = $f3->get('PARAMS.guide');
+	$guides = array(
+		"how-to-contribute" => array("How to Contriubte","turnjs",16, "/resources/booklets/how-to-contribute/how-to-contribute.pdf")
+	);
+	
+	if(!isset($guides[$guide])){
+		$f3->error(404);
+	}
+	$tg = $guides[$guide];
+	$f3->set('html_title', $tg[0]);
+	
+	switch($tg[1]){
+		case "turnjs":
+
+			$f3->set('key',$guide);
+			$f3->set('noofpages',$tg[2]);
+			$f3->set('download',$tg[3]);
+			$f3->set('content','guide-turnjs.html');
+			break;
+		case "issuu":
+		$f3->set('issuu',$tg[2]);
+		$f3->set('download',$tg[3]);
+		$f3->set('content','guide-issuu.html');
+		break;
+	}
+	print Template::instance()->render( "page-template.html" );
+	exit();
+	}
+);
+
 $f3->set('ONERROR',function() use($f3) {
  	$f3=Base::instance();
 
