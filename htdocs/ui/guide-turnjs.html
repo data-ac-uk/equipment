@@ -1,4 +1,4 @@
-<div id="canvas">
+<div id="canvas" class="">
 
 <div class="zoom-icon zoom-icon-in"></div>
 
@@ -26,13 +26,13 @@
 							<check if="{{ (@i==0)}}">
 							    <true>
 									<li class="i">
-									<img src="/resources/booklets/how-to-contribute/thumb-0.png" width="76" height="100" class="page-1">
+									<img src="/resources/booklets/{{ @key }}/thumb-0.png" width="38" height="50" class="page-1">
 									<span>cover</span>
 									</li>
 							    </true>
 							    <false>
 									<li class="i">
-									<img src="/resources/booklets/how-to-contribute/thumb-{{(@i)}}.png" width="76" height="100" class="page-{{(@i+1)}}">
+									<img src="/resources/booklets/{{ @key }}/thumb-{{(@i)}}.png" width="38" height="50" class="page-{{(@i+1)}}">
 									<span>back</span>
 									</li>
 								</false>
@@ -40,8 +40,8 @@
 					    </true>
 					    <false>
 							<li class="i">
-			   				<img src="/resources/booklets/how-to-contribute/thumb-{{(@i)}}.png" width="76" height="100" class="page-{{(@i+1)}}">
-			   				<img src="/resources/booklets/how-to-contribute/thumb-{{(@i+1)}}.png" width="76" height="100" class="page-{{(@i+2)}}">
+			   				<img src="/resources/booklets/{{ @key }}/thumb-{{(@i)}}.png" width="38" height="50" class="page-{{(@i+1)}}">
+			   				<img src="/resources/booklets/{{ @key }}/thumb-{{(@i+1)}}.png" width="38" height="50" class="page-{{(@i+2)}}">
 			   				<span>{{(@i)}}-{{(@i+1)}}</span><!-- {{@i++}} -->
 							</li>
 						</false>
@@ -213,6 +213,7 @@ var pagebase = '/resources/booklets/{{@key}}/';
 
 					//$('.thumbnails').hide();
 					$('.made').hide();
+					//$('#canvas').addClass('flipbook-fullscreen');
 					$('.flipbook').removeClass('animated').addClass('zoom-in');
 					$('.zoom-icon').removeClass('zoom-icon-in').addClass('zoom-icon-out');
 				
@@ -227,6 +228,7 @@ var pagebase = '/resources/booklets/{{@key}}/';
 									$(this).remove();
 								});
 					}
+					
 				},
 
 				zoomOut: function () {
@@ -234,6 +236,7 @@ var pagebase = '/resources/booklets/{{@key}}/';
 					$('.exit-message').hide();
 					$('.thumbnails').fadeIn();
 					$('.made').fadeIn();
+					//$('#canvas').removeClass('flipbook-fullscreen');
 					$('.zoom-icon').removeClass('zoom-icon-out').addClass('zoom-icon-in');
 
 					setTimeout(function(){
@@ -463,5 +466,29 @@ var pagebase = '/resources/booklets/{{@key}}/';
  	both: ['/resources/turnjs4/lib/zoom.min.js','/resources/booklets/booklet.css','/resources/booklets/booklet.js '],
  	complete: loadApp
  });
-
+ 
+ function toggleFullScreen() {
+   if (!document.fullscreenElement &&    // alternative standard method
+       !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement ) {  // current working methods
+     if (document.documentElement.requestFullscreen) {
+       document.documentElement.requestFullscreen();
+     } else if (document.documentElement.msRequestFullscreen) {
+       document.documentElement.msRequestFullscreen();
+     } else if (document.documentElement.mozRequestFullScreen) {
+       document.documentElement.mozRequestFullScreen();
+     } else if (document.documentElement.webkitRequestFullscreen) {
+       document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+     }
+   } else {
+     if (document.exitFullscreen) {
+       document.exitFullscreen();
+     } else if (document.msExitFullscreen) {
+       document.msExitFullscreen();
+     } else if (document.mozCancelFullScreen) {
+       document.mozCancelFullScreen();
+     } else if (document.webkitExitFullscreen) {
+       document.webkitExitFullscreen();
+     }
+   }
+ }
  </script>

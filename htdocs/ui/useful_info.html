@@ -24,6 +24,8 @@ body{
 	background: white;
 	border-radius: 10px;
 	padding:20px;
+
+	position: relative;
 }
 
 img {
@@ -60,26 +62,52 @@ a:hover{
 	
 	
 .posters{
-	margin:auto; max-width: 400px; width:100%;
+	margin:auto; max-width: 600px; width:100%;
 	text-align: center;
 }
+.posters img {
+	border: 1px solid  rgb(65, 124, 165);
+}
+.posters .rleft {
+    -ms-transform: rotate(-3deg); /* IE 9 */
+    -webkit-transform: rotate(-3deg); /* Chrome, Safari, Opera */
+    transform: rotate(-3deg);
+	display:inline-block;
+	margin-top: 5px;
+}
+.posters .rright {
+    -ms-transform: rotate(3deg); /* IE 9 */
+    -webkit-transform: rotate(3deg); /* Chrome, Safari, Opera */
+    transform: rotate(3deg);
+		display:inline-block;
+		margin-top: 5px;
+}
 
+#qrcode{
+	position: absolute;
+	bottom: 5px;
+	right: 5px;
+	display:none;
+}
 @media print {
 	body{
-		zoom: 0.80;
+		zoom: 0.71;
 		background: none;
+		margin: 0px;
 	}
     #content {
-        width:100%;
+        width:120%;
     }
 	.noprint{
 		display:none;
 	}
 	a{
 		color: rgb(25, 57, 101);
-			text-decoration: none;
+		text-decoration: none;
 	}
-	
+	#qrcode{
+		display: block;
+	}
 }
 
 </style>
@@ -94,19 +122,22 @@ a:hover{
 			<hr/>
 			<h1>Useful Information</h1>
 			
+			<h2>What is <a href="http://equipment.data.ac.uk">equipment.data.ac.uk</a></h2>
+			<p>An EPSRC project funded to deliver a sustainable “national equipment portal” for the HE sector (Joint ESPRC/Jisc funded from 1st April 15). The service provides an aggregation of all published UK HE equipment datasets – making it the “one stop shop” for facilitating equipment collaboration discussions</p>
+			
 			<h2>How to contribute to and use <a href="http://equipment.data.ac.uk">equipment.data.ac.uk</a></h2>
-			<p>Have a look at our two posters guiding you through the simple processes of both contributing to and accessing the equipment and facilities database.</p>
+			<p>Have a look at our new guides to help you through the simple processes of contributing to the equipment and facilities database.</p>
 			<table class="posters">
 				<tr>
-					<th>Accessing</th>
-					<th>Contributing</th>
+					<th>How to Contribute (Guide)</th>
+					<th>The OPD (Guide)</th>
 				</tr>
 				<tr>
 					<td>
-						<a href="/resources/posters/poster-enabling.pdf"><img src="/resources/posters/poster-enabling-small.png" width="160px"/><span class="noprint"><br/> As PDF</span></a>
+						<a href="/resources/booklets/how-to-contribute/how-to-contribute.pdf" class="rleft"><img src="resources/booklets/how-to-contribute/thumb-0.png" width="200px;" /><span class="noprint"><br/> As PDF</a></a>
 					</td>
 					<td>
-						<a href="/resources/posters/poster-contributing.pdf"><img src="/resources/posters/poster-contributing-small.png" width="160px"/><span class="noprint"><br/> As PDF</a></a>
+						<a href="/resources/booklets/opd/opd.pdf" class="rright"><img src="resources/booklets/opd/thumb-0.png"  width="200px;"/><span class="noprint"><br/> As PDF</a></a>
 					</td>
 				</tr>
 				
@@ -120,7 +151,7 @@ a:hover{
 			<p>Our publishing spec defines the requirements for equipment database data publishing to enable individual institutions' data to be harvested by, or published to, equipment portals like ours. <br/><a href="http://equipment.data.ac.uk/uniquip">http://equipment.data.ac.uk/uniquip</a></p>
 
 			<h2>Auto Discovery</h2>
-			<p>For information on enabling ‘Auto Discovery’ by including an Organisational Profile Document. <br/> <a href="http://equipment.data.ac.uk/faq#whatisanopd">http://equipment.data.ac.uk/faq#whatisanopd</a></p>
+			<p>For information on enabling ‘Auto Discovery’ by including an Organisational Profile Document. <br/> <a href="http://opd.data.ac.uk">http://opd.data.ac.uk</a></p>
 
 			<h2>Licenses</h2>
 			<p>Here you will find recommended licenses for open data. <br/> <a href="http://equipment.data.ac.uk/faq#license">http://equipment.data.ac.uk/faq#license</a></p>
@@ -128,10 +159,21 @@ a:hover{
 			<h2>Status report </h2>
 			<p>View the status report on all contributors to equipment.data.<br/> <a href="http://equipment.data.ac.uk/status">http://equipment.data.ac.uk/status</a></p>
 
-			<h2>Creating infrastructure for the future</h2>
-			<p>The auto-discovery programming and Organisational Profile Document (OPD) could very easily be used to aggregate other datasets e.g. expertise (academic profiles) and research data.</p>
+			<h2>Useful posters</h2>
+			<p>Checkout our set of posters that explain: how to use the site, how to contribute and a future architecture for the HE data landscape.</p>
 			<table class="posters">
 				<tr>
+					<th>How to access</th>
+					<th>How to contribute</th>
+					<th>A future architecture</th>
+				</tr>
+				<tr>
+					<td>
+						<a href="/resources/posters/poster-enabling.pdf"><img src="/resources/posters/poster-enabling-small.png" height="160px"/><span class="noprint"><br/> As PDF</span></a>
+					</td>
+					<td>
+						<a href="/resources/posters/poster-contributing.pdf"><img src="/resources/posters/poster-contributing-small.png" height="160px"/><span class="noprint"><br/> As PDF</a></a>
+					</td>
 					<td>
 						<a href="/resources/posters/poster-architecture.pdf"><img src="/resources/posters/poster-architecture-small.png"/><span class="noprint"><br/> As PDF</span></a>
 					</td>
@@ -152,14 +194,15 @@ a:hover{
 
 			<h2>Need help?</h2>
 			<p>If you need any assistance, contact us via the feedback tab on the homepage <a href="http://equipment.data.ac.uk/">http://equipment.data.ac.uk/</a></p>
-	
-			<br/>
-			<hr/>
+			
+			<img src="/resources/images/qr-info.jpg" width="100" height="100" alt="Qr Info" id="qrcode">
+		
+		</div>	
 			<center>
-				<small> &copy; Data.ac.uk and Equipment.Data</small>
+				<small> &copy; 2015 Equipment.Data and Data.ac.uk</small>
 			</center>
-						
-		</div>
+			
+			
 		<script type="text/javascript">
 
 		  var _gaq = _gaq || [];

@@ -507,8 +507,9 @@ ol.faq{
 
 .posters img{
 	max-width: 100%; width:400px;
-}
 
+	border: 1px solid  rgb(65, 124, 165);
+}
 
  #query{
 	

@@ -103,12 +103,18 @@ $f3->route('GET /poster',
         $f3->reroute('/posters');
     }
 );
-
 $f3->route('GET /posters',
+    function() use($f3) {
+        $f3->reroute('/guides');
+    }
+);
+
+
+$f3->route('GET /guides',
 	function() use($f3) {
                 $f3=Base::instance();
 
-		$f3->set('html_title', "Posters" );
+		$f3->set('html_title', "Guides and Posters" );
 		$f3->set('content','poster.html');
 		print Template::instance()->render( "page-template.html" );
 	}
@@ -187,7 +193,8 @@ $f3->route('GET	/guides/@guide', function() {
     $f3=Base::instance();
 	$guide = $f3->get('PARAMS.guide');
 	$guides = array(
-		"how-to-contribute" => array("How to Contriubte","turnjs",16, "/resources/booklets/how-to-contribute/how-to-contribute.pdf")
+		"how-to-contribute" => array("How to Contriubte","turnjs",16, "/resources/booklets/how-to-contribute/how-to-contribute.pdf"),
+		"opd" => array("The OPD","turnjs",16, "/resources/booklets/opd/opd.pdf")
 	);
 	
 	if(!isset($guides[$guide])){

@@ -48,7 +48,7 @@ function loadPage(page, pageElement) {
 
 	// Load the page
 
-	img.attr('src', '/resources/booklets/how-to-contribute/page-' +  (page-1) + '.png');
+	img.attr('src', pagebase+'/page-' +  (page-1) + '.png');
 
 	loadRegions(page, pageElement);
 
