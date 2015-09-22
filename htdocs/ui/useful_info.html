@@ -62,23 +62,28 @@ a:hover{
 	
 	
 .posters{
-	margin:auto; max-width: 600px; width:100%;
+	margin:auto; width: 500px;
 	text-align: center;
+}
+
+#side .posters {
+	width: 100px;
 }
 .posters img {
 	border: 1px solid  rgb(65, 124, 165);
 }
 .posters .rleft {
-    -ms-transform: rotate(-3deg); /* IE 9 */
-    -webkit-transform: rotate(-3deg); /* Chrome, Safari, Opera */
-    transform: rotate(-3deg);
+    -ms-transform: rotate(-6deg); /* IE 9 */
+    -webkit-transform: rotate(-6deg); /* Chrome, Safari, Opera */
+    transform: rotate(-6deg);
 	display:inline-block;
 	margin-top: 5px;
+
 }
 .posters .rright {
-    -ms-transform: rotate(3deg); /* IE 9 */
-    -webkit-transform: rotate(3deg); /* Chrome, Safari, Opera */
-    transform: rotate(3deg);
+    -ms-transform: rotate(6deg); /* IE 9 */
+    -webkit-transform: rotate(6deg); /* Chrome, Safari, Opera */
+    transform: rotate(6deg);
 		display:inline-block;
 		margin-top: 5px;
 }
@@ -89,9 +94,16 @@ a:hover{
 	right: 5px;
 	display:none;
 }
+
+#side{
+	float:right;
+	width:260px;
+	margin-left: 30px;
+}
+
 @media print {
 	body{
-		zoom: 0.71;
+		zoom: 0.79;
 		background: none;
 		margin: 0px;
 	}
@@ -116,34 +128,43 @@ a:hover{
 
 <body style="">
 		<div id="content">
-			<a href="http://equipment.data.ac.uk"><img src="/resources/images/logos/Data_EquipmentLogo_Web_FColour.png" height="45" alt="Data EquipmentLogo Print FColour" /></a>
-			<a href="http://www.data.ac.uk"><img src="http://www.data.ac.uk/sites/all/themes/zen_atelier/images/downloads/web/coloured.jpg" height="35" style="float:right;"/></a>
+			<a href="http://equipment.data.ac.uk"><img src="/resources/images/logos/Data_EquipmentLogo_Web_FColour.png" height="70" alt="Data EquipmentLogo Print FColour" /></a>
+			<a href="http://www.data.ac.uk"><img src="http://www.data.ac.uk/sites/all/themes/zen_atelier/images/downloads/web/coloured.jpg" height="35" style="float:right;" class="noprint"/></a>
 			
 			<hr/>
-			<h1>Useful Information</h1>
+			
+			
+			
+			<h1>Everything you need to know!</h1>
+			
+				<div id="side">
+				<h2>How to contribute to and use <a href="http://equipment.data.ac.uk">equipment.data.ac.uk</a></h2>
+				<p>Have a look at our new guides to help you through the simple processes of contributing to the equipment and facilities database.</p>
+				<center><a href="http://equipment.data.ac.uk/guides">http://equipment.data.ac.uk/guides</a></center>
+				<table class="posters">
+					<!--tr>
+						<th>How to Contribute (Guide)</th>
+						<th>The OPD (Guide)</th>
+					</tr-->
+				
+					<tr>
+						<td>
+							<a href="/resources/booklets/how-to-contribute/how-to-contribute.pdf" class=""><img src="resources/booklets/how-to-contribute/page-0.png" width="250px;" /><span class="noprint"><br/> As PDF</a></a>
+						</td>
+					</tr>
+						<tr>
+						<td>
+							<a href="/resources/booklets/opd/opd.pdf" class=""><img src="resources/booklets/opd/page-0.png"  width="250px;"/><span class="noprint"><br/> As PDF</a></a>
+						</td>
+					</tr>
+				</table>
+			
+			</div>
 			
 			<h2>What is <a href="http://equipment.data.ac.uk">equipment.data.ac.uk</a></h2>
 			<p>An EPSRC project funded to deliver a sustainable “national equipment portal” for the HE sector (Joint ESPRC/Jisc funded from 1st April 15). The service provides an aggregation of all published UK HE equipment datasets – making it the “one stop shop” for facilitating equipment collaboration discussions</p>
 			
-			<h2>How to contribute to and use <a href="http://equipment.data.ac.uk">equipment.data.ac.uk</a></h2>
-			<p>Have a look at our new guides to help you through the simple processes of contributing to the equipment and facilities database.</p>
-			<table class="posters">
-				<tr>
-					<th>How to Contribute (Guide)</th>
-					<th>The OPD (Guide)</th>
-				</tr>
-				<tr>
-					<td>
-						<a href="/resources/booklets/how-to-contribute/how-to-contribute.pdf" class="rleft"><img src="resources/booklets/how-to-contribute/thumb-0.png" width="200px;" /><span class="noprint"><br/> As PDF</a></a>
-					</td>
-					<td>
-						<a href="/resources/booklets/opd/opd.pdf" class="rright"><img src="resources/booklets/opd/thumb-0.png"  width="200px;"/><span class="noprint"><br/> As PDF</a></a>
-					</td>
-				</tr>
-				
-			</table>
 			
-
 			<h2>Want to contribute data but don’t have a database?</h2>
 			<p>That’s ok; we provide all the information you need on how to get started. <br/> <a href="http://equipment.data.ac.uk/faq#howtoinclude">http://equipment.data.ac.uk/faq#howtoinclude</a></p>
  
@@ -161,20 +182,31 @@ a:hover{
 
 			<h2>Useful posters</h2>
 			<p>Checkout our set of posters that explain: how to use the site, how to contribute and a future architecture for the HE data landscape.</p>
+			<center><a href="http://equipment.data.ac.uk/guides">http://equipment.data.ac.uk/posters</a></center>
 			<table class="posters">
 				<tr>
 					<th>How to access</th>
 					<th>How to contribute</th>
-					<th>A future architecture</th>
+					<th>Demand more from your vendor!</th>
 				</tr>
 				<tr>
-					<td>
+					<td width="33%">
 						<a href="/resources/posters/poster-enabling.pdf"><img src="/resources/posters/poster-enabling-small.png" height="160px"/><span class="noprint"><br/> As PDF</span></a>
 					</td>
-					<td>
+					<td width="33%">
 						<a href="/resources/posters/poster-contributing.pdf"><img src="/resources/posters/poster-contributing-small.png" height="160px"/><span class="noprint"><br/> As PDF</a></a>
 					</td>
-					<td>
+					<td width="33%">
+						<a href="/resources/posters/poster-vendor.pdf"><img src="/resources/posters/poster-vendor.png" height="160px"/><span class="noprint"><br/> As PDF</a></a>
+					</td>
+					
+				</tr>
+				
+				<tr >
+					<th colspan=3>A future architecture</th>
+				</tr>
+				<tr>
+					<td colspan=3>
 						<a href="/resources/posters/poster-architecture.pdf"><img src="/resources/posters/poster-architecture-small.png"/><span class="noprint"><br/> As PDF</span></a>
 					</td>
 				</tr>
