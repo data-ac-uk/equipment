@@ -10,3 +10,4 @@ etc/opds/*
 etc/eq_config.local.php
 
 bin/messages-test
+.DS_Store
