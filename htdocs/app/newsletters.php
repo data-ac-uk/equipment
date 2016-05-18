@@ -2,13 +2,14 @@
 class newsletters {
 
 	var $newsletters = array(
+		"issue10"=>array("title"=>"Issue 10, May 2016"),
 		"issue9"=>array("title"=>"Issue 9, October 2015"),
 		"issue8"=>array("title"=>"Issue 8, July 2015"),
 		"issue7"=>array("title"=>"Issue 7, April 2015"),
 		"issue6"=>array("title"=>"Issue 6, December 2014"),
 		"issue5"=>array("title"=>"Issue 5, October 2014"),
 		"issue4"=>array("title"=>"Issue 4, July 2014"),
-		"issue3"=>array("title"=>"Issue 3, Feburary 2014"),
+		"issue3"=>array("title"=>"Issue 3, February 2014"),
 		"issue2"=>array("title"=>"Issue 2, November 2013"),
 		"issue1"=>array("title"=>"Issue 1, July 2013")
 	);
